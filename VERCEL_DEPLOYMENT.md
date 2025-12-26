@@ -10,16 +10,38 @@ This guide explains how to deploy the PS Stores application to Vercel using TanS
 
 ## Setup Steps
 
-### 1. Vercel Configuration
+### 1. Install Nitro
 
-No additional dependencies are required. TanStack Start works with Vercel out of the box using Vite's native support.
+Nitro is required for TanStack Start to work properly with Vercel. It's already installed in `package.json`:
+- `nitro` - Server engine for Vercel deployment
+
+Install it:
+```bash
+bun install
+```
+
+### 2. Vite Configuration
+
+The `vite.config.ts` has been updated to include the Nitro plugin:
+```typescript
+import { nitro } from "nitro/vite";
+
+plugins: [
+  tanstackStart(),
+  nitro({ preset: "vercel" }),
+  // ... other plugins
+]
+```
+
+### 3. Vercel Configuration
 
 The `vercel.json` file has been created with the following configuration:
 - **buildCommand**: `bun run build`
-- **outputDirectory**: `.output` (TanStack Start output directory)
+- **outputDirectory**: `.output` (Nitro output directory)
 - **devCommand**: `bun run dev`
 - **installCommand**: `bun install`
-- **rewrites**: All routes rewrite to `/` for client-side routing
+
+**Note**: Nitro automatically handles routing and serverless function configuration for Vercel, so no manual rewrites or functions configuration is needed.
 
 ### 4. Environment Variables
 

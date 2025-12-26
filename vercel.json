@@ -3,16 +3,5 @@
   "outputDirectory": ".output",
   "devCommand": "bun run dev",
   "installCommand": "bun install",
-  "framework": null,
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/"
-    }
-  ],
-  "functions": {
-    ".output/server/index.mjs": {
-      "maxDuration": 30
-    }
-  }
+  "framework": null
 }
