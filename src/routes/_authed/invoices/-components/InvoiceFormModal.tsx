@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Modal } from './Modal'
+import { Modal } from '~/components/modals/Modal'
 import type { Invoice, Shop } from '~/lib/types'
 
 interface InvoiceFormModalProps {

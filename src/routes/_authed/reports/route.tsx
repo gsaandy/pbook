@@ -1,15 +1,8 @@
 import { useMemo, useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import type {FilterOptions, ReconciliationEvent, ReportTransaction, TransactionFilters, TrendData} from '~/components/sections/ReportsAndHistory';
+import type { FilterOptions, ReconciliationEvent, ReportTransaction, TransactionFilters, TrendData } from './-components/ReportsAndHistory'
 import { useDataStore } from '~/lib/data-store'
-import {
-
-
-
-  ReportsAndHistory
-
-
-} from '~/components/sections/ReportsAndHistory'
+import { ReportsAndHistory } from './-components/ReportsAndHistory'
 
 export const Route = createFileRoute('/_authed/reports')({
   component: ReportsPage,

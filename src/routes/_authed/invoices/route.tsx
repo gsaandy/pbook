@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import type { Invoice } from '~/lib/types'
-import { InvoicesSection } from '~/components/sections/InvoicesSection'
-import { InvoiceFormModal } from '~/components/modals'
+import { InvoicesSection } from './-components/InvoicesSection'
+import { InvoiceFormModal } from './-components/InvoiceFormModal'
 import { useDataStore } from '~/lib/data-store'
 
 export const Route = createFileRoute('/_authed/invoices')({

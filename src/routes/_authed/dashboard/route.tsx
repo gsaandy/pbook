@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import type {DashboardTransaction, EmployeeStatus, EmployeeTransactions, Summary} from '~/components/sections/AdminDashboard';
+import type { DashboardTransaction, EmployeeStatus, EmployeeTransactions, Summary } from './-components/AdminDashboard'
 import { useDataStore } from '~/lib/data-store'
-import { AdminDashboard     } from '~/components/sections/AdminDashboard'
+import { AdminDashboard } from './-components/AdminDashboard'
 
 export const Route = createFileRoute('/_authed/dashboard')({
   component: DashboardPage,

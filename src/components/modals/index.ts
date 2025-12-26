@@ -1,6 +1,2 @@
 export { Modal } from './Modal'
-export { ShopFormModal } from './ShopFormModal'
-export { RouteFormModal } from './RouteFormModal'
-export { EmployeeFormModal } from './EmployeeFormModal'
 export { ConfirmModal } from './ConfirmModal'
-export { InvoiceFormModal } from './InvoiceFormModal'
