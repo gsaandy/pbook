@@ -73,6 +73,18 @@ export interface DailyReconciliation {
   verifiedAt?: string // ISO 8601 datetime
 }
 
+export interface Invoice {
+  id: string
+  shopId: string
+  amount: number
+  invoiceNumber: string
+  invoiceDate: string // ISO 8601 date
+  reference: string
+  createdAt: string // ISO 8601 datetime
+  createdBy: string // Employee ID
+  status: 'active' | 'cancelled'
+}
+
 // Extended types for UI components
 
 export interface NavigationItem {

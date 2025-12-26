@@ -1,6 +1,6 @@
 import {  createContext, useCallback, useContext, useState } from 'react'
 import type {ReactNode} from 'react';
-import type { DailyReconciliation, Employee, Route, RouteAssignment, Shop, Transaction } from './types'
+import type { DailyReconciliation, Employee, Invoice, Route, RouteAssignment, Shop, Transaction } from './types'
 
 // Initial sample data
 const initialShops: Array<Shop> = [
@@ -48,6 +48,7 @@ interface DataStoreContextType {
   routeAssignments: Array<RouteAssignment>
   transactions: Array<Transaction>
   reconciliations: Array<DailyReconciliation>
+  invoices: Array<Invoice>
 
   // Shop CRUD
   addShop: (shop: Omit<Shop, 'id'>) => Shop
@@ -92,6 +93,15 @@ interface DataStoreContextType {
   getTodayReconciliation: (employeeId: string) => DailyReconciliation | undefined
   getTodayReconciliations: () => Array<DailyReconciliation>
 
+  // Invoice CRUD
+  addInvoice: (invoice: Omit<Invoice, 'id' | 'createdAt' | 'status'>) => Invoice
+  updateInvoice: (id: string, data: Partial<Pick<Invoice, 'amount' | 'invoiceNumber' | 'invoiceDate' | 'reference'>>) => void
+  cancelInvoice: (id: string) => void
+  getInvoice: (id: string) => Invoice | undefined
+  getShopInvoices: (shopId: string) => Array<Invoice>
+  getAllInvoices: () => Array<Invoice>
+  searchInvoices: (query: string) => Array<Invoice>
+
   // Utility
   getShopsForRoute: (routeId: string) => Array<Shop>
   searchShops: (query: string) => Array<Shop>
@@ -106,6 +116,7 @@ export function DataStoreProvider({ children }: { children: ReactNode }) {
   const [routeAssignments, setRouteAssignments] = useState<Array<RouteAssignment>>([])
   const [transactions, setTransactions] = useState<Array<Transaction>>([])
   const [reconciliations, setReconciliations] = useState<Array<DailyReconciliation>>([])
+  const [invoices, setInvoices] = useState<Array<Invoice>>([])
 
   // Shop CRUD
   const addShop = useCallback((shop: Omit<Shop, 'id'>): Shop => {
@@ -323,6 +334,97 @@ export function DataStoreProvider({ children }: { children: ReactNode }) {
     return reconciliations.filter((r) => r.date === today)
   }, [reconciliations])
 
+  // Invoice CRUD
+  const addInvoice = useCallback(
+    (invoice: Omit<Invoice, 'id' | 'createdAt' | 'status'>): Invoice => {
+      const newInvoice: Invoice = {
+        ...invoice,
+        id: generateId('inv'),
+        createdAt: new Date().toISOString(),
+        status: 'active',
+      }
+      setInvoices((prev) => [...prev, newInvoice])
+
+      // Update shop balance - ADD the amount
+      setShops((prev) =>
+        prev.map((s) =>
+          s.id === invoice.shopId ? { ...s, currentBalance: s.currentBalance + invoice.amount } : s
+        )
+      )
+
+      return newInvoice
+    },
+    []
+  )
+
+  const updateInvoice = useCallback(
+    (id: string, data: Partial<Pick<Invoice, 'amount' | 'invoiceNumber' | 'invoiceDate' | 'reference'>>) => {
+      const invoice = invoices.find((inv) => inv.id === id)
+      if (!invoice || invoice.status === 'cancelled') return
+
+      const oldAmount = invoice.amount
+      const newAmount = data.amount ?? oldAmount
+      const amountDelta = newAmount - oldAmount
+
+      setInvoices((prev) => prev.map((inv) => (inv.id === id ? { ...inv, ...data } : inv)))
+
+      // Update shop balance with delta
+      if (amountDelta !== 0) {
+        setShops((prev) =>
+          prev.map((s) =>
+            s.id === invoice.shopId ? { ...s, currentBalance: s.currentBalance + amountDelta } : s
+          )
+        )
+      }
+    },
+    [invoices]
+  )
+
+  const cancelInvoice = useCallback(
+    (id: string) => {
+      const invoice = invoices.find((inv) => inv.id === id)
+      if (!invoice || invoice.status === 'cancelled') return
+
+      setInvoices((prev) => prev.map((inv) => (inv.id === id ? { ...inv, status: 'cancelled' } : inv)))
+
+      // Revert shop balance - SUBTRACT the amount
+      setShops((prev) =>
+        prev.map((s) =>
+          s.id === invoice.shopId ? { ...s, currentBalance: s.currentBalance - invoice.amount } : s
+        )
+      )
+    },
+    [invoices]
+  )
+
+  const getInvoice = useCallback((id: string) => invoices.find((inv) => inv.id === id), [invoices])
+
+  const getShopInvoices = useCallback(
+    (shopId: string) =>
+      invoices
+        .filter((inv) => inv.shopId === shopId)
+        .sort((a, b) => b.invoiceDate.localeCompare(a.invoiceDate)),
+    [invoices]
+  )
+
+  const getAllInvoices = useCallback(() => invoices, [invoices])
+
+  const searchInvoices = useCallback(
+    (query: string) => {
+      const lowerQuery = query.toLowerCase()
+      return invoices.filter((inv) => {
+        if (inv.status === 'cancelled') return false
+        const shop = shops.find((s) => s.id === inv.shopId)
+        return (
+          inv.invoiceNumber.toLowerCase().includes(lowerQuery) ||
+          inv.reference.toLowerCase().includes(lowerQuery) ||
+          shop?.name.toLowerCase().includes(lowerQuery)
+        )
+      })
+    },
+    [invoices, shops]
+  )
+
   // Utility
   const getShopsForRoute = useCallback(
     (routeId: string) => {
@@ -355,6 +457,7 @@ export function DataStoreProvider({ children }: { children: ReactNode }) {
         routeAssignments,
         transactions,
         reconciliations,
+        invoices,
         addShop,
         updateShop,
         deleteShop,
@@ -379,6 +482,13 @@ export function DataStoreProvider({ children }: { children: ReactNode }) {
         verifyReconciliation,
         getTodayReconciliation,
         getTodayReconciliations,
+        addInvoice,
+        updateInvoice,
+        cancelInvoice,
+        getInvoice,
+        getShopInvoices,
+        getAllInvoices,
+        searchInvoices,
         getShopsForRoute,
         searchShops,
       }}

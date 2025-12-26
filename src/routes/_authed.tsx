@@ -28,6 +28,7 @@ function AuthedLayout() {
   const navigationItems: Array<NavigationItem> = [
     { label: 'Dashboard', href: '/dashboard', isActive: location.pathname === '/dashboard' },
     { label: 'Operations', href: '/operations', isActive: location.pathname === '/operations' },
+    { label: 'Invoices', href: '/invoices', isActive: location.pathname === '/invoices' },
     { label: 'Setup', href: '/setup', isActive: location.pathname === '/setup' },
     { label: 'Reconciliation', href: '/reconciliation', isActive: location.pathname === '/reconciliation' },
     { label: 'Reports', href: '/reports', isActive: location.pathname === '/reports' },

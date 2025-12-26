@@ -15,6 +15,7 @@ import { Route as AuthedSetupRouteImport } from './routes/_authed/setup'
 import { Route as AuthedReportsRouteImport } from './routes/_authed/reports'
 import { Route as AuthedReconciliationRouteImport } from './routes/_authed/reconciliation'
 import { Route as AuthedOperationsRouteImport } from './routes/_authed/operations'
+import { Route as AuthedInvoicesRouteImport } from './routes/_authed/invoices'
 import { Route as AuthedDashboardRouteImport } from './routes/_authed/dashboard'
 
 const AuthedRoute = AuthedRouteImport.update({
@@ -46,6 +47,11 @@ const AuthedOperationsRoute = AuthedOperationsRouteImport.update({
   path: '/operations',
   getParentRoute: () => AuthedRoute,
 } as any)
+const AuthedInvoicesRoute = AuthedInvoicesRouteImport.update({
+  id: '/invoices',
+  path: '/invoices',
+  getParentRoute: () => AuthedRoute,
+} as any)
 const AuthedDashboardRoute = AuthedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -55,6 +61,7 @@ const AuthedDashboardRoute = AuthedDashboardRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof AuthedDashboardRoute
+  '/invoices': typeof AuthedInvoicesRoute
   '/operations': typeof AuthedOperationsRoute
   '/reconciliation': typeof AuthedReconciliationRoute
   '/reports': typeof AuthedReportsRoute
@@ -63,6 +70,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof AuthedDashboardRoute
+  '/invoices': typeof AuthedInvoicesRoute
   '/operations': typeof AuthedOperationsRoute
   '/reconciliation': typeof AuthedReconciliationRoute
   '/reports': typeof AuthedReportsRoute
@@ -73,6 +81,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authed': typeof AuthedRouteWithChildren
   '/_authed/dashboard': typeof AuthedDashboardRoute
+  '/_authed/invoices': typeof AuthedInvoicesRoute
   '/_authed/operations': typeof AuthedOperationsRoute
   '/_authed/reconciliation': typeof AuthedReconciliationRoute
   '/_authed/reports': typeof AuthedReportsRoute
@@ -83,6 +92,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/dashboard'
+    | '/invoices'
     | '/operations'
     | '/reconciliation'
     | '/reports'
@@ -91,6 +101,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/dashboard'
+    | '/invoices'
     | '/operations'
     | '/reconciliation'
     | '/reports'
@@ -100,6 +111,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authed'
     | '/_authed/dashboard'
+    | '/_authed/invoices'
     | '/_authed/operations'
     | '/_authed/reconciliation'
     | '/_authed/reports'
@@ -155,6 +167,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedOperationsRouteImport
       parentRoute: typeof AuthedRoute
     }
+    '/_authed/invoices': {
+      id: '/_authed/invoices'
+      path: '/invoices'
+      fullPath: '/invoices'
+      preLoaderRoute: typeof AuthedInvoicesRouteImport
+      parentRoute: typeof AuthedRoute
+    }
     '/_authed/dashboard': {
       id: '/_authed/dashboard'
       path: '/dashboard'
@@ -167,6 +186,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthedRouteChildren {
   AuthedDashboardRoute: typeof AuthedDashboardRoute
+  AuthedInvoicesRoute: typeof AuthedInvoicesRoute
   AuthedOperationsRoute: typeof AuthedOperationsRoute
   AuthedReconciliationRoute: typeof AuthedReconciliationRoute
   AuthedReportsRoute: typeof AuthedReportsRoute
@@ -175,6 +195,7 @@ interface AuthedRouteChildren {
 
 const AuthedRouteChildren: AuthedRouteChildren = {
   AuthedDashboardRoute: AuthedDashboardRoute,
+  AuthedInvoicesRoute: AuthedInvoicesRoute,
   AuthedOperationsRoute: AuthedOperationsRoute,
   AuthedReconciliationRoute: AuthedReconciliationRoute,
   AuthedReportsRoute: AuthedReportsRoute,
