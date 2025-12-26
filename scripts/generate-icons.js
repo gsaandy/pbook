@@ -25,7 +25,7 @@ const createIconSVG = (size) => {
   `
 }
 
-const sizes = [192, 512]
+const sizes = [180, 192, 512] // 180 is for apple-touch-icon
 const publicDir = join(import.meta.dirname, '..', 'public')
 
 for (const size of sizes) {
