@@ -1,5 +1,3 @@
-'use client'
-
 import { useState } from 'react'
 import { CreditCard, Download, Search, Store, TrendingUp, Users } from 'lucide-react'
 

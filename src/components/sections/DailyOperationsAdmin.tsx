@@ -1,5 +1,3 @@
-'use client'
-
 import { useState } from 'react'
 import { Calendar, MapPin, Plus, Users, X } from 'lucide-react'
 import type { Employee, Route, RouteAssignment } from '@/lib/types'

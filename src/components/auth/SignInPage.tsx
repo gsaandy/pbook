@@ -1,19 +1,12 @@
-'use client'
-
 import { SignIn } from '@clerk/tanstack-react-start'
-import { useEffect, useState } from 'react'
+import { ClientOnly } from '@tanstack/react-router'
 
 export function SignInPage() {
-  const [redirectUrl, setRedirectUrl] = useState<string | undefined>(undefined)
-
-  useEffect(() => {
-    // Only access window on client side
-    setRedirectUrl(window.location.href)
-  }, [])
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
-      <SignIn routing="hash" forceRedirectUrl={redirectUrl} />
+      <ClientOnly fallback={<div>Loading...</div>}>
+        <SignIn routing="hash" forceRedirectUrl={window.location.href} />
+      </ClientOnly>
     </div>
   )
 }

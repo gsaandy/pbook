@@ -1,5 +1,3 @@
-'use client'
-
 import { useState } from 'react'
 import { AlertCircle, CheckCircle2, CreditCard, IndianRupee, Wallet } from 'lucide-react'
 

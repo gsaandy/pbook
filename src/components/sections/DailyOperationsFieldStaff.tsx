@@ -1,5 +1,3 @@
-'use client'
-
 import { useState } from 'react'
 import { Banknote, ChevronRight, FileText, Search, Smartphone, Wallet } from 'lucide-react'
 import type { PaymentMode, Shop } from '@/lib/types'

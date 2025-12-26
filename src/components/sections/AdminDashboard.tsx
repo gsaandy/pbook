@@ -1,5 +1,3 @@
-'use client'
-
 import { useState } from 'react'
 import { CreditCard, IndianRupee, RefreshCw, Wallet } from 'lucide-react'
 

@@ -1,5 +1,3 @@
-'use client'
-
 import { createFileRoute } from '@tanstack/react-router'
 import { useDataStore } from '@/lib/data-store'
 import { DailyOperationsAdmin } from '@/components/sections/DailyOperationsAdmin'

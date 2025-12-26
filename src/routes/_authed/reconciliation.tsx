@@ -1,5 +1,3 @@
-'use client'
-
 import { useMemo } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import type {CashTransactionsByEmployee, EODSummary, EmployeeSettlement, VerificationFormData} from '@/components/sections/EndOfDayReconciliation';

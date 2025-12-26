@@ -1,5 +1,3 @@
-'use client'
-
 import {  createContext, useCallback, useContext, useState } from 'react'
 import type {ReactNode} from 'react';
 import type { DailyReconciliation, Employee, Route, RouteAssignment, Shop, Transaction } from './types'

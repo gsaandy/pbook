@@ -1,5 +1,3 @@
-'use client'
-
 import type { NavigationItem } from '@/lib/types'
 
 interface MainNavProps {

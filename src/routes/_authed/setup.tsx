@@ -1,5 +1,3 @@
-'use client'
-
 import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import type { Employee, Route as RouteType, Shop } from '@/lib/types'

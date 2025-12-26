@@ -1,5 +1,3 @@
-'use client'
-
 import { useState } from 'react'
 import { Modal } from './Modal'
 import type { Route, Shop } from '@/lib/types'

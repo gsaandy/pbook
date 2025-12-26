@@ -1,5 +1,3 @@
-'use client'
-
 import { useMemo, useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import type {FilterOptions, ReconciliationEvent, ReportTransaction, TransactionFilters, TrendData} from '@/components/sections/ReportsAndHistory';
