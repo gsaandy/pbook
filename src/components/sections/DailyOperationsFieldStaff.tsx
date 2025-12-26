@@ -12,7 +12,7 @@ import type { PaymentMode, Shop } from '~/lib/types'
 export interface CurrentEmployee {
   id: string
   name: string
-  role: 'field_staff' | 'admin'
+  role: 'field_staff' | 'admin' | 'super_admin'
   cashInBag: number
 }
 

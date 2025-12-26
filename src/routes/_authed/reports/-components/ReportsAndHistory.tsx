@@ -19,19 +19,15 @@ export interface ReportTransaction {
   shopName: string
   amount: number
   paymentMode: 'cash' | 'upi' | 'cheque'
-  reference: string | null
-  status: 'completed' | 'adjusted' | 'reversed'
+  isVerified: boolean
 }
 
-export interface SettlementEvent {
+export interface HandoverEvent {
   id: string
   employeeName: string
-  expectedAmount: number
-  receivedAmount: number
-  variance: number
-  status: 'received' | 'discrepancy'
-  note: string | null
-  receivedAt: string
+  cashAmount: number
+  transactionCount: number
+  verifiedAt: string
 }
 
 export interface DailyCollection {
@@ -84,7 +80,7 @@ export interface TransactionFilters {
 
 export interface ReportsAndHistoryProps {
   transactions: Array<ReportTransaction>
-  settlementEvents: Array<SettlementEvent>
+  handoverEvents: Array<HandoverEvent>
   trendData: TrendData
   filterOptions: FilterOptions
   currentFilters: TransactionFilters
@@ -94,18 +90,17 @@ export interface ReportsAndHistoryProps {
   onViewTransaction?: (transactionId: string) => void
   onExportTransactions?: (format: 'pdf' | 'csv' | 'excel') => void
   onClearFilters?: () => void
-  onViewSettlement?: (eventId: string) => void
 }
 
 export function ReportsAndHistory({
   transactions,
-  settlementEvents,
+  handoverEvents,
   trendData,
   onExportTransactions,
   onClearFilters,
 }: ReportsAndHistoryProps) {
   const [activeView, setActiveView] = useState<
-    'transactions' | 'settlements' | 'analytics'
+    'transactions' | 'handovers' | 'analytics'
   >('transactions')
   const [searchQuery, setSearchQuery] = useState('')
 
@@ -145,17 +140,10 @@ export function ReportsAndHistory({
     }
   }
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
-      case 'adjusted':
-        return 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300'
-      case 'reversed':
-        return 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
-      default:
-        return 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
-    }
+  const getVerifiedColor = (isVerified: boolean) => {
+    return isVerified
+      ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
+      : 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300'
   }
 
   const filteredTransactions = transactions.filter(
@@ -202,14 +190,14 @@ export function ReportsAndHistory({
             Transactions ({transactions.length})
           </button>
           <button
-            onClick={() => setActiveView('settlements')}
+            onClick={() => setActiveView('handovers')}
             className={`px-4 py-2 font-medium text-sm transition-colors border-b-2 ${
-              activeView === 'settlements'
+              activeView === 'handovers'
                 ? 'border-indigo-600 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400'
                 : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
-            Audit Trail ({settlementEvents.length})
+            Handovers ({handoverEvents.length})
           </button>
           <button
             onClick={() => setActiveView('analytics')}
@@ -321,11 +309,11 @@ export function ReportsAndHistory({
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <span
-                                className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                                  txn.status,
+                                className={`px-2 py-1 rounded-full text-xs font-medium ${getVerifiedColor(
+                                  txn.isVerified,
                                 )}`}
                               >
-                                {txn.status}
+                                {txn.isVerified ? 'In Office' : 'In Bag'}
                               </span>
                             </td>
                           </tr>
@@ -367,11 +355,11 @@ export function ReportsAndHistory({
                             {txn.paymentMode.toUpperCase()}
                           </span>
                           <span
-                            className={`px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
-                              txn.status,
+                            className={`px-2 py-0.5 rounded-full text-xs font-medium ${getVerifiedColor(
+                              txn.isVerified,
                             )}`}
                           >
-                            {txn.status}
+                            {txn.isVerified ? 'In Office' : 'In Bag'}
                           </span>
                         </div>
                       </div>
@@ -383,24 +371,24 @@ export function ReportsAndHistory({
           </>
         )}
 
-        {/* Settlements View */}
-        {activeView === 'settlements' && (
+        {/* Handovers View */}
+        {activeView === 'handovers' && (
           <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
             <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
               <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
-                Settlement History
+                Cash Handover History
               </h2>
             </div>
 
-            {settlementEvents.length === 0 ? (
+            {handoverEvents.length === 0 ? (
               <div className="text-center py-12">
                 <p className="text-slate-600 dark:text-slate-400">
-                  No settlement events yet
+                  No handover events yet
                 </p>
               </div>
             ) : (
               <div className="divide-y divide-slate-200 dark:divide-slate-700">
-                {settlementEvents.map((event) => (
+                {handoverEvents.map((event) => (
                   <div
                     key={event.id}
                     className="p-6 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
@@ -411,67 +399,33 @@ export function ReportsAndHistory({
                           {event.employeeName}
                         </h3>
                         <p className="text-sm text-slate-600 dark:text-slate-400 mt-0.5">
-                          Received at {formatTime(event.receivedAt)} •{' '}
-                          {formatDate(event.receivedAt)}
+                          Verified at {formatTime(event.verifiedAt)} •{' '}
+                          {formatDate(event.verifiedAt)}
                         </p>
                       </div>
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          event.status === 'received'
-                            ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
-                            : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
-                        }`}
-                      >
-                        {event.status === 'received' ? 'Received' : 'Discrepancy'}
+                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300">
+                        Verified
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-3">
+                    <div className="grid grid-cols-2 gap-4">
                       <div>
                         <p className="text-xs text-slate-500 dark:text-slate-400">
-                          Expected
+                          Cash Amount
                         </p>
                         <p className="text-sm font-semibold text-slate-900 dark:text-white mt-0.5">
-                          {formatCurrency(event.expectedAmount)}
+                          {formatCurrency(event.cashAmount)}
                         </p>
                       </div>
                       <div>
                         <p className="text-xs text-slate-500 dark:text-slate-400">
-                          Received
+                          Transactions
                         </p>
                         <p className="text-sm font-semibold text-slate-900 dark:text-white mt-0.5">
-                          {formatCurrency(event.receivedAmount)}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">
-                          Variance
-                        </p>
-                        <p
-                          className={`text-sm font-semibold mt-0.5 ${
-                            event.variance === 0
-                              ? 'text-emerald-600 dark:text-emerald-400'
-                              : event.variance > 0
-                                ? 'text-emerald-600 dark:text-emerald-400'
-                                : 'text-red-600 dark:text-red-400'
-                          }`}
-                        >
-                          {event.variance > 0 ? '+' : ''}
-                          {formatCurrency(event.variance)}
+                          {event.transactionCount}
                         </p>
                       </div>
                     </div>
-
-                    {event.note && (
-                      <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-3">
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">
-                          Note:
-                        </p>
-                        <p className="text-sm text-slate-700 dark:text-slate-300">
-                          {event.note}
-                        </p>
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>

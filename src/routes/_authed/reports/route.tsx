@@ -4,24 +4,18 @@ import { createFileRoute } from '@tanstack/react-router'
 import { ReportsAndHistory } from './-components/ReportsAndHistory'
 import type {
   FilterOptions,
+  HandoverEvent,
   ReportTransaction,
-  SettlementEvent,
   TransactionFilters,
   TrendData,
 } from './-components/ReportsAndHistory'
-import {
-  employeeQueries,
-  settlementQueries,
-  shopQueries,
-  transactionQueries,
-} from '~/queries'
+import { employeeQueries, shopQueries, transactionQueries } from '~/queries'
 
 export const Route = createFileRoute('/_authed/reports')({
   component: ReportsPage,
   loader: async ({ context: { queryClient } }) => {
     await Promise.all([
       queryClient.ensureQueryData(transactionQueries.listWithDetails({})),
-      queryClient.ensureQueryData(settlementQueries.listWithDetails({})),
       queryClient.ensureQueryData(employeeQueries.list()),
       queryClient.ensureQueryData(shopQueries.list()),
     ])
@@ -32,9 +26,6 @@ function ReportsPage() {
   // Fetch data from Convex
   const { data: convexTransactions } = useSuspenseQuery(
     transactionQueries.listWithDetails({}),
-  )
-  const { data: convexSettlements } = useSuspenseQuery(
-    settlementQueries.listWithDetails({}),
   )
   const { data: convexEmployees } = useSuspenseQuery(employeeQueries.list())
   const { data: convexShops } = useSuspenseQuery(shopQueries.list())
@@ -58,8 +49,7 @@ function ReportsPage() {
           shopName: txn.shop?.name ?? 'Unknown',
           amount: txn.amount,
           paymentMode: txn.paymentMode,
-          reference: txn.reference ?? null,
-          status: txn.status,
+          isVerified: txn.isVerified,
         }
       })
       .sort(
@@ -68,28 +58,50 @@ function ReportsPage() {
       )
   }, [convexTransactions])
 
-  // Transform settlements to include employee names
-  const settlementEvents: Array<SettlementEvent> = useMemo(() => {
-    return convexSettlements
-      .filter((s) => s.receivedAt) // Only include received settlements
-      .map((s) => {
-        // Employee is already included in listWithDetails
-        return {
-          id: s._id,
-          employeeName: s.employee?.name ?? 'Unknown',
-          expectedAmount: s.expectedAmount,
-          receivedAmount: s.receivedAmount ?? 0,
-          variance: s.variance ?? 0,
-          status: s.status as 'received' | 'discrepancy',
-          note: s.note ?? null,
-          receivedAt: new Date(s.receivedAt!).toISOString(),
-        }
-      })
+  // Build handover events from verified transactions grouped by verifiedAt
+  const handoverEvents: Array<HandoverEvent> = useMemo(() => {
+    // Group verified cash transactions by employee and verifiedAt timestamp (rounded to minute)
+    const verifiedCashTxns = convexTransactions.filter(
+      (t) => t.isVerified && t.verifiedAt && t.paymentMode === 'cash',
+    )
+
+    // Group by employee + verifiedAt (rounded to minute for grouping)
+    const groupMap = new Map<
+      string,
+      { employeeName: string; amount: number; count: number; verifiedAt: number }
+    >()
+
+    for (const txn of verifiedCashTxns) {
+      // Round to minute for grouping
+      const roundedTime = Math.floor((txn.verifiedAt ?? 0) / 60000) * 60000
+      const key = `${txn.employeeId}-${roundedTime}`
+      const existing = groupMap.get(key)
+      if (existing) {
+        existing.amount += txn.amount
+        existing.count += 1
+      } else {
+        groupMap.set(key, {
+          employeeName: txn.employee?.name ?? 'Unknown',
+          amount: txn.amount,
+          count: 1,
+          verifiedAt: txn.verifiedAt ?? 0,
+        })
+      }
+    }
+
+    return Array.from(groupMap.entries())
+      .map(([key, data]) => ({
+        id: key,
+        employeeName: data.employeeName,
+        cashAmount: data.amount,
+        transactionCount: data.count,
+        verifiedAt: new Date(data.verifiedAt).toISOString(),
+      }))
       .sort(
         (a, b) =>
-          new Date(b.receivedAt).getTime() - new Date(a.receivedAt).getTime(),
+          new Date(b.verifiedAt).getTime() - new Date(a.verifiedAt).getTime(),
       )
-  }, [convexSettlements])
+  }, [convexTransactions])
 
   // Build trend data
   const trendData: TrendData = useMemo(() => {
@@ -157,16 +169,12 @@ function ReportsPage() {
 
   // Build filter options
   const filterOptions: FilterOptions = useMemo(() => {
-    // Filter active field staff
-    const fieldStaff = convexEmployees.filter(
-      (e) => e.role === 'field_staff' && !e.deletedAt,
-    )
-    // Filter active shops
-    const activeShops = convexShops.filter((s) => !s.deletedAt)
+    // Filter field staff
+    const fieldStaff = convexEmployees.filter((e) => e.role === 'field_staff')
 
     return {
       employees: fieldStaff.map((e) => ({ id: e._id, name: e.name })),
-      shops: activeShops.map((s) => ({ id: s._id, name: s.name })),
+      shops: convexShops.map((s) => ({ id: s._id, name: s.name })),
       paymentModes: ['cash', 'upi', 'cheque'],
     }
   }, [convexEmployees, convexShops])
@@ -187,7 +195,6 @@ function ReportsPage() {
       'Amount',
       'Payment Mode',
       'Status',
-      'Reference',
     ]
     const rows = transactions.map((txn) => {
       const date = new Date(txn.timestamp)
@@ -201,8 +208,7 @@ function ReportsPage() {
         txn.shopName,
         txn.amount.toString(),
         txn.paymentMode.toUpperCase(),
-        txn.status,
-        txn.reference || '',
+        txn.isVerified ? 'In Office' : 'In Bag',
       ]
     })
 
@@ -225,7 +231,7 @@ function ReportsPage() {
   return (
     <ReportsAndHistory
       transactions={transactions}
-      settlementEvents={settlementEvents}
+      handoverEvents={handoverEvents}
       trendData={trendData}
       filterOptions={filterOptions}
       currentFilters={filters}

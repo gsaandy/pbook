@@ -52,7 +52,7 @@ function AuthedLayout() {
       isActive: location.pathname === '/setup',
     },
     {
-      label: 'Settlements',
+      label: 'Handovers',
       href: '/settlements',
       isActive: location.pathname === '/settlements',
     },

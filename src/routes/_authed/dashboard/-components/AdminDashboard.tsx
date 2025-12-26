@@ -24,7 +24,7 @@ export interface DashboardTransaction {
   shopName: string
   amount: number
   paymentMode: 'cash' | 'upi' | 'cheque'
-  reference: string | null
+  isVerified: boolean
 }
 
 export interface EmployeeTransactions {

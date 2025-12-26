@@ -8,12 +8,10 @@ import { api } from '~/convex/_generated/api'
  */
 export const routeQueries = {
   /** List all routes */
-  list: (options?: { includeDeleted?: boolean }) =>
-    convexQuery(api.routes.list, options ?? {}),
+  list: () => convexQuery(api.routes.list, {}),
 
   /** List all routes with shop counts */
-  listWithShopCounts: (options?: { includeDeleted?: boolean }) =>
-    convexQuery(api.routes.listWithShopCounts, options ?? {}),
+  listWithShopCounts: () => convexQuery(api.routes.listWithShopCounts, {}),
 
   /** Get a single route by ID */
   detail: (id: Id<'routes'>) => convexQuery(api.routes.get, { id }),
@@ -35,13 +33,5 @@ export function useCreateRouteMutation() {
  */
 export function useUpdateRouteMutation() {
   const mutationFn = useConvexMutation(api.routes.update)
-  return useMutation({ mutationFn })
-}
-
-/**
- * Soft delete a route.
- */
-export function useDeleteRouteMutation() {
-  const mutationFn = useConvexMutation(api.routes.remove)
   return useMutation({ mutationFn })
 }

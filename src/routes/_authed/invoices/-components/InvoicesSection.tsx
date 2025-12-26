@@ -1,44 +1,37 @@
 import { useState } from 'react'
-import {
-  CheckCircle,
-  Edit2,
-  FileText,
-  Plus,
-  Search,
-  XCircle,
-} from 'lucide-react'
-import type { Invoice, Shop } from '~/lib/types'
+import { FileText, Plus, Search } from 'lucide-react'
 import { formatCurrency } from '~/lib/constants'
 import { ShopCombobox } from '~/components/ui/shop-combobox'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '~/components/ui/select'
+
+export interface InvoiceData {
+  _id: string
+  invoiceNumber: string
+  shopId: string
+  amount: number
+  issueDate: string
+  note?: string
+  shop?: { name: string; zone: string } | null
+}
+
+export interface ShopData {
+  _id: string
+  name: string
+  zone: string
+  currentBalance: number
+}
 
 export interface InvoicesSectionProps {
-  invoices: Array<Invoice>
-  shops: Array<Shop>
+  invoices: Array<InvoiceData>
+  shops: Array<ShopData>
   onAddInvoice: () => void
-  onEditInvoice: (invoiceId: string) => void
-  onCancelInvoice: (invoiceId: string) => void
-  getShopName: (shopId: string) => string
 }
 
 export function InvoicesSection({
   invoices,
   shops,
   onAddInvoice,
-  onEditInvoice,
-  onCancelInvoice,
-  getShopName,
 }: InvoicesSectionProps) {
   const [searchQuery, setSearchQuery] = useState('')
-  const [statusFilter, setStatusFilter] = useState<
-    'all' | 'active' | 'cancelled'
-  >('all')
   const [shopFilter, setShopFilter] = useState('')
 
   const formatDate = (dateString: string) => {
@@ -52,36 +45,31 @@ export function InvoicesSection({
 
   // Filter invoices
   const filteredInvoices = invoices.filter((invoice) => {
-    const shopName = getShopName(invoice.shopId).toLowerCase()
+    const shopName = (invoice.shop?.name ?? '').toLowerCase()
     const query = searchQuery.toLowerCase()
 
     const matchesSearch =
       !searchQuery ||
       invoice.invoiceNumber.toLowerCase().includes(query) ||
-      shopName.includes(query) ||
-      invoice.reference.toLowerCase().includes(query)
-
-    const matchesStatus =
-      statusFilter === 'all' || invoice.status === statusFilter
+      shopName.includes(query)
 
     const matchesShop = !shopFilter || invoice.shopId === shopFilter
 
-    return matchesSearch && matchesStatus && matchesShop
+    return matchesSearch && matchesShop
   })
 
   // Sort by date (newest first)
   const sortedInvoices = [...filteredInvoices].sort(
     (a, b) =>
-      new Date(b.invoiceDate).getTime() - new Date(a.invoiceDate).getTime(),
+      new Date(b.issueDate).getTime() - new Date(a.issueDate).getTime(),
   )
 
   const handleClearFilters = () => {
     setSearchQuery('')
-    setStatusFilter('all')
     setShopFilter('')
   }
 
-  const hasActiveFilters = searchQuery || statusFilter !== 'all' || shopFilter
+  const hasActiveFilters = searchQuery || shopFilter
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 p-4 md:p-6">
@@ -91,10 +79,10 @@ export function InvoicesSection({
           <div className="flex items-center justify-between mb-2">
             <div>
               <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">
-                Invoices
+                Deliveries
               </h1>
               <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                Manage delivery invoices for shops
+                Track product deliveries to shops
               </p>
             </div>
             <button
@@ -109,14 +97,14 @@ export function InvoicesSection({
 
         {/* Filters */}
         <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Search */}
             <div className="md:col-span-2">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                 <input
                   type="text"
-                  placeholder="Search invoices..."
+                  placeholder="Search by invoice number or shop..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -134,25 +122,6 @@ export function InvoicesSection({
                 showBalance={false}
                 allowClear={true}
               />
-            </div>
-
-            {/* Status Filter */}
-            <div>
-              <Select
-                value={statusFilter}
-                onValueChange={(value) =>
-                  setStatusFilter(value as 'all' | 'active' | 'cancelled')
-                }
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="All Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="cancelled">Cancelled</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
           </div>
 
@@ -210,110 +179,43 @@ export function InvoicesSection({
                       Shop
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                      Zone
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                       Amount
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                      Reference
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                      Actions
+                      Note
                     </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
                   {sortedInvoices.map((invoice) => (
                     <tr
-                      key={invoice.id}
-                      className={
-                        invoice.status === 'cancelled'
-                          ? 'opacity-60'
-                          : 'hover:bg-slate-50 dark:hover:bg-slate-750'
-                      }
+                      key={invoice._id}
+                      className="hover:bg-slate-50 dark:hover:bg-slate-750"
                     >
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`text-sm font-medium ${
-                            invoice.status === 'cancelled'
-                              ? 'text-slate-400 line-through'
-                              : 'text-slate-900 dark:text-white'
-                          }`}
-                        >
+                        <span className="text-sm font-medium text-slate-900 dark:text-white">
                           {invoice.invoiceNumber}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-400">
-                        {formatDate(invoice.invoiceDate)}
+                        {formatDate(invoice.issueDate)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900 dark:text-white">
-                        {getShopName(invoice.shopId)}
+                        {invoice.shop?.name ?? 'Unknown'}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`text-sm font-medium ${
-                            invoice.status === 'cancelled'
-                              ? 'text-slate-400 line-through'
-                              : 'text-slate-900 dark:text-white'
-                          }`}
-                        >
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-400">
+                        {invoice.shop?.zone ?? '-'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right">
+                        <span className="text-sm font-medium text-slate-900 dark:text-white">
                           {formatCurrency(invoice.amount)}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 max-w-xs truncate">
-                        {invoice.reference || '-'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            invoice.status === 'active'
-                              ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
-                              : 'bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-300'
-                          }`}
-                        >
-                          {invoice.status === 'active' ? (
-                            <CheckCircle className="w-3 h-3" />
-                          ) : (
-                            <XCircle className="w-3 h-3" />
-                          )}
-                          {invoice.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                        <div className="flex items-center justify-end gap-2">
-                          {invoice.status === 'active' && (
-                            <>
-                              <button
-                                onClick={() => onEditInvoice(invoice.id)}
-                                className="p-1.5 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded transition-colors"
-                                title="Edit invoice"
-                              >
-                                <Edit2 className="w-4 h-4" />
-                              </button>
-                              <button
-                                onClick={() => {
-                                  if (
-                                    confirm(
-                                      `Cancel invoice ${invoice.invoiceNumber}? This will reduce the shop's balance.`,
-                                    )
-                                  ) {
-                                    onCancelInvoice(invoice.id)
-                                  }
-                                }}
-                                className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded transition-colors"
-                                title="Cancel invoice"
-                              >
-                                <XCircle className="w-4 h-4" />
-                              </button>
-                            </>
-                          )}
-                          {invoice.status === 'cancelled' && (
-                            <span className="text-xs text-slate-400">
-                              Cancelled
-                            </span>
-                          )}
-                        </div>
+                        {invoice.note || '-'}
                       </td>
                     </tr>
                   ))}
@@ -325,103 +227,51 @@ export function InvoicesSection({
             <div className="md:hidden space-y-4">
               {sortedInvoices.map((invoice) => (
                 <div
-                  key={invoice.id}
-                  className={`bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4 ${
-                    invoice.status === 'cancelled' ? 'opacity-60' : ''
-                  }`}
+                  key={invoice._id}
+                  className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4"
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div>
-                      <span
-                        className={`text-sm font-medium ${
-                          invoice.status === 'cancelled'
-                            ? 'text-slate-400 line-through'
-                            : 'text-slate-900 dark:text-white'
-                        }`}
-                      >
+                      <span className="text-sm font-medium text-slate-900 dark:text-white">
                         {invoice.invoiceNumber}
                       </span>
                       <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                        {formatDate(invoice.invoiceDate)}
+                        {formatDate(invoice.issueDate)}
                       </p>
                     </div>
-                    <span
-                      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        invoice.status === 'active'
-                          ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
-                          : 'bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-300'
-                      }`}
-                    >
-                      {invoice.status === 'active' ? (
-                        <CheckCircle className="w-3 h-3" />
-                      ) : (
-                        <XCircle className="w-3 h-3" />
-                      )}
-                      {invoice.status}
+                    <span className="text-sm font-semibold text-slate-900 dark:text-white">
+                      {formatCurrency(invoice.amount)}
                     </span>
                   </div>
 
-                  <div className="space-y-2 mb-3">
+                  <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span className="text-slate-600 dark:text-slate-400">
                         Shop:
                       </span>
                       <span className="text-slate-900 dark:text-white font-medium">
-                        {getShopName(invoice.shopId)}
+                        {invoice.shop?.name ?? 'Unknown'}
                       </span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-slate-600 dark:text-slate-400">
-                        Amount:
+                        Zone:
                       </span>
-                      <span
-                        className={`font-medium ${
-                          invoice.status === 'cancelled'
-                            ? 'text-slate-400 line-through'
-                            : 'text-slate-900 dark:text-white'
-                        }`}
-                      >
-                        {formatCurrency(invoice.amount)}
+                      <span className="text-slate-900 dark:text-white">
+                        {invoice.shop?.zone ?? '-'}
                       </span>
                     </div>
-                    {invoice.reference && (
-                      <div className="flex justify-between text-sm">
+                    {invoice.note && (
+                      <div className="text-sm">
                         <span className="text-slate-600 dark:text-slate-400">
-                          Reference:
+                          Note:{' '}
                         </span>
-                        <span className="text-slate-900 dark:text-white text-right max-w-[60%] truncate">
-                          {invoice.reference}
+                        <span className="text-slate-900 dark:text-white">
+                          {invoice.note}
                         </span>
                       </div>
                     )}
                   </div>
-
-                  {invoice.status === 'active' && (
-                    <div className="flex gap-2 pt-3 border-t border-slate-200 dark:border-slate-700">
-                      <button
-                        onClick={() => onEditInvoice(invoice.id)}
-                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors"
-                      >
-                        <Edit2 className="w-4 h-4" />
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => {
-                          if (
-                            confirm(
-                              `Cancel invoice ${invoice.invoiceNumber}? This will reduce the shop's balance.`,
-                            )
-                          ) {
-                            onCancelInvoice(invoice.id)
-                          }
-                        }}
-                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-red-600 bg-red-50 dark:bg-red-900/30 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
-                      >
-                        <XCircle className="w-4 h-4" />
-                        Cancel
-                      </button>
-                    </div>
-                  )}
                 </div>
               ))}
             </div>

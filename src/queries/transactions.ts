@@ -12,20 +12,22 @@ export const transactionQueries = {
     employeeId?: Id<'employees'>
     shopId?: Id<'shops'>
     date?: string
+    isVerified?: boolean
   }) => convexQuery(api.transactions.list, options ?? {}),
 
   /** List transactions with employee and shop details */
   listWithDetails: (options?: {
     employeeId?: Id<'employees'>
     date?: string
+    isVerified?: boolean
   }) => convexQuery(api.transactions.listWithDetails, options ?? {}),
 
   /** Get a single transaction by ID */
   detail: (id: Id<'transactions'>) => convexQuery(api.transactions.get, { id }),
 
-  /** Get cash in hand for an employee on a specific date */
-  cashInHand: (employeeId: Id<'employees'>, date: string) =>
-    convexQuery(api.transactions.getEmployeeCashInHand, { employeeId, date }),
+  /** Get unverified cash for an employee ("Cash in Bag") */
+  cashInBag: (employeeId: Id<'employees'>) =>
+    convexQuery(api.transactions.getCashInBag, { employeeId }),
 }
 
 /**
@@ -33,13 +35,5 @@ export const transactionQueries = {
  */
 export function useCollectCashMutation() {
   const mutationFn = useConvexMutation(api.transactions.collectCash)
-  return useMutation({ mutationFn })
-}
-
-/**
- * Reverse a transaction.
- */
-export function useReverseTransactionMutation() {
-  const mutationFn = useConvexMutation(api.transactions.reverse)
   return useMutation({ mutationFn })
 }

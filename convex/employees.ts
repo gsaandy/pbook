@@ -35,7 +35,6 @@ export const linkUser = internalMutation({
     // Link the Clerk account to the employee
     await ctx.db.patch('employees', employee._id, {
       clerkUserId: args.clerkUserId,
-      status: 'active',
     })
 
     console.log(
@@ -84,32 +83,12 @@ export const getCurrentEmployee = query({
 })
 
 /**
- * List all employees (for admin use).
- * Optionally filter by status.
+ * List all employees.
  */
 export const list = query({
-  args: {
-    status: v.optional(v.union(v.literal('active'), v.literal('inactive'))),
-    includeDeleted: v.optional(v.boolean()),
-  },
-  handler: async (ctx, args) => {
-    let employees
-
-    if (args.status) {
-      employees = await ctx.db
-        .query('employees')
-        .withIndex('by_status', (q) => q.eq('status', args.status!))
-        .collect()
-    } else {
-      employees = await ctx.db.query('employees').collect()
-    }
-
-    // Filter out deleted unless specifically requested
-    if (!args.includeDeleted) {
-      employees = employees.filter((e) => !e.deletedAt)
-    }
-
-    return employees
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db.query('employees').collect()
   },
 })
 
@@ -131,12 +110,7 @@ export const create = mutation({
   args: {
     name: v.string(),
     email: v.string(),
-    phone: v.string(),
-    role: v.union(
-      v.literal('field_staff'),
-      v.literal('admin'),
-      v.literal('super_admin'),
-    ),
+    role: v.union(v.literal('field_staff'), v.literal('admin'), v.literal('super_admin')),
   },
   handler: async (ctx, args) => {
     // Check if email already exists
@@ -152,9 +126,8 @@ export const create = mutation({
     const employeeId = await ctx.db.insert('employees', {
       name: args.name,
       email: args.email,
-      phone: args.phone,
       role: args.role,
-      status: 'inactive', // Will become active when linked to Clerk
+      status: 'active',
     })
 
     return employeeId
@@ -168,14 +141,7 @@ export const update = mutation({
   args: {
     id: v.id('employees'),
     name: v.optional(v.string()),
-    phone: v.optional(v.string()),
-    role: v.optional(
-      v.union(
-        v.literal('field_staff'),
-        v.literal('admin'),
-        v.literal('super_admin'),
-      ),
-    ),
+    role: v.optional(v.union(v.literal('field_staff'), v.literal('admin'), v.literal('super_admin'))),
   },
   handler: async (ctx, args) => {
     const { id, ...updates } = args
@@ -189,36 +155,5 @@ export const update = mutation({
 
     await ctx.db.patch('employees', id, cleanUpdates)
     return id
-  },
-})
-
-/**
- * Toggle employee status between active and inactive.
- */
-export const toggleStatus = mutation({
-  args: { id: v.id('employees') },
-  handler: async (ctx, args) => {
-    const employee = await ctx.db.get('employees', args.id)
-    if (!employee) {
-      throw new Error('Employee not found')
-    }
-
-    const newStatus = employee.status === 'active' ? 'inactive' : 'active'
-    await ctx.db.patch('employees', args.id, { status: newStatus })
-    return args.id
-  },
-})
-
-/**
- * Soft delete an employee.
- */
-export const remove = mutation({
-  args: { id: v.id('employees') },
-  handler: async (ctx, args) => {
-    await ctx.db.patch('employees', args.id, {
-      deletedAt: Date.now(),
-      status: 'inactive',
-    })
-    return args.id
   },
 })

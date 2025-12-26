@@ -1,37 +1,41 @@
 import { useState } from 'react'
-import type { Invoice, Shop } from '~/lib/types'
 import { Modal } from '~/components/modals/Modal'
 import { ShopCombobox } from '~/components/ui/shop-combobox'
 import { formatCurrency } from '~/lib/constants'
 
+interface ShopData {
+  _id: string
+  name: string
+  zone: string
+  currentBalance: number
+}
+
 interface InvoiceFormModalProps {
   isOpen: boolean
   onClose: () => void
-  onSave: (
-    invoice: Omit<Invoice, 'id' | 'createdAt' | 'status'> | Invoice,
-  ) => void
-  invoice?: Invoice | null
-  shops: Array<Shop>
-  currentUserId: string
+  onSave: (invoice: {
+    shopId: string
+    amount: number
+    invoiceNumber: string
+    issueDate: string
+    note?: string
+  }) => void
+  shops: Array<ShopData>
 }
 
 export function InvoiceFormModal({
   isOpen,
   onClose,
   onSave,
-  invoice,
   shops,
-  currentUserId,
 }: InvoiceFormModalProps) {
-  // Lazy initialization - parent uses key prop to reset when invoice changes
-  const [formData, setFormData] = useState(() => ({
-    shopId: invoice?.shopId ?? '',
-    amount: invoice?.amount ?? '',
-    invoiceNumber: invoice?.invoiceNumber ?? '',
-    invoiceDate: invoice?.invoiceDate ?? new Date().toISOString().split('T')[0],
-    reference: invoice?.reference ?? '',
-    createdBy: invoice?.createdBy ?? currentUserId,
-  }))
+  const [formData, setFormData] = useState({
+    shopId: '',
+    amount: '',
+    invoiceNumber: '',
+    issueDate: new Date().toISOString().split('T')[0],
+    note: '',
+  })
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -41,42 +45,32 @@ export function InvoiceFormModal({
       return
     }
 
-    const amount =
-      typeof formData.amount === 'string'
-        ? parseFloat(formData.amount)
-        : formData.amount
+    const amount = parseFloat(formData.amount)
     if (amount <= 0) {
       alert('Amount must be greater than 0')
       return
     }
 
-    if (invoice) {
-      onSave({
-        ...invoice,
-        amount,
-        invoiceNumber: formData.invoiceNumber,
-        invoiceDate: formData.invoiceDate,
-        reference: formData.reference,
-      })
-    } else {
-      onSave({
-        shopId: formData.shopId,
-        amount,
-        invoiceNumber: formData.invoiceNumber,
-        invoiceDate: formData.invoiceDate,
-        reference: formData.reference,
-        createdBy: formData.createdBy,
-      })
-    }
-    onClose()
+    onSave({
+      shopId: formData.shopId,
+      amount,
+      invoiceNumber: formData.invoiceNumber,
+      issueDate: formData.issueDate,
+      note: formData.note || undefined,
+    })
+
+    // Reset form
+    setFormData({
+      shopId: '',
+      amount: '',
+      invoiceNumber: '',
+      issueDate: new Date().toISOString().split('T')[0],
+      note: '',
+    })
   }
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={invoice ? 'Edit Invoice' : 'Add Invoice'}
-    >
+    <Modal isOpen={isOpen} onClose={onClose} title="Add Invoice">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
@@ -86,15 +80,9 @@ export function InvoiceFormModal({
             shops={shops}
             value={formData.shopId}
             onChange={(shopId) => setFormData({ ...formData, shopId })}
-            disabled={!!invoice}
             placeholder="Search for a shop..."
             showBalance={true}
           />
-          {invoice && (
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-              Shop cannot be changed when editing
-            </p>
-          )}
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -116,14 +104,14 @@ export function InvoiceFormModal({
 
           <div>
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-              Invoice Date *
+              Issue Date *
             </label>
             <input
               type="date"
               required
-              value={formData.invoiceDate}
+              value={formData.issueDate}
               onChange={(e) =>
-                setFormData({ ...formData, invoiceDate: e.target.value })
+                setFormData({ ...formData, issueDate: e.target.value })
               }
               className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
@@ -146,25 +134,23 @@ export function InvoiceFormModal({
             className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             placeholder="0.00"
           />
-          {formData.amount && parseFloat(formData.amount as string) > 0 && (
+          {formData.amount && parseFloat(formData.amount) > 0 && (
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-              {formatCurrency(parseFloat(formData.amount as string))}
+              {formatCurrency(parseFloat(formData.amount))}
             </p>
           )}
         </div>
 
         <div>
           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-            Reference / Notes
+            Note
           </label>
           <textarea
-            value={formData.reference}
-            onChange={(e) =>
-              setFormData({ ...formData, reference: e.target.value })
-            }
+            value={formData.note}
+            onChange={(e) => setFormData({ ...formData, note: e.target.value })}
             className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             rows={3}
-            placeholder="Add any notes or reference information..."
+            placeholder="Add any notes..."
           />
         </div>
 
@@ -180,7 +166,7 @@ export function InvoiceFormModal({
             type="submit"
             className="flex-1 px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors"
           >
-            {invoice ? 'Save Changes' : 'Add Invoice'}
+            Add Invoice
           </button>
         </div>
       </form>

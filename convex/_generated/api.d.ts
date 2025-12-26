@@ -8,12 +8,12 @@
  * @module
  */
 
+import type * as admin from "../admin.js";
 import type * as employees from "../employees.js";
 import type * as http from "../http.js";
 import type * as invoices from "../invoices.js";
-import type * as routeAssignments from "../routeAssignments.js";
+import type * as migrations from "../migrations.js";
 import type * as routes from "../routes.js";
-import type * as settlements from "../settlements.js";
 import type * as shops from "../shops.js";
 import type * as test from "../test.js";
 import type * as transactions from "../transactions.js";
@@ -25,12 +25,12 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  admin: typeof admin;
   employees: typeof employees;
   http: typeof http;
   invoices: typeof invoices;
-  routeAssignments: typeof routeAssignments;
+  migrations: typeof migrations;
   routes: typeof routes;
-  settlements: typeof settlements;
   shops: typeof shops;
   test: typeof test;
   transactions: typeof transactions;

@@ -7,7 +7,6 @@ import { RouteFormModal } from './-components/RouteFormModal'
 import { ShopFormModal } from './-components/ShopFormModal'
 import type { Employee, Route as RouteType, Shop } from '~/lib/types'
 import type { Id } from '~/convex/_generated/dataModel'
-import { ConfirmModal } from '~/components/modals'
 import {
   employeeQueries,
   routeQueries,
@@ -15,9 +14,6 @@ import {
   useCreateEmployeeMutation,
   useCreateRouteMutation,
   useCreateShopMutation,
-  useDeleteRouteMutation,
-  useDeleteShopMutation,
-  useToggleEmployeeStatusMutation,
   useUpdateEmployeeMutation,
   useUpdateRouteMutation,
   useUpdateShopMutation,
@@ -39,22 +35,18 @@ export const Route = createFileRoute('/_authed/setup')({
 function adaptShop(shop: {
   _id: Id<'shops'>
   name: string
-  address: string
-  phone?: string
   zone: string
   currentBalance: number
-  lastCollectionDate?: string
   routeId?: Id<'routes'>
 }): Shop {
   return {
     id: shop._id,
     name: shop.name,
-    address: shop.address,
-    phone: shop.phone ?? '',
+    address: '',
+    phone: '',
     zone: shop.zone,
     currentBalance: shop.currentBalance,
-    lastCollectionDate:
-      shop.lastCollectionDate ?? new Date().toISOString().split('T')[0],
+    lastCollectionDate: new Date().toISOString().split('T')[0],
   }
 }
 
@@ -62,14 +54,13 @@ function adaptRoute(
   route: {
     _id: Id<'routes'>
     name: string
-    description?: string
   },
   shopsByRoute: Map<string, Array<string>>,
 ): RouteType {
   return {
     id: route._id,
     name: route.name,
-    description: route.description ?? '',
+    description: '',
     shopIds: shopsByRoute.get(route._id) ?? [],
   }
 }
@@ -78,16 +69,15 @@ function adaptEmployee(employee: {
   _id: Id<'employees'>
   name: string
   email: string
-  phone: string
   role: 'field_staff' | 'admin' | 'super_admin'
-  status: 'active' | 'inactive'
+  status: 'active'
 }): Employee {
   return {
     id: employee._id,
     name: employee.name,
     email: employee.email,
-    phone: employee.phone,
-    role: employee.role === 'super_admin' ? 'admin' : employee.role,
+    phone: '',
+    role: employee.role,
     status: employee.status,
   }
 }
@@ -111,39 +101,25 @@ function SetupPage() {
   // Adapt Convex data to local types
   const shops = convexShops.map(adaptShop)
   const routes = convexRoutes.map((r) => adaptRoute(r, shopsByRoute))
-  // Filter out super_admin users - they should not be visible in the employees table
-  const employees = convexEmployees
-    .filter((e) => e.role !== 'super_admin')
-    .map(adaptEmployee)
+  const employees = convexEmployees.map(adaptEmployee)
 
   // Mutations
   const createShop = useCreateShopMutation()
   const updateShop = useUpdateShopMutation()
-  const deleteShop = useDeleteShopMutation()
   const createRoute = useCreateRouteMutation()
   const updateRoute = useUpdateRouteMutation()
-  const deleteRoute = useDeleteRouteMutation()
   const createEmployee = useCreateEmployeeMutation()
   const updateEmployee = useUpdateEmployeeMutation()
-  const toggleEmployeeStatus = useToggleEmployeeStatusMutation()
 
   // Modal states
   const [shopModalOpen, setShopModalOpen] = useState(false)
   const [routeModalOpen, setRouteModalOpen] = useState(false)
   const [employeeModalOpen, setEmployeeModalOpen] = useState(false)
-  const [confirmModalOpen, setConfirmModalOpen] = useState(false)
 
   // Edit states
   const [editingShop, setEditingShop] = useState<Shop | null>(null)
   const [editingRoute, setEditingRoute] = useState<RouteType | null>(null)
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null)
-
-  // Delete state
-  const [deleteTarget, setDeleteTarget] = useState<{
-    type: 'shop' | 'route'
-    id: string
-    name: string
-  } | null>(null)
 
   // Shop handlers
   const handleAddShop = () => {
@@ -159,28 +135,16 @@ function SetupPage() {
     }
   }
 
-  const handleDeleteShop = (id: string) => {
-    const shop = shops.find((s) => s.id === id)
-    if (shop) {
-      setDeleteTarget({ type: 'shop', id, name: shop.name })
-      setConfirmModalOpen(true)
-    }
-  }
-
   const handleSaveShop = (shopData: Omit<Shop, 'id'> | Shop) => {
     if ('id' in shopData) {
       updateShop.mutate({
         id: shopData.id as Id<'shops'>,
         name: shopData.name,
-        address: shopData.address,
-        phone: shopData.phone,
         zone: shopData.zone,
       })
     } else {
       createShop.mutate({
         name: shopData.name,
-        address: shopData.address,
-        phone: shopData.phone,
         zone: shopData.zone,
         currentBalance: shopData.currentBalance,
       })
@@ -203,25 +167,15 @@ function SetupPage() {
     }
   }
 
-  const handleDeleteRoute = (id: string) => {
-    const route = routes.find((r) => r.id === id)
-    if (route) {
-      setDeleteTarget({ type: 'route', id, name: route.name })
-      setConfirmModalOpen(true)
-    }
-  }
-
   const handleSaveRoute = (routeData: Omit<RouteType, 'id'> | RouteType) => {
     if ('id' in routeData) {
       updateRoute.mutate({
         id: routeData.id as Id<'routes'>,
         name: routeData.name,
-        description: routeData.description,
       })
     } else {
       createRoute.mutate({
         name: routeData.name,
-        description: routeData.description,
       })
     }
     setRouteModalOpen(false)
@@ -249,36 +203,17 @@ function SetupPage() {
       updateEmployee.mutate({
         id: employeeData.id as Id<'employees'>,
         name: employeeData.name,
-        phone: employeeData.phone,
         role: employeeData.role,
       })
     } else {
       createEmployee.mutate({
         name: employeeData.name,
         email: employeeData.email,
-        phone: employeeData.phone,
         role: employeeData.role,
       })
     }
     setEmployeeModalOpen(false)
     setEditingEmployee(null)
-  }
-
-  const handleToggleEmployeeStatus = (id: string) => {
-    toggleEmployeeStatus.mutate({ id: id as Id<'employees'> })
-  }
-
-  // Delete confirmation handler
-  const handleConfirmDelete = () => {
-    if (deleteTarget) {
-      if (deleteTarget.type === 'shop') {
-        deleteShop.mutate({ id: deleteTarget.id as Id<'shops'> })
-      } else {
-        deleteRoute.mutate({ id: deleteTarget.id as Id<'routes'> })
-      }
-      setDeleteTarget(null)
-      setConfirmModalOpen(false)
-    }
   }
 
   return (
@@ -289,13 +224,10 @@ function SetupPage() {
         employees={employees}
         onAddShop={handleAddShop}
         onEditShop={handleEditShop}
-        onDeleteShop={handleDeleteShop}
         onCreateRoute={handleCreateRoute}
         onEditRoute={handleEditRoute}
-        onDeleteRoute={handleDeleteRoute}
         onAddEmployee={handleAddEmployee}
         onEditEmployee={handleEditEmployee}
-        onToggleEmployeeStatus={handleToggleEmployeeStatus}
       />
 
       {/* Shop Form Modal */}
@@ -333,20 +265,6 @@ function SetupPage() {
         }}
         onSave={handleSaveEmployee}
         employee={editingEmployee}
-      />
-
-      {/* Delete Confirmation Modal */}
-      <ConfirmModal
-        isOpen={confirmModalOpen}
-        onClose={() => {
-          setConfirmModalOpen(false)
-          setDeleteTarget(null)
-        }}
-        onConfirm={handleConfirmDelete}
-        title={`Delete ${deleteTarget?.type === 'shop' ? 'Shop' : 'Route'}`}
-        message={`Are you sure you want to delete "${deleteTarget?.name}"? This action cannot be undone.`}
-        confirmLabel="Delete"
-        variant="danger"
       />
     </>
   )

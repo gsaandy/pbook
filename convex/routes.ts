@@ -5,17 +5,9 @@ import { mutation, query } from './_generated/server'
  * List all routes.
  */
 export const list = query({
-  args: {
-    includeDeleted: v.optional(v.boolean()),
-  },
-  handler: async (ctx, args) => {
-    const routes = await ctx.db.query('routes').collect()
-
-    if (!args.includeDeleted) {
-      return routes.filter((r) => !r.deletedAt)
-    }
-
-    return routes
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db.query('routes').collect()
   },
 })
 
@@ -23,23 +15,14 @@ export const list = query({
  * List all routes with shop counts.
  */
 export const listWithShopCounts = query({
-  args: {
-    includeDeleted: v.optional(v.boolean()),
-  },
-  handler: async (ctx, args) => {
-    let routes = await ctx.db.query('routes').collect()
-
-    if (!args.includeDeleted) {
-      routes = routes.filter((r) => !r.deletedAt)
-    }
-
-    // Get all active shops
+  args: {},
+  handler: async (ctx) => {
+    const routes = await ctx.db.query('routes').collect()
     const allShops = await ctx.db.query('shops').collect()
-    const activeShops = allShops.filter((s) => !s.deletedAt)
 
     // Count shops per route
     const shopCountByRoute = new Map<string, number>()
-    for (const shop of activeShops) {
+    for (const shop of allShops) {
       if (shop.routeId) {
         const count = shopCountByRoute.get(shop.routeId) ?? 0
         shopCountByRoute.set(shop.routeId, count + 1)
@@ -75,7 +58,6 @@ export const getWithShops = query({
     const shops = await ctx.db
       .query('shops')
       .withIndex('by_route', (q) => q.eq('routeId', args.id))
-      .filter((q) => q.eq(q.field('deletedAt'), undefined))
       .collect()
 
     return { ...route, shops }
@@ -88,12 +70,33 @@ export const getWithShops = query({
 export const create = mutation({
   args: {
     name: v.string(),
-    description: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    const nameLower = args.name.toLowerCase().trim()
+
+    // Check for duplicate name (case-insensitive)
+    // First try the index, then fallback to full scan for unmigrated records
+    let existing = await ctx.db
+      .query('routes')
+      .withIndex('by_name_lower', (q) => q.eq('nameLower', nameLower))
+      .first()
+
+    if (!existing) {
+      // Fallback: check for unmigrated records by comparing name directly
+      const allRoutes = await ctx.db.query('routes').collect()
+      existing =
+        allRoutes.find(
+          (r) => !r.nameLower && r.name.toLowerCase().trim() === nameLower,
+        ) ?? null
+    }
+
+    if (existing) {
+      throw new Error(`A route named "${existing.name}" already exists`)
+    }
+
     const routeId = await ctx.db.insert('routes', {
-      name: args.name,
-      description: args.description,
+      name: args.name.trim(),
+      nameLower,
     })
 
     return routeId
@@ -107,30 +110,41 @@ export const update = mutation({
   args: {
     id: v.id('routes'),
     name: v.optional(v.string()),
-    description: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const { id, ...updates } = args
+    const { id, name } = args
 
-    const cleanUpdates = Object.fromEntries(
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-      Object.entries(updates).filter(([_, value]) => value !== undefined),
-    )
+    if (name === undefined) {
+      return id // Nothing to update
+    }
 
-    await ctx.db.patch('routes', id, cleanUpdates)
-    return id
-  },
-})
+    const nameLower = name.toLowerCase().trim()
 
-/**
- * Soft delete a route.
- */
-export const remove = mutation({
-  args: { id: v.id('routes') },
-  handler: async (ctx, args) => {
-    await ctx.db.patch('routes', args.id, {
-      deletedAt: Date.now(),
+    // Check for duplicate name (case-insensitive)
+    // First try the index, then fallback to full scan for unmigrated records
+    let existing = await ctx.db
+      .query('routes')
+      .withIndex('by_name_lower', (q) => q.eq('nameLower', nameLower))
+      .first()
+
+    if (!existing) {
+      // Fallback: check for unmigrated records
+      const allRoutes = await ctx.db.query('routes').collect()
+      existing =
+        allRoutes.find(
+          (r) => !r.nameLower && r.name.toLowerCase().trim() === nameLower,
+        ) ?? null
+    }
+
+    if (existing && existing._id !== id) {
+      throw new Error(`A route named "${existing.name}" already exists`)
+    }
+
+    await ctx.db.patch('routes', id, {
+      name: name.trim(),
+      nameLower,
     })
-    return args.id
+
+    return id
   },
 })

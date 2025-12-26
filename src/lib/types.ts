@@ -21,7 +21,7 @@ export interface Employee {
   name: string
   phone: string
   email: string
-  role: 'field_staff' | 'admin'
+  role: 'field_staff' | 'admin' | 'super_admin'
   status: 'active' | 'inactive'
 }
 

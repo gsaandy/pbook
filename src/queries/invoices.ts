@@ -8,17 +8,19 @@ import { api } from '~/convex/_generated/api'
  */
 export const invoiceQueries = {
   /** List invoices with optional filters */
-  list: (options?: {
-    shopId?: Id<'shops'>
-    status?: 'active' | 'cancelled'
-    includeShopDetails?: boolean
-  }) => convexQuery(api.invoices.list, options ?? {}),
+  list: (options?: { shopId?: Id<'shops'> }) =>
+    convexQuery(api.invoices.list, options ?? {}),
+
+  /** List invoices with shop details */
+  listWithDetails: (options?: { shopId?: Id<'shops'> }) =>
+    convexQuery(api.invoices.listWithDetails, options ?? {}),
 
   /** Get a single invoice by ID */
   detail: (id: Id<'invoices'>) => convexQuery(api.invoices.get, { id }),
 
-  /** Search invoices by invoice number, reference, or shop name */
-  search: (query: string) => convexQuery(api.invoices.search, { query }),
+  /** Get invoice by invoice number */
+  byInvoiceNumber: (invoiceNumber: string) =>
+    convexQuery(api.invoices.getByInvoiceNumber, { invoiceNumber }),
 }
 
 /**
@@ -26,21 +28,5 @@ export const invoiceQueries = {
  */
 export function useCreateInvoiceMutation() {
   const mutationFn = useConvexMutation(api.invoices.create)
-  return useMutation({ mutationFn })
-}
-
-/**
- * Update an invoice.
- */
-export function useUpdateInvoiceMutation() {
-  const mutationFn = useConvexMutation(api.invoices.update)
-  return useMutation({ mutationFn })
-}
-
-/**
- * Cancel an invoice.
- */
-export function useCancelInvoiceMutation() {
-  const mutationFn = useConvexMutation(api.invoices.cancel)
   return useMutation({ mutationFn })
 }

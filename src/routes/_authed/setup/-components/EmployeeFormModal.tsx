@@ -27,7 +27,7 @@ export function EmployeeFormModal({
     name: employee?.name ?? '',
     email: employee?.email ?? '',
     phone: employee?.phone ?? '',
-    role: employee?.role ?? ('field_staff' as 'field_staff' | 'admin'),
+    role: employee?.role ?? ('field_staff' as 'field_staff' | 'admin' | 'super_admin'),
     status: employee?.status ?? ('active' as 'active' | 'inactive'),
   }))
 
@@ -103,7 +103,7 @@ export function EmployeeFormModal({
             onValueChange={(value) =>
               setFormData({
                 ...formData,
-                role: value as 'field_staff' | 'admin',
+                role: value as 'field_staff' | 'admin' | 'super_admin',
               })
             }
           >
@@ -113,6 +113,7 @@ export function EmployeeFormModal({
             <SelectContent>
               <SelectItem value="field_staff">Field Staff</SelectItem>
               <SelectItem value="admin">Admin</SelectItem>
+              <SelectItem value="super_admin">Super Admin</SelectItem>
             </SelectContent>
           </Select>
         </div>

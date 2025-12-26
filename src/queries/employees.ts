@@ -15,10 +15,7 @@ export const employeeQueries = {
   current: () => convexQuery(api.employees.getCurrentEmployee, {}),
 
   /** List all employees */
-  list: (options?: {
-    status?: 'active' | 'inactive'
-    includeDeleted?: boolean
-  }) => convexQuery(api.employees.list, options ?? {}),
+  list: () => convexQuery(api.employees.list, {}),
 
   /** Get a single employee by ID */
   detail: (id: Id<'employees'>) => convexQuery(api.employees.get, { id }),
@@ -37,13 +34,5 @@ export function useCreateEmployeeMutation() {
  */
 export function useUpdateEmployeeMutation() {
   const mutationFn = useConvexMutation(api.employees.update)
-  return useMutation({ mutationFn })
-}
-
-/**
- * Toggle employee status (active/inactive).
- */
-export function useToggleEmployeeStatusMutation() {
-  const mutationFn = useConvexMutation(api.employees.toggleStatus)
   return useMutation({ mutationFn })
 }

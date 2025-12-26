@@ -8,12 +8,8 @@ import type {
   EmployeeTransactions,
   Summary,
 } from './-components/AdminDashboard'
-import {
-  employeeQueries,
-  routeAssignmentQueries,
-  transactionQueries,
-} from '~/queries'
-import { EmployeeRole, PaymentMode, Status } from '~/lib/constants'
+import { employeeQueries, transactionQueries } from '~/queries'
+import { EmployeeRole, PaymentMode } from '~/lib/constants'
 
 export const Route = createFileRoute('/_authed/dashboard')({
   component: DashboardPage,
@@ -23,9 +19,6 @@ export const Route = createFileRoute('/_authed/dashboard')({
       queryClient.ensureQueryData(employeeQueries.list()),
       queryClient.ensureQueryData(
         transactionQueries.listWithDetails({ date: today }),
-      ),
-      queryClient.ensureQueryData(
-        routeAssignmentQueries.byDateWithDetails(today),
       ),
     ])
   },
@@ -41,9 +34,6 @@ function DashboardPage() {
   const { data: convexEmployees } = useSuspenseQuery(employeeQueries.list())
   const { data: convexTransactions } = useSuspenseQuery(
     transactionQueries.listWithDetails({ date: today }),
-  )
-  const { data: convexAssignments } = useSuspenseQuery(
-    routeAssignmentQueries.byDateWithDetails(today),
   )
 
   // Calculate summary from transactions
@@ -69,18 +59,12 @@ function DashboardPage() {
 
   // Build employee status
   const employeeStatus: Array<EmployeeStatus> = useMemo(() => {
-    // Filter active field staff (no deletedAt and role is field_staff)
+    // Filter field staff
     const fieldStaff = convexEmployees.filter(
-      (e) => e.role === EmployeeRole.FIELD_STAFF && !e.deletedAt,
+      (e) => e.role === EmployeeRole.FIELD_STAFF,
     )
 
     return fieldStaff.map((emp) => {
-      // Find assignment - convexAssignments already includes route details
-      const assignment = convexAssignments.find(
-        (a) => a.employeeId === emp._id && a.status === Status.ACTIVE,
-      )
-      const routeName = assignment?.route?.name ?? null
-
       // Filter transactions for this employee
       const empTransactions = convexTransactions.filter(
         (t) => t.employeeId === emp._id,
@@ -91,9 +75,9 @@ function DashboardPage() {
       const lastTransaction =
         sortedTransactions.length > 0 ? sortedTransactions[0] : undefined
 
-      // Calculate cash in hand (sum of cash transactions)
+      // Calculate cash in bag (unverified cash transactions)
       const cashInHand = empTransactions
-        .filter((t) => t.paymentMode === PaymentMode.CASH)
+        .filter((t) => t.paymentMode === PaymentMode.CASH && !t.isVerified)
         .reduce((sum, t) => sum + t.amount, 0)
 
       // Determine status based on last transaction time
@@ -113,7 +97,7 @@ function DashboardPage() {
       return {
         id: emp._id,
         name: emp.name,
-        route: routeName,
+        route: null,
         collectionsCount: empTransactions.length,
         cashInHand,
         lastActivity:
@@ -123,7 +107,7 @@ function DashboardPage() {
         status,
       }
     })
-  }, [convexEmployees, convexAssignments, convexTransactions])
+  }, [convexEmployees, convexTransactions])
 
   // Build employee transactions map
   const employeeTransactions: EmployeeTransactions = useMemo(() => {
@@ -142,7 +126,7 @@ function DashboardPage() {
         shopName: txn.shop?.name ?? 'Unknown Shop',
         amount: txn.amount,
         paymentMode: txn.paymentMode,
-        reference: txn.reference ?? null,
+        isVerified: txn.isVerified,
       }
 
       result[empId].push(dashboardTxn)
