@@ -1,8 +1,10 @@
 'use client'
 
-import {  createContext, useCallback, useContext, useState } from 'react'
-import type {ReactNode} from 'react';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react'
+import type { ReactNode } from 'react'
 import type { AuthUser, Employee } from './types'
+
+const AUTH_STORAGE_KEY = 'psbook_auth_user'
 
 // Mock users for authentication
 const MOCK_USERS: Array<AuthUser> = [
@@ -35,6 +37,31 @@ const MOCK_USERS: Array<AuthUser> = [
   },
 ]
 
+// Helper to safely get from localStorage (SSR-safe)
+function getStoredUser(): Employee | null {
+  if (typeof window === 'undefined') return null
+  try {
+    const stored = localStorage.getItem(AUTH_STORAGE_KEY)
+    return stored ? JSON.parse(stored) : null
+  } catch {
+    return null
+  }
+}
+
+// Helper to safely set to localStorage
+function setStoredUser(user: Employee | null) {
+  if (typeof window === 'undefined') return
+  try {
+    if (user) {
+      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user))
+    } else {
+      localStorage.removeItem(AUTH_STORAGE_KEY)
+    }
+  } catch {
+    // Ignore storage errors
+  }
+}
+
 interface AuthContextType {
   currentUser: Employee | null
   isAuthenticated: boolean
@@ -48,14 +75,23 @@ const AuthContext = createContext<AuthContextType | null>(null)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUser] = useState<Employee | null>(null)
 
+  // Restore user from localStorage on mount
+  useEffect(() => {
+    const storedUser = getStoredUser()
+    if (storedUser) {
+      setCurrentUser(storedUser)
+    }
+  }, [])
+
   const login = useCallback((email: string, password: string): boolean => {
     const user = MOCK_USERS.find(
       (u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password
     )
     if (user) {
-      // Remove password before storing in state
+      // Remove password before storing
       const { password: _, ...userWithoutPassword } = user
       setCurrentUser(userWithoutPassword)
+      setStoredUser(userWithoutPassword)
       return true
     }
     return false
@@ -63,6 +99,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(() => {
     setCurrentUser(null)
+    setStoredUser(null)
   }, [])
 
   const isAuthenticated = currentUser !== null
