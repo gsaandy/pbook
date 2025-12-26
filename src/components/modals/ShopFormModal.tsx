@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Modal } from './Modal'
 import type { Shop } from '@/lib/types'
 
@@ -12,36 +12,15 @@ interface ShopFormModalProps {
 }
 
 export function ShopFormModal({ isOpen, onClose, onSave, shop }: ShopFormModalProps) {
-  const [formData, setFormData] = useState({
-    name: '',
-    address: '',
-    phone: '',
-    zone: '',
-    currentBalance: 0,
-    lastCollectionDate: new Date().toISOString().split('T')[0],
-  })
-
-  useEffect(() => {
-    if (shop) {
-      setFormData({
-        name: shop.name,
-        address: shop.address,
-        phone: shop.phone,
-        zone: shop.zone,
-        currentBalance: shop.currentBalance,
-        lastCollectionDate: shop.lastCollectionDate,
-      })
-    } else {
-      setFormData({
-        name: '',
-        address: '',
-        phone: '',
-        zone: '',
-        currentBalance: 0,
-        lastCollectionDate: new Date().toISOString().split('T')[0],
-      })
-    }
-  }, [shop, isOpen])
+  // Lazy initialization - parent uses key prop to reset when shop changes
+  const [formData, setFormData] = useState(() => ({
+    name: shop?.name ?? '',
+    address: shop?.address ?? '',
+    phone: shop?.phone ?? '',
+    zone: shop?.zone ?? '',
+    currentBalance: shop?.currentBalance ?? 0,
+    lastCollectionDate: shop?.lastCollectionDate ?? new Date().toISOString().split('T')[0],
+  }))
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()

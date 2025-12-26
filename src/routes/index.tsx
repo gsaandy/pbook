@@ -1,7 +1,6 @@
 'use client'
 
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useEffect } from 'react'
+import { createFileRoute, Navigate } from '@tanstack/react-router'
 import { useAuth } from '@/lib/auth'
 
 export const Route = createFileRoute('/')({
@@ -10,22 +9,13 @@ export const Route = createFileRoute('/')({
 
 function IndexPage() {
   const { isAuthenticated, isAdmin } = useAuth()
-  const navigate = useNavigate()
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate({ to: '/login' })
-    } else if (isAdmin) {
-      navigate({ to: '/dashboard' })
-    } else {
-      navigate({ to: '/operations' })
-    }
-  }, [isAuthenticated, isAdmin, navigate])
-
-  // Show loading while redirecting
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
-      <div className="text-slate-600 dark:text-slate-400">Loading...</div>
-    </div>
-  )
+  // Declarative redirect based on auth state - no useEffect needed
+  if (!isAuthenticated) {
+    return <Navigate to="/login" />
+  } else if (isAdmin) {
+    return <Navigate to="/dashboard" />
+  } else {
+    return <Navigate to="/operations" />
+  }
 }

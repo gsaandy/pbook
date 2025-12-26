@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Modal } from './Modal'
 import type { Employee } from '@/lib/types'
 
@@ -12,33 +12,14 @@ interface EmployeeFormModalProps {
 }
 
 export function EmployeeFormModal({ isOpen, onClose, onSave, employee }: EmployeeFormModalProps) {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    role: 'field_staff' as 'field_staff' | 'admin',
-    status: 'active' as 'active' | 'inactive',
-  })
-
-  useEffect(() => {
-    if (employee) {
-      setFormData({
-        name: employee.name,
-        email: employee.email,
-        phone: employee.phone,
-        role: employee.role,
-        status: employee.status,
-      })
-    } else {
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        role: 'field_staff',
-        status: 'active',
-      })
-    }
-  }, [employee, isOpen])
+  // Lazy initialization - parent uses key prop to reset when employee changes
+  const [formData, setFormData] = useState(() => ({
+    name: employee?.name ?? '',
+    email: employee?.email ?? '',
+    phone: employee?.phone ?? '',
+    role: employee?.role ?? ('field_staff' as 'field_staff' | 'admin'),
+    status: employee?.status ?? ('active' as 'active' | 'inactive'),
+  }))
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()

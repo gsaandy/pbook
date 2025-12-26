@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useCallback, useContext, useEffect, useState } from 'react'
+import { createContext, useCallback, useContext, useState } from 'react'
 import type { ReactNode } from 'react'
 import type { AuthUser, Employee } from './types'
 
@@ -73,15 +73,8 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | null>(null)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [currentUser, setCurrentUser] = useState<Employee | null>(null)
-
-  // Restore user from localStorage on mount
-  useEffect(() => {
-    const storedUser = getStoredUser()
-    if (storedUser) {
-      setCurrentUser(storedUser)
-    }
-  }, [])
+  // Lazy initialization - reads from localStorage once on first render
+  const [currentUser, setCurrentUser] = useState<Employee | null>(() => getStoredUser())
 
   const login = useCallback((email: string, password: string): boolean => {
     const user = MOCK_USERS.find(

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Modal } from './Modal'
 import type { Route, Shop } from '@/lib/types'
 
@@ -13,27 +13,12 @@ interface RouteFormModalProps {
 }
 
 export function RouteFormModal({ isOpen, onClose, onSave, route, availableShops }: RouteFormModalProps) {
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    shopIds: [] as Array<string>,
-  })
-
-  useEffect(() => {
-    if (route) {
-      setFormData({
-        name: route.name,
-        description: route.description,
-        shopIds: route.shopIds,
-      })
-    } else {
-      setFormData({
-        name: '',
-        description: '',
-        shopIds: [],
-      })
-    }
-  }, [route, isOpen])
+  // Lazy initialization - parent uses key prop to reset when route changes
+  const [formData, setFormData] = useState(() => ({
+    name: route?.name ?? '',
+    description: route?.description ?? '',
+    shopIds: route?.shopIds ?? ([] as Array<string>),
+  }))
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()

@@ -165,6 +165,7 @@ function SetupPage() {
 
       {/* Shop Form Modal */}
       <ShopFormModal
+        key={editingShop?.id ?? 'new-shop'}
         isOpen={shopModalOpen}
         onClose={() => {
           setShopModalOpen(false)
@@ -176,6 +177,7 @@ function SetupPage() {
 
       {/* Route Form Modal */}
       <RouteFormModal
+        key={editingRoute?.id ?? 'new-route'}
         isOpen={routeModalOpen}
         onClose={() => {
           setRouteModalOpen(false)
@@ -188,6 +190,7 @@ function SetupPage() {
 
       {/* Employee Form Modal */}
       <EmployeeFormModal
+        key={editingEmployee?.id ?? 'new-employee'}
         isOpen={employeeModalOpen}
         onClose={() => {
           setEmployeeModalOpen(false)
