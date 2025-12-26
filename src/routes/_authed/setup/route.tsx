@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { SetupAndConfiguration } from './-components/SetupAndConfiguration'
 import { EmployeeFormModal } from './-components/EmployeeFormModal'
@@ -6,8 +7,21 @@ import { RouteFormModal } from './-components/RouteFormModal'
 import { ShopFormModal } from './-components/ShopFormModal'
 import type { Employee, Route as RouteType, Shop } from '~/lib/types'
 import { ConfirmModal } from '~/components/modals'
-import { useDataStore } from '~/lib/data-store'
-import { employeeQueries, routeQueries, shopQueries } from '~/queries'
+import {
+  employeeQueries,
+  routeQueries,
+  shopQueries,
+  useCreateShopMutation,
+  useUpdateShopMutation,
+  useDeleteShopMutation,
+  useCreateRouteMutation,
+  useUpdateRouteMutation,
+  useDeleteRouteMutation,
+  useCreateEmployeeMutation,
+  useUpdateEmployeeMutation,
+  useToggleEmployeeStatusMutation,
+} from '~/queries'
+import type { Id } from '~/convex/_generated/dataModel'
 
 export const Route = createFileRoute('/_authed/setup')({
   component: SetupPage,
@@ -21,24 +35,90 @@ export const Route = createFileRoute('/_authed/setup')({
   },
 })
 
+// Adapter functions to convert Convex types to local types
+function adaptShop(shop: {
+  _id: Id<'shops'>
+  name: string
+  address: string
+  phone?: string
+  zone: string
+  currentBalance: number
+  lastCollectionDate?: string
+  routeId?: Id<'routes'>
+}): Shop {
+  return {
+    id: shop._id,
+    name: shop.name,
+    address: shop.address,
+    phone: shop.phone ?? '',
+    zone: shop.zone,
+    currentBalance: shop.currentBalance,
+    lastCollectionDate: shop.lastCollectionDate ?? new Date().toISOString().split('T')[0],
+  }
+}
+
+function adaptRoute(route: {
+  _id: Id<'routes'>
+  name: string
+  description?: string
+}, shopsByRoute: Map<string, string[]>): RouteType {
+  return {
+    id: route._id,
+    name: route.name,
+    description: route.description ?? '',
+    shopIds: shopsByRoute.get(route._id) ?? [],
+  }
+}
+
+function adaptEmployee(employee: {
+  _id: Id<'employees'>
+  name: string
+  email: string
+  phone: string
+  role: 'field_staff' | 'admin' | 'super_admin'
+  status: 'active' | 'inactive'
+}): Employee {
+  return {
+    id: employee._id,
+    name: employee.name,
+    email: employee.email,
+    phone: employee.phone,
+    role: employee.role === 'super_admin' ? 'admin' : employee.role,
+    status: employee.status,
+  }
+}
+
 function SetupPage() {
-  const {
-    shops,
-    routes,
-    employees,
-    addShop,
-    updateShop,
-    deleteShop,
-    addRoute,
-    updateRoute,
-    deleteRoute,
-    addEmployee,
-    updateEmployee,
-    toggleEmployeeStatus,
-    getShop,
-    getRoute,
-    getEmployee,
-  } = useDataStore()
+  // Fetch data from Convex
+  const { data: convexShops } = useSuspenseQuery(shopQueries.list())
+  const { data: convexRoutes } = useSuspenseQuery(routeQueries.list())
+  const { data: convexEmployees } = useSuspenseQuery(employeeQueries.list())
+
+  // Build shopsByRoute map for route adaptation
+  const shopsByRoute = new Map<string, string[]>()
+  for (const shop of convexShops) {
+    if (shop.routeId) {
+      const existing = shopsByRoute.get(shop.routeId) ?? []
+      existing.push(shop._id)
+      shopsByRoute.set(shop.routeId, existing)
+    }
+  }
+
+  // Adapt Convex data to local types
+  const shops = convexShops.map(adaptShop)
+  const routes = convexRoutes.map((r) => adaptRoute(r, shopsByRoute))
+  const employees = convexEmployees.map(adaptEmployee)
+
+  // Mutations
+  const createShop = useCreateShopMutation()
+  const updateShop = useUpdateShopMutation()
+  const deleteShop = useDeleteShopMutation()
+  const createRoute = useCreateRouteMutation()
+  const updateRoute = useUpdateRouteMutation()
+  const deleteRoute = useDeleteRouteMutation()
+  const createEmployee = useCreateEmployeeMutation()
+  const updateEmployee = useUpdateEmployeeMutation()
+  const toggleEmployeeStatus = useToggleEmployeeStatusMutation()
 
   // Modal states
   const [shopModalOpen, setShopModalOpen] = useState(false)
@@ -65,7 +145,7 @@ function SetupPage() {
   }
 
   const handleEditShop = (id: string) => {
-    const shop = getShop(id)
+    const shop = shops.find((s) => s.id === id)
     if (shop) {
       setEditingShop(shop)
       setShopModalOpen(true)
@@ -73,7 +153,7 @@ function SetupPage() {
   }
 
   const handleDeleteShop = (id: string) => {
-    const shop = getShop(id)
+    const shop = shops.find((s) => s.id === id)
     if (shop) {
       setDeleteTarget({ type: 'shop', id, name: shop.name })
       setConfirmModalOpen(true)
@@ -82,10 +162,24 @@ function SetupPage() {
 
   const handleSaveShop = (shopData: Omit<Shop, 'id'> | Shop) => {
     if ('id' in shopData) {
-      updateShop(shopData.id, shopData)
+      updateShop.mutate({
+        id: shopData.id as Id<'shops'>,
+        name: shopData.name,
+        address: shopData.address,
+        phone: shopData.phone,
+        zone: shopData.zone,
+      })
     } else {
-      addShop(shopData)
+      createShop.mutate({
+        name: shopData.name,
+        address: shopData.address,
+        phone: shopData.phone,
+        zone: shopData.zone,
+        currentBalance: shopData.currentBalance,
+      })
     }
+    setShopModalOpen(false)
+    setEditingShop(null)
   }
 
   // Route handlers
@@ -95,7 +189,7 @@ function SetupPage() {
   }
 
   const handleEditRoute = (id: string) => {
-    const route = getRoute(id)
+    const route = routes.find((r) => r.id === id)
     if (route) {
       setEditingRoute(route)
       setRouteModalOpen(true)
@@ -103,7 +197,7 @@ function SetupPage() {
   }
 
   const handleDeleteRoute = (id: string) => {
-    const route = getRoute(id)
+    const route = routes.find((r) => r.id === id)
     if (route) {
       setDeleteTarget({ type: 'route', id, name: route.name })
       setConfirmModalOpen(true)
@@ -112,10 +206,19 @@ function SetupPage() {
 
   const handleSaveRoute = (routeData: Omit<RouteType, 'id'> | RouteType) => {
     if ('id' in routeData) {
-      updateRoute(routeData.id, routeData)
+      updateRoute.mutate({
+        id: routeData.id as Id<'routes'>,
+        name: routeData.name,
+        description: routeData.description,
+      })
     } else {
-      addRoute(routeData)
+      createRoute.mutate({
+        name: routeData.name,
+        description: routeData.description,
+      })
     }
+    setRouteModalOpen(false)
+    setEditingRoute(null)
   }
 
   // Employee handlers
@@ -125,7 +228,7 @@ function SetupPage() {
   }
 
   const handleEditEmployee = (id: string) => {
-    const employee = getEmployee(id)
+    const employee = employees.find((e) => e.id === id)
     if (employee) {
       setEditingEmployee(employee)
       setEmployeeModalOpen(true)
@@ -134,25 +237,38 @@ function SetupPage() {
 
   const handleSaveEmployee = (employeeData: Omit<Employee, 'id'> | Employee) => {
     if ('id' in employeeData) {
-      updateEmployee(employeeData.id, employeeData)
+      updateEmployee.mutate({
+        id: employeeData.id as Id<'employees'>,
+        name: employeeData.name,
+        phone: employeeData.phone,
+        role: employeeData.role,
+      })
     } else {
-      addEmployee(employeeData)
+      createEmployee.mutate({
+        name: employeeData.name,
+        email: employeeData.email,
+        phone: employeeData.phone,
+        role: employeeData.role,
+      })
     }
+    setEmployeeModalOpen(false)
+    setEditingEmployee(null)
   }
 
   const handleToggleEmployeeStatus = (id: string) => {
-    toggleEmployeeStatus(id)
+    toggleEmployeeStatus.mutate({ id: id as Id<'employees'> })
   }
 
   // Delete confirmation handler
   const handleConfirmDelete = () => {
     if (deleteTarget) {
       if (deleteTarget.type === 'shop') {
-        deleteShop(deleteTarget.id)
+        deleteShop.mutate({ id: deleteTarget.id as Id<'shops'> })
       } else {
-        deleteRoute(deleteTarget.id)
+        deleteRoute.mutate({ id: deleteTarget.id as Id<'routes'> })
       }
       setDeleteTarget(null)
+      setConfirmModalOpen(false)
     }
   }
 

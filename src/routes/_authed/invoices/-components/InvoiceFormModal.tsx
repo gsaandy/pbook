@@ -5,7 +5,9 @@ import { Modal } from '~/components/modals/Modal'
 interface InvoiceFormModalProps {
   isOpen: boolean
   onClose: () => void
-  onSave: (invoice: Omit<Invoice, 'id' | 'createdAt' | 'status'> | Invoice) => void
+  onSave: (
+    invoice: Omit<Invoice, 'id' | 'createdAt' | 'status'> | Invoice,
+  ) => void
   invoice?: Invoice | null
   shops: Array<Shop>
   currentUserId: string
@@ -37,7 +39,10 @@ export function InvoiceFormModal({
       return
     }
 
-    const amount = typeof formData.amount === 'string' ? parseFloat(formData.amount) : formData.amount
+    const amount =
+      typeof formData.amount === 'string'
+        ? parseFloat(formData.amount)
+        : formData.amount
     if (amount <= 0) {
       alert('Amount must be greater than 0')
       return
@@ -73,7 +78,11 @@ export function InvoiceFormModal({
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={invoice ? 'Edit Invoice' : 'Add Invoice'}>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={invoice ? 'Edit Invoice' : 'Add Invoice'}
+    >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
@@ -83,13 +92,16 @@ export function InvoiceFormModal({
             required
             disabled={!!invoice} // Cannot change shop when editing
             value={formData.shopId}
-            onChange={(e) => setFormData({ ...formData, shopId: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, shopId: e.target.value })
+            }
             className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <option value="">Select a shop</option>
             {shops.map((shop) => (
               <option key={shop.id} value={shop.id}>
-                {shop.name} - {shop.zone} (Balance: {formatCurrency(shop.currentBalance)})
+                {shop.name} - {shop.zone} (Balance:{' '}
+                {formatCurrency(shop.currentBalance)})
               </option>
             ))}
           </select>
@@ -109,7 +121,9 @@ export function InvoiceFormModal({
               type="text"
               required
               value={formData.invoiceNumber}
-              onChange={(e) => setFormData({ ...formData, invoiceNumber: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, invoiceNumber: e.target.value })
+              }
               className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
               placeholder="INV-001"
             />
@@ -123,7 +137,9 @@ export function InvoiceFormModal({
               type="date"
               required
               value={formData.invoiceDate}
-              onChange={(e) => setFormData({ ...formData, invoiceDate: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, invoiceDate: e.target.value })
+              }
               className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
@@ -139,7 +155,9 @@ export function InvoiceFormModal({
             step="0.01"
             min="0.01"
             value={formData.amount}
-            onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, amount: e.target.value })
+            }
             className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             placeholder="0.00"
           />
@@ -156,7 +174,9 @@ export function InvoiceFormModal({
           </label>
           <textarea
             value={formData.reference}
-            onChange={(e) => setFormData({ ...formData, reference: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, reference: e.target.value })
+            }
             className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             rows={3}
             placeholder="Add any notes or reference information..."

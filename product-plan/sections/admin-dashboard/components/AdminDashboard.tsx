@@ -1,7 +1,15 @@
 'use client'
 
 import { useState } from 'react'
-import { Clock, CreditCard, Download, IndianRupee, MapPin, RefreshCw, Wallet } from 'lucide-react'
+import {
+  Clock,
+  CreditCard,
+  Download,
+  IndianRupee,
+  MapPin,
+  RefreshCw,
+  Wallet,
+} from 'lucide-react'
 import type { AdminDashboardProps } from '@/../product/sections/admin-dashboard/types'
 
 export function AdminDashboard({
@@ -57,7 +65,9 @@ export function AdminDashboard({
     ? employeeStatus.find((e) => e.id === selectedEmployee)
     : null
 
-  const transactions = selectedEmployee ? employeeTransactions[selectedEmployee] || [] : []
+  const transactions = selectedEmployee
+    ? employeeTransactions[selectedEmployee] || []
+    : []
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
@@ -133,10 +143,13 @@ export function AdminDashboard({
                               {txn.shopName}
                             </p>
                             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                              {new Date(txn.timestamp).toLocaleTimeString('en-IN', {
-                                hour: '2-digit',
-                                minute: '2-digit',
-                              })}
+                              {new Date(txn.timestamp).toLocaleTimeString(
+                                'en-IN',
+                                {
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                },
+                              )}
                             </p>
                           </div>
                           <p className="font-semibold text-slate-900 dark:text-white">
@@ -188,7 +201,9 @@ export function AdminDashboard({
                 disabled={isRefreshing}
                 className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50 transition-colors"
               >
-                <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                <RefreshCw
+                  className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`}
+                />
                 Refresh
               </button>
             )}
@@ -326,7 +341,7 @@ export function AdminDashboard({
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
-                          emp.status
+                          emp.status,
                         )}`}
                       >
                         <span
@@ -334,15 +349,15 @@ export function AdminDashboard({
                             emp.status === 'active'
                               ? 'bg-emerald-600 dark:bg-emerald-400'
                               : emp.status === 'delayed'
-                              ? 'bg-red-600 dark:bg-red-400'
-                              : 'bg-slate-400'
+                                ? 'bg-red-600 dark:bg-red-400'
+                                : 'bg-slate-400'
                           }`}
                         />
                         {emp.status === 'active'
                           ? 'Active'
                           : emp.status === 'delayed'
-                          ? 'Delayed'
-                          : 'Idle'}
+                            ? 'Delayed'
+                            : 'Idle'}
                       </span>
                     </td>
                   </tr>
@@ -370,7 +385,7 @@ export function AdminDashboard({
                   </div>
                   <span
                     className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                      emp.status
+                      emp.status,
                     )}`}
                   >
                     <span
@@ -378,15 +393,15 @@ export function AdminDashboard({
                         emp.status === 'active'
                           ? 'bg-emerald-600'
                           : emp.status === 'delayed'
-                          ? 'bg-red-600'
-                          : 'bg-slate-400'
+                            ? 'bg-red-600'
+                            : 'bg-slate-400'
                       }`}
                     />
                     {emp.status === 'active'
                       ? 'Active'
                       : emp.status === 'delayed'
-                      ? 'Delayed'
-                      : 'Idle'}
+                        ? 'Delayed'
+                        : 'Idle'}
                   </span>
                 </div>
                 <div className="grid grid-cols-3 gap-3 text-sm">

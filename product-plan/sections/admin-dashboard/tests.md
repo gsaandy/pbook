@@ -7,12 +7,14 @@ These test-writing instructions are **framework-agnostic**. Adapt them to your t
 ### Flow 1: View Live Dashboard
 
 **Success Path:**
+
 1. Admin navigates to dashboard
 2. Dashboard loads with three metric cards
 3. Employee status table shows all active employees
 4. Expected: Metrics show correct totals, last updated timestamp is recent
 
 **Auto-Refresh:**
+
 1. Dashboard loads
 2. Wait 30 seconds
 3. Expected: Data refreshes automatically, timestamp updates
@@ -20,6 +22,7 @@ These test-writing instructions are **framework-agnostic**. Adapt them to your t
 ### Flow 2: View Employee Detail
 
 **Success Path:**
+
 1. Admin clicks on employee row
 2. Detail modal opens showing transaction log
 3. Modal shows all transactions with timestamps, shops, amounts
@@ -28,6 +31,7 @@ These test-writing instructions are **framework-agnostic**. Adapt them to your t
 ### Flow 3: Manual Refresh
 
 **Success Path:**
+
 1. Admin clicks refresh button
 2. Expected: Data reloads, loading indicator shows briefly, updated data appears
 
@@ -50,4 +54,3 @@ These test-writing instructions are **framework-agnostic**. Adapt them to your t
 - Employee with 100+ transactions (scrollable list in modal)
 - Very recent activity (shows "Just now")
 - Employee assigned but hasn't collected anything yet
-

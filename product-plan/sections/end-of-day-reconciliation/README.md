@@ -15,15 +15,19 @@ Cash handover verification and daily closing workflow where admins reconcile phy
 ## User Flows
 
 ### View EOD Summary
+
 See date selector and live status cards (Total Collected, Cash Expected, Digital Payments), view employee settlement table.
 
 ### Verify Cash Handover
+
 Click "Verify" for an employee, review system-calculated expected cash, see transaction log as reference, confirm match or report mismatch.
 
 ### Handle Matching Cash
+
 Click "Yes, Matches" to close the day for that employee.
 
 ### Handle Cash Mismatch
+
 Click "No, Mismatch", enter actual cash received, system calculates variance, add mandatory note, save with mismatch flag.
 
 ## Components Provided

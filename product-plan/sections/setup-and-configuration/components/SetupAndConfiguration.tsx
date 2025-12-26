@@ -1,7 +1,15 @@
 'use client'
 
 import { useState } from 'react'
-import { Edit2, Plus, Power, PowerOff, Search, Trash2, Upload } from 'lucide-react'
+import {
+  Edit2,
+  Plus,
+  Power,
+  PowerOff,
+  Search,
+  Trash2,
+  Upload,
+} from 'lucide-react'
 import type { SetupAndConfigurationProps } from '@/../product/sections/setup-and-configuration/types'
 
 type Tab = 'shops' | 'routes' | 'employees'
@@ -28,17 +36,17 @@ export function SetupAndConfiguration({
   const filteredShops = shops.filter(
     (shop) =>
       shop.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      shop.zone.toLowerCase().includes(searchQuery.toLowerCase())
+      shop.zone.toLowerCase().includes(searchQuery.toLowerCase()),
   )
 
   const filteredRoutes = routes.filter((route) =>
-    route.name.toLowerCase().includes(searchQuery.toLowerCase())
+    route.name.toLowerCase().includes(searchQuery.toLowerCase()),
   )
 
   const filteredEmployees = employees.filter(
     (emp) =>
       emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      emp.email.toLowerCase().includes(searchQuery.toLowerCase())
+      emp.email.toLowerCase().includes(searchQuery.toLowerCase()),
   )
 
   const formatCurrency = (amount: number) => {
@@ -250,8 +258,8 @@ export function SetupAndConfiguration({
                                 shop.currentBalance > 10000
                                   ? 'text-red-600 dark:text-red-400'
                                   : shop.currentBalance > 0
-                                  ? 'text-amber-600 dark:text-amber-400'
-                                  : 'text-emerald-600 dark:text-emerald-400'
+                                    ? 'text-amber-600 dark:text-amber-400'
+                                    : 'text-emerald-600 dark:text-emerald-400'
                               }`}
                             >
                               {formatCurrency(shop.currentBalance)}
@@ -332,8 +340,8 @@ export function SetupAndConfiguration({
                             shop.currentBalance > 10000
                               ? 'text-red-600 dark:text-red-400'
                               : shop.currentBalance > 0
-                              ? 'text-amber-600 dark:text-amber-400'
-                              : 'text-emerald-600 dark:text-emerald-400'
+                                ? 'text-amber-600 dark:text-amber-400'
+                                : 'text-emerald-600 dark:text-emerald-400'
                           }`}
                         >
                           {formatCurrency(shop.currentBalance)}

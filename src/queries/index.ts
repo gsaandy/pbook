@@ -1,7 +1,12 @@
 // Query options and mutation hooks for Convex data
 // Use these instead of calling Convex API directly in routes/components
 
-export { employeeQueries } from './employees'
+export {
+  employeeQueries,
+  useCreateEmployeeMutation,
+  useUpdateEmployeeMutation,
+  useToggleEmployeeStatusMutation,
+} from './employees'
 
 export {
   shopQueries,
@@ -23,3 +28,22 @@ export {
   useCancelAssignmentMutation,
   useCompleteAssignmentMutation,
 } from './routeAssignments'
+
+export {
+  transactionQueries,
+  useCollectCashMutation,
+  useReverseTransactionMutation,
+} from './transactions'
+
+export {
+  reconciliationQueries,
+  useVerifyReconciliationMutation,
+  useUpdateReconciliationStatusMutation,
+} from './reconciliations'
+
+export {
+  invoiceQueries,
+  useCreateInvoiceMutation,
+  useUpdateInvoiceMutation,
+  useCancelInvoiceMutation,
+} from './invoices'

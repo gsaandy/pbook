@@ -1,5 +1,12 @@
 import { useState } from 'react'
-import { CreditCard, Download, Search, Store, TrendingUp, Users } from 'lucide-react'
+import {
+  CreditCard,
+  Download,
+  Search,
+  Store,
+  TrendingUp,
+  Users,
+} from 'lucide-react'
 
 // =============================================================================
 // Types
@@ -98,7 +105,9 @@ export function ReportsAndHistory({
   onExportTransactions,
   onClearFilters,
 }: ReportsAndHistoryProps) {
-  const [activeView, setActiveView] = useState<'transactions' | 'reconciliation' | 'analytics'>('transactions')
+  const [activeView, setActiveView] = useState<
+    'transactions' | 'reconciliation' | 'analytics'
+  >('transactions')
   const [searchQuery, setSearchQuery] = useState('')
 
   const formatCurrency = (amount: number) => {
@@ -154,7 +163,7 @@ export function ReportsAndHistory({
     (txn) =>
       txn.shopName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       txn.employeeName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      txn.id.toLowerCase().includes(searchQuery.toLowerCase())
+      txn.id.toLowerCase().includes(searchQuery.toLowerCase()),
   )
 
   return (
@@ -305,7 +314,7 @@ export function ReportsAndHistory({
                             <td className="px-6 py-4 whitespace-nowrap">
                               <span
                                 className={`px-2 py-1 rounded-full text-xs font-medium ${getPaymentModeColor(
-                                  txn.paymentMode
+                                  txn.paymentMode,
                                 )}`}
                               >
                                 {txn.paymentMode.toUpperCase()}
@@ -314,7 +323,7 @@ export function ReportsAndHistory({
                             <td className="px-6 py-4 whitespace-nowrap">
                               <span
                                 className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                                  txn.status
+                                  txn.status,
                                 )}`}
                               >
                                 {txn.status}
@@ -348,18 +357,19 @@ export function ReportsAndHistory({
                         </div>
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="text-xs text-slate-500 dark:text-slate-400">
-                            {formatDate(txn.timestamp)} • {formatTime(txn.timestamp)}
+                            {formatDate(txn.timestamp)} •{' '}
+                            {formatTime(txn.timestamp)}
                           </span>
                           <span
                             className={`px-2 py-0.5 rounded-full text-xs font-medium ${getPaymentModeColor(
-                              txn.paymentMode
+                              txn.paymentMode,
                             )}`}
                           >
                             {txn.paymentMode.toUpperCase()}
                           </span>
                           <span
                             className={`px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
-                              txn.status
+                              txn.status,
                             )}`}
                           >
                             {txn.status}
@@ -443,8 +453,8 @@ export function ReportsAndHistory({
                             event.variance === 0
                               ? 'text-emerald-600 dark:text-emerald-400'
                               : event.variance > 0
-                              ? 'text-emerald-600 dark:text-emerald-400'
-                              : 'text-red-600 dark:text-red-400'
+                                ? 'text-emerald-600 dark:text-emerald-400'
+                                : 'text-red-600 dark:text-red-400'
                           }`}
                         >
                           {event.variance > 0 ? '+' : ''}
@@ -486,8 +496,9 @@ export function ReportsAndHistory({
                 </div>
                 <p className="text-2xl font-bold text-slate-900 dark:text-white">
                   {formatCurrency(
-                    trendData.dailyCollections[trendData.dailyCollections.length - 1]
-                      ?.amount || 0
+                    trendData.dailyCollections[
+                      trendData.dailyCollections.length - 1
+                    ]?.amount || 0,
                   )}
                 </p>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
@@ -508,7 +519,9 @@ export function ReportsAndHistory({
                   {trendData.employeePerformance[0]?.employeeName || 'N/A'}
                 </p>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                  {formatCurrency(trendData.employeePerformance[0]?.totalCollected || 0)}
+                  {formatCurrency(
+                    trendData.employeePerformance[0]?.totalCollected || 0,
+                  )}
                 </p>
               </div>
 
@@ -539,7 +552,10 @@ export function ReportsAndHistory({
                   </p>
                 </div>
                 <p className="text-2xl font-bold text-slate-900 dark:text-white">
-                  {trendData.paymentModeDistribution.find(p => p.mode === 'cash')?.percentage || 0}%
+                  {trendData.paymentModeDistribution.find(
+                    (p) => p.mode === 'cash',
+                  )?.percentage || 0}
+                  %
                 </p>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   of total collections
@@ -571,7 +587,9 @@ export function ReportsAndHistory({
                             width: `${
                               (emp.totalCollected /
                                 Math.max(
-                                  ...trendData.employeePerformance.map((e) => e.totalCollected)
+                                  ...trendData.employeePerformance.map(
+                                    (e) => e.totalCollected,
+                                  ),
                                 )) *
                               100
                             }%`,
@@ -592,7 +610,10 @@ export function ReportsAndHistory({
                 </h3>
                 <div className="space-y-3">
                   {trendData.topShops.map((shop, index) => (
-                    <div key={index} className="flex items-center justify-between">
+                    <div
+                      key={index}
+                      className="flex items-center justify-between"
+                    >
                       <div className="flex items-center gap-3">
                         <span className="flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 text-sm font-semibold text-slate-600 dark:text-slate-400">
                           {index + 1}

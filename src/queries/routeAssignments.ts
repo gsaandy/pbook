@@ -8,7 +8,8 @@ import { api } from '~/convex/_generated/api'
  */
 export const routeAssignmentQueries = {
   /** Get assignments for a specific date */
-  byDate: (date: string) => convexQuery(api.routeAssignments.getByDate, { date }),
+  byDate: (date: string) =>
+    convexQuery(api.routeAssignments.getByDate, { date }),
 
   /** Get assignments for a specific date with employee and route details */
   byDateWithDetails: (date: string) =>
@@ -16,7 +17,10 @@ export const routeAssignmentQueries = {
 
   /** Get today's assignment for a specific employee */
   employeeAssignment: (employeeId: Id<'employees'>, date: string) =>
-    convexQuery(api.routeAssignments.getEmployeeAssignment, { employeeId, date }),
+    convexQuery(api.routeAssignments.getEmployeeAssignment, {
+      employeeId,
+      date,
+    }),
 }
 
 /**

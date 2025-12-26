@@ -10,7 +10,13 @@ interface RouteFormModalProps {
   availableShops: Array<Shop>
 }
 
-export function RouteFormModal({ isOpen, onClose, onSave, route, availableShops }: RouteFormModalProps) {
+export function RouteFormModal({
+  isOpen,
+  onClose,
+  onSave,
+  route,
+  availableShops,
+}: RouteFormModalProps) {
   // Lazy initialization - parent uses key prop to reset when route changes
   const [formData, setFormData] = useState(() => ({
     name: route?.name ?? '',
@@ -38,7 +44,12 @@ export function RouteFormModal({ isOpen, onClose, onSave, route, availableShops 
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={route ? 'Edit Route' : 'Create Route'} size="lg">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={route ? 'Edit Route' : 'Create Route'}
+      size="lg"
+    >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
@@ -60,7 +71,9 @@ export function RouteFormModal({ isOpen, onClose, onSave, route, availableShops 
           </label>
           <textarea
             value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, description: e.target.value })
+            }
             className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             rows={2}
             placeholder="Describe this route"

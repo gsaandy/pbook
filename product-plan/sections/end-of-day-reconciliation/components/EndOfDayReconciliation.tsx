@@ -1,8 +1,18 @@
 'use client'
 
 import { useState } from 'react'
-import { AlertCircle, CheckCircle2, CreditCard, Download, IndianRupee, Wallet } from 'lucide-react'
-import type { EndOfDayReconciliationProps, VerificationFormData } from '@/../product/sections/end-of-day-reconciliation/types'
+import {
+  AlertCircle,
+  CheckCircle2,
+  CreditCard,
+  Download,
+  IndianRupee,
+  Wallet,
+} from 'lucide-react'
+import type {
+  EndOfDayReconciliationProps,
+  VerificationFormData,
+} from '@/../product/sections/end-of-day-reconciliation/types'
 
 export function EndOfDayReconciliation({
   eodSummary,
@@ -15,7 +25,9 @@ export function EndOfDayReconciliation({
   onVerifyMismatch,
   onGenerateReport,
 }: EndOfDayReconciliationProps) {
-  const [verifyingEmployee, setVerifyingEmployee] = useState<string | null>(null)
+  const [verifyingEmployee, setVerifyingEmployee] = useState<string | null>(
+    null,
+  )
   const [showMismatchForm, setShowMismatchForm] = useState(false)
   const [actualCash, setActualCash] = useState('')
   const [note, setNote] = useState('')
@@ -58,9 +70,10 @@ export function EndOfDayReconciliation({
     setNote('')
   }
 
-  const variance = actualCash && settlement
-    ? parseFloat(actualCash) - settlement.expectedCash
-    : 0
+  const variance =
+    actualCash && settlement
+      ? parseFloat(actualCash) - settlement.expectedCash
+      : 0
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -152,10 +165,13 @@ export function EndOfDayReconciliation({
                               {txn.shopName}
                             </p>
                             <p className="text-xs text-slate-500 dark:text-slate-400">
-                              {new Date(txn.timestamp).toLocaleTimeString('en-IN', {
-                                hour: '2-digit',
-                                minute: '2-digit',
-                              })}
+                              {new Date(txn.timestamp).toLocaleTimeString(
+                                'en-IN',
+                                {
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                },
+                              )}
                             </p>
                           </div>
                           <p className="font-semibold text-emerald-600 dark:text-emerald-400">
@@ -173,7 +189,8 @@ export function EndOfDayReconciliation({
                       {settlement.employeeName}.
                     </p>
                     <p className="text-sm text-slate-700 dark:text-slate-300 mt-2">
-                      <strong>Step 2:</strong> Does it match the expected amount?
+                      <strong>Step 2:</strong> Does it match the expected
+                      amount?
                     </p>
                   </div>
                 </div>
@@ -200,7 +217,8 @@ export function EndOfDayReconciliation({
                     <p className="text-sm text-amber-800 dark:text-amber-200">
                       <strong>Cash Mismatch Detected</strong>
                       <br />
-                      Please enter the actual cash amount received and provide an explanation.
+                      Please enter the actual cash amount received and provide
+                      an explanation.
                     </p>
                   </div>
 
@@ -228,8 +246,8 @@ export function EndOfDayReconciliation({
                         variance === 0
                           ? 'bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800'
                           : variance > 0
-                          ? 'bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800'
-                          : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'
+                            ? 'bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800'
+                            : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'
                       }`}
                     >
                       <p className="text-sm font-medium mb-1">Variance</p>
@@ -238,8 +256,8 @@ export function EndOfDayReconciliation({
                           variance === 0
                             ? 'text-emerald-700 dark:text-emerald-300'
                             : variance > 0
-                            ? 'text-emerald-700 dark:text-emerald-300'
-                            : 'text-red-700 dark:text-red-300'
+                              ? 'text-emerald-700 dark:text-emerald-300'
+                              : 'text-red-700 dark:text-red-300'
                         }`}
                       >
                         {variance > 0 ? '+' : ''}
@@ -249,8 +267,8 @@ export function EndOfDayReconciliation({
                         {variance === 0
                           ? 'Perfect match'
                           : variance > 0
-                          ? 'Overage (extra cash received)'
-                          : 'Shortage (less cash received)'}
+                            ? 'Overage (extra cash received)'
+                            : 'Shortage (less cash received)'}
                       </p>
                     </div>
                   )}
@@ -330,7 +348,8 @@ export function EndOfDayReconciliation({
                 Reconciliation Progress
               </p>
               <p className="text-sm font-semibold text-slate-900 dark:text-white">
-                {eodSummary.employeesVerified} of {eodSummary.employeesTotal} verified
+                {eodSummary.employeesVerified} of {eodSummary.employeesTotal}{' '}
+                verified
               </p>
             </div>
             <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5">
@@ -338,7 +357,8 @@ export function EndOfDayReconciliation({
                 className="bg-indigo-600 dark:bg-indigo-500 h-2.5 rounded-full transition-all"
                 style={{
                   width: `${
-                    (eodSummary.employeesVerified / eodSummary.employeesTotal) * 100
+                    (eodSummary.employeesVerified / eodSummary.employeesTotal) *
+                    100
                   }%`,
                 }}
               />
@@ -462,7 +482,9 @@ export function EndOfDayReconciliation({
                         <td className="px-6 py-4 whitespace-nowrap text-right">
                           {settlementItem.status === 'pending' ? (
                             <button
-                              onClick={() => setVerifyingEmployee(settlementItem.employeeId)}
+                              onClick={() =>
+                                setVerifyingEmployee(settlementItem.employeeId)
+                              }
                               className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 dark:bg-indigo-500 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors"
                             >
                               Verify
@@ -470,7 +492,9 @@ export function EndOfDayReconciliation({
                           ) : (
                             <span className="text-sm text-slate-500 dark:text-slate-400">
                               {settlementItem.verifiedAt &&
-                                new Date(settlementItem.verifiedAt).toLocaleTimeString('en-IN', {
+                                new Date(
+                                  settlementItem.verifiedAt,
+                                ).toLocaleTimeString('en-IN', {
                                   hour: '2-digit',
                                   minute: '2-digit',
                                 })}
@@ -509,7 +533,9 @@ export function EndOfDayReconciliation({
                       </div>
                       {settlementItem.status === 'pending' && (
                         <button
-                          onClick={() => setVerifyingEmployee(settlementItem.employeeId)}
+                          onClick={() =>
+                            setVerifyingEmployee(settlementItem.employeeId)
+                          }
                           className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 dark:bg-indigo-500 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors"
                         >
                           Verify

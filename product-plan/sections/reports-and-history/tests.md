@@ -7,6 +7,7 @@ These test-writing instructions are **framework-agnostic**. Adapt them to your t
 ### Flow 1: View Transaction History
 
 **Success Path:**
+
 1. User views Reports & History page
 2. Transaction table loads with last 7 days of data
 3. User applies filters (employee, shop, payment mode)
@@ -16,6 +17,7 @@ These test-writing instructions are **framework-agnostic**. Adapt them to your t
 ### Flow 2: View Transaction Detail
 
 **Success Path:**
+
 1. User clicks on a transaction row
 2. Detail modal opens
 3. Expected: Shows GPS location on map, full transaction metadata, before/after balances
@@ -23,6 +25,7 @@ These test-writing instructions are **framework-agnostic**. Adapt them to your t
 ### Flow 3: Generate Report
 
 **Success Path:**
+
 1. User selects report type (e.g., "Daily Summary")
 2. User chooses date range
 3. User clicks "Preview Report"
@@ -33,6 +36,7 @@ These test-writing instructions are **framework-agnostic**. Adapt them to your t
 ### Flow 4: View Audit Trail
 
 **Success Path:**
+
 1. User switches to Audit Trail tab
 2. Sees all reconciliation events
 3. User filters by "Mismatches only"
@@ -41,6 +45,7 @@ These test-writing instructions are **framework-agnostic**. Adapt them to your t
 ### Flow 5: Analyze Trends
 
 **Success Path:**
+
 1. User switches to Analytics tab
 2. Charts render showing collection trends, employee performance, top shops
 3. Expected: Data visualizations are accurate and interactive
@@ -67,4 +72,3 @@ These test-writing instructions are **framework-agnostic**. Adapt them to your t
 - Transaction with missing GPS data
 - Historical data from inactive employees/shops
 - Filtering by multiple criteria simultaneously
-

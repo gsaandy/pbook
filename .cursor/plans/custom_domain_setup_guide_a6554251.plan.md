@@ -3,7 +3,7 @@ name: Custom Domain Setup Guide
 overview: Configure GoDaddy DNS and Vercel settings to serve the application at app.parvathi.store instead of the default Vercel URL.
 todos:
   - id: dns-godaddy
-    content: "Configure CNAME record in GoDaddy DNS: Name=app, Value=cname.vercel-dns.com"
+    content: 'Configure CNAME record in GoDaddy DNS: Name=app, Value=cname.vercel-dns.com'
     status: pending
   - id: vercel-domain
     content: Add app.parvathi.store as custom domain in Vercel project settings
@@ -74,9 +74,9 @@ The setup involves two main steps:
 
 - DNS changes can take 24-48 hours, but usually propagate within a few minutes to a few hours
 - Vercel will show the domain status:
-    - **Valid Configuration**: DNS is correctly configured
-    - **Invalid Configuration**: DNS needs to be updated (check GoDaddy settings)
-    - **Pending**: Waiting for DNS propagation
+  - **Valid Configuration**: DNS is correctly configured
+  - **Invalid Configuration**: DNS needs to be updated (check GoDaddy settings)
+  - **Pending**: Waiting for DNS propagation
 
 ### Step 3: SSL Certificate (Automatic)
 

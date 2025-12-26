@@ -7,6 +7,7 @@ These test-writing instructions are **framework-agnostic**. Adapt them to your t
 ### Flow 1: Verify Matching Cash
 
 **Success Path:**
+
 1. Admin clicks "Verify" button for employee
 2. Verification modal shows expected cash amount
 3. Admin reviews transaction log
@@ -16,6 +17,7 @@ These test-writing instructions are **framework-agnostic**. Adapt them to your t
 ### Flow 2: Handle Cash Mismatch
 
 **Success Path:**
+
 1. Admin clicks "Verify" button for employee
 2. Admin clicks "No, Mismatch"
 3. Mismatch form appears
@@ -26,6 +28,7 @@ These test-writing instructions are **framework-agnostic**. Adapt them to your t
 8. Expected: Employee marked with mismatch status, variance and note recorded for audit
 
 **Failure Path - Validation:**
+
 1. Admin clicks "No, Mismatch"
 2. Admin tries to save without entering note
 3. Expected: Validation error, "Note is required for mismatches"
@@ -33,6 +36,7 @@ These test-writing instructions are **framework-agnostic**. Adapt them to your t
 ### Flow 3: Complete Daily Close
 
 **Success Path:**
+
 1. Admin verifies all employees
 2. Progress indicator shows "5 of 5 employees verified"
 3. Expected: Completion summary appears, option to generate EOD report
@@ -56,4 +60,3 @@ These test-writing instructions are **framework-agnostic**. Adapt them to your t
 - Large variance (₹1000+ shortage/overage)
 - Historical EOD sessions (view past dates)
 - Employee with 0 expected cash (digital payments only)
-

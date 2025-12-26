@@ -10,10 +10,13 @@
 
 import type * as employees from "../employees.js";
 import type * as http from "../http.js";
+import type * as invoices from "../invoices.js";
+import type * as reconciliations from "../reconciliations.js";
 import type * as routeAssignments from "../routeAssignments.js";
 import type * as routes from "../routes.js";
 import type * as shops from "../shops.js";
 import type * as test from "../test.js";
+import type * as transactions from "../transactions.js";
 
 import type {
   ApiFromModules,
@@ -24,10 +27,13 @@ import type {
 declare const fullApi: ApiFromModules<{
   employees: typeof employees;
   http: typeof http;
+  invoices: typeof invoices;
+  reconciliations: typeof reconciliations;
   routeAssignments: typeof routeAssignments;
   routes: typeof routes;
   shops: typeof shops;
   test: typeof test;
+  transactions: typeof transactions;
 }>;
 
 /**

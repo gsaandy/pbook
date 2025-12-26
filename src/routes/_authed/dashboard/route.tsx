@@ -1,37 +1,57 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { AdminDashboard } from './-components/AdminDashboard'
-import type { DashboardTransaction, EmployeeStatus, EmployeeTransactions, Summary } from './-components/AdminDashboard'
-import { useDataStore } from '~/lib/data-store'
+import type {
+  DashboardTransaction,
+  EmployeeStatus,
+  EmployeeTransactions,
+  Summary,
+} from './-components/AdminDashboard'
+import {
+  employeeQueries,
+  transactionQueries,
+  routeAssignmentQueries,
+} from '~/queries'
+import type { Id } from '~/convex/_generated/dataModel'
 
 export const Route = createFileRoute('/_authed/dashboard')({
   component: DashboardPage,
+  loader: async ({ context: { queryClient } }) => {
+    const today = new Date().toISOString().split('T')[0]
+    await Promise.all([
+      queryClient.ensureQueryData(employeeQueries.list()),
+      queryClient.ensureQueryData(transactionQueries.listWithDetails({ date: today })),
+      queryClient.ensureQueryData(routeAssignmentQueries.byDateWithDetails(today)),
+    ])
+  },
 })
 
 function DashboardPage() {
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [, setRefreshKey] = useState(0)
 
-  const {
-    employees,
-    getTodayTransactions,
-    getTodayAssignments,
-    getEmployeeCashInHand,
-    getRoute,
-    getShop,
-  } = useDataStore()
-
   const today = new Date().toISOString().split('T')[0]
-  const todayTransactions = getTodayTransactions()
-  const todayAssignments = getTodayAssignments()
 
-  // Calculate summary
+  // Fetch data from Convex
+  const { data: convexEmployees } = useSuspenseQuery(employeeQueries.list())
+  const { data: convexTransactions } = useSuspenseQuery(
+    transactionQueries.listWithDetails({ date: today }),
+  )
+  const { data: convexAssignments } = useSuspenseQuery(
+    routeAssignmentQueries.byDateWithDetails(today),
+  )
+
+  // Calculate summary from transactions
   const summary: Summary = useMemo(() => {
-    const totalCollected = todayTransactions.reduce((sum, t) => sum + t.amount, 0)
-    const cashInHand = todayTransactions
+    const totalCollected = convexTransactions.reduce(
+      (sum, t) => sum + t.amount,
+      0,
+    )
+    const cashInHand = convexTransactions
       .filter((t) => t.paymentMode === 'cash')
       .reduce((sum, t) => sum + t.amount, 0)
-    const digitalPayments = todayTransactions
+    const digitalPayments = convexTransactions
       .filter((t) => t.paymentMode !== 'cash')
       .reduce((sum, t) => sum + t.amount, 0)
 
@@ -41,27 +61,41 @@ function DashboardPage() {
       digitalPayments,
       lastUpdated: new Date().toISOString(),
     }
-  }, [todayTransactions])
+  }, [convexTransactions])
 
   // Build employee status
   const employeeStatus: Array<EmployeeStatus> = useMemo(() => {
-    const fieldStaff = employees.filter((e) => e.role === 'field_staff' && e.status === 'active')
+    // Filter active field staff (no deletedAt and role is field_staff)
+    const fieldStaff = convexEmployees.filter(
+      (e) => e.role === 'field_staff' && !e.deletedAt,
+    )
 
     return fieldStaff.map((emp) => {
-      const assignment = todayAssignments.find((a) => a.employeeId === emp.id && a.status === 'active')
-      const route = assignment ? getRoute(assignment.routeId) : null
-      const empTransactions = todayTransactions.filter((t) => t.employeeId === emp.id)
-      const sortedTransactions = [...empTransactions].sort(
-        (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      // Find assignment - convexAssignments already includes route details
+      const assignment = convexAssignments.find(
+        (a) => a.employeeId === emp._id && a.status === 'active',
       )
-      const lastTransaction = sortedTransactions.length > 0 ? sortedTransactions[0] : undefined
+      const routeName = assignment?.route?.name ?? null
 
-      const cashInHand = getEmployeeCashInHand(emp.id)
+      // Filter transactions for this employee
+      const empTransactions = convexTransactions.filter(
+        (t) => t.employeeId === emp._id,
+      )
+      const sortedTransactions = [...empTransactions].sort(
+        (a, b) => b.timestamp - a.timestamp,
+      )
+      const lastTransaction =
+        sortedTransactions.length > 0 ? sortedTransactions[0] : undefined
 
-      // Determine status
+      // Calculate cash in hand (sum of cash transactions)
+      const cashInHand = empTransactions
+        .filter((t) => t.paymentMode === 'cash')
+        .reduce((sum, t) => sum + t.amount, 0)
+
+      // Determine status based on last transaction time
       let status: 'active' | 'delayed' | 'idle' = 'idle'
       if (lastTransaction !== undefined) {
-        const lastActivityTime = new Date(lastTransaction.timestamp).getTime()
+        const lastActivityTime = lastTransaction.timestamp
         const now = Date.now()
         const hoursSinceLast = (now - lastActivityTime) / (1000 * 60 * 60)
 
@@ -73,49 +107,53 @@ function DashboardPage() {
       }
 
       return {
-        id: emp.id,
+        id: emp._id,
         name: emp.name,
-        route: route?.name ?? null,
+        route: routeName,
         collectionsCount: empTransactions.length,
         cashInHand,
-        lastActivity: lastTransaction !== undefined ? lastTransaction.timestamp : null,
+        lastActivity:
+          lastTransaction !== undefined
+            ? new Date(lastTransaction.timestamp).toISOString()
+            : null,
         status,
       }
     })
-  }, [employees, todayAssignments, todayTransactions, getRoute, getEmployeeCashInHand])
+  }, [convexEmployees, convexAssignments, convexTransactions])
 
   // Build employee transactions map
   const employeeTransactions: EmployeeTransactions = useMemo(() => {
     const result: EmployeeTransactions = {}
 
-    todayTransactions.forEach((txn) => {
-      if (!(txn.employeeId in result)) {
-        result[txn.employeeId] = []
+    convexTransactions.forEach((txn) => {
+      const empId = txn.employeeId as string
+      if (!(empId in result)) {
+        result[empId] = []
       }
 
-      const shop = getShop(txn.shopId)
-
+      // Shop is already included in listWithDetails response
       const dashboardTxn: DashboardTransaction = {
-        id: txn.id,
-        timestamp: txn.timestamp,
-        shopName: shop?.name ?? 'Unknown Shop',
+        id: txn._id,
+        timestamp: new Date(txn.timestamp).toISOString(),
+        shopName: txn.shop?.name ?? 'Unknown Shop',
         amount: txn.amount,
         paymentMode: txn.paymentMode,
         reference: txn.reference ?? null,
       }
 
-      result[txn.employeeId].push(dashboardTxn)
+      result[empId].push(dashboardTxn)
     })
 
     // Sort each employee's transactions by timestamp (newest first)
     Object.keys(result).forEach((empId) => {
       result[empId].sort(
-        (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+        (a, b) =>
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
       )
     })
 
     return result
-  }, [todayTransactions, getShop])
+  }, [convexTransactions])
 
   // Auto-refresh every 30 seconds
   useEffect(() => {

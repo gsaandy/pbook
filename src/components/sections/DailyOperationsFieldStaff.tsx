@@ -1,5 +1,12 @@
 import { useState } from 'react'
-import { Banknote, ChevronRight, FileText, Search, Smartphone, Wallet } from 'lucide-react'
+import {
+  Banknote,
+  ChevronRight,
+  FileText,
+  Search,
+  Smartphone,
+  Wallet,
+} from 'lucide-react'
 import type { PaymentMode, Shop } from '~/lib/types'
 
 export interface CurrentEmployee {
@@ -39,7 +46,9 @@ export function DailyOperationsFieldStaff({
 }: DailyOperationsFieldStaffProps) {
   const [selectedShop, setSelectedShop] = useState<string | null>(null)
   const [amount, setAmount] = useState('')
-  const [paymentMode, setPaymentMode] = useState<'cash' | 'upi' | 'cheque'>('cash')
+  const [paymentMode, setPaymentMode] = useState<'cash' | 'upi' | 'cheque'>(
+    'cash',
+  )
   const [reference, setReference] = useState('')
 
   const formatCurrency = (value: number) => {
@@ -115,7 +124,10 @@ export function DailyOperationsFieldStaff({
                 {shop.name}
               </h2>
               <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                Current Balance: <span className="font-semibold text-amber-600 dark:text-amber-400">{formatCurrency(shop.currentBalance)}</span>
+                Current Balance:{' '}
+                <span className="font-semibold text-amber-600 dark:text-amber-400">
+                  {formatCurrency(shop.currentBalance)}
+                </span>
               </p>
             </div>
 
@@ -292,13 +304,15 @@ export function DailyOperationsFieldStaff({
                     {shopItem.address}
                   </p>
                   <div className="flex items-center gap-3 mt-2">
-                    <span className={`text-sm font-semibold ${
-                      shopItem.currentBalance > 10000
-                        ? 'text-red-600 dark:text-red-400'
-                        : shopItem.currentBalance > 0
-                        ? 'text-amber-600 dark:text-amber-400'
-                        : 'text-emerald-600 dark:text-emerald-400'
-                    }`}>
+                    <span
+                      className={`text-sm font-semibold ${
+                        shopItem.currentBalance > 10000
+                          ? 'text-red-600 dark:text-red-400'
+                          : shopItem.currentBalance > 0
+                            ? 'text-amber-600 dark:text-amber-400'
+                            : 'text-emerald-600 dark:text-emerald-400'
+                      }`}
+                    >
                       {formatCurrency(shopItem.currentBalance)}
                     </span>
                     {shopItem.currentBalance > 10000 && (

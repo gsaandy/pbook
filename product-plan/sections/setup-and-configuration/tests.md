@@ -7,12 +7,14 @@ These test-writing instructions are **framework-agnostic**. Adapt them to your t
 ### Flow 1: Add a New Shop
 
 **Success Path:**
+
 1. User clicks "Add Shop" button
 2. User fills in shop name, address, phone, zone
 3. User clicks "Save"
 4. Expected: Shop appears in the list, success message shown
 
 **Failure Path - Validation:**
+
 1. User leaves required field empty
 2. User clicks "Save"
 3. Expected: Validation error shown, form not submitted
@@ -20,6 +22,7 @@ These test-writing instructions are **framework-agnostic**. Adapt them to your t
 ### Flow 2: Create a Route
 
 **Success Path:**
+
 1. User clicks "Add Route" button
 2. User enters route name and description
 3. User selects shops from checklist
@@ -29,12 +32,14 @@ These test-writing instructions are **framework-agnostic**. Adapt them to your t
 ### Flow 3: Manage Employees
 
 **Success Path:**
+
 1. User clicks "Add Employee"
 2. User fills in name, phone, email, role
 3. User clicks "Save"
 4. Expected: Employee appears in active employees list
 
 **Deactivate Employee:**
+
 1. User clicks deactivate icon on employee
 2. User confirms action
 3. Expected: Employee status changes to inactive, preserved in system
@@ -60,4 +65,3 @@ These test-writing instructions are **framework-agnostic**. Adapt them to your t
 - Handles 1 shop and 100+ shops without performance issues
 - Route with no shops shows "0 shops" correctly
 - Inactive employees don't show in assignment dropdowns
-

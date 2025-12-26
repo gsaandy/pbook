@@ -7,6 +7,7 @@ These test-writing instructions are **framework-agnostic**. Adapt them to your t
 ### Flow 1: Log a Collection (Field Staff)
 
 **Success Path:**
+
 1. Field staff views assigned route and shops
 2. Field staff taps shop with pending balance
 3. Collection modal opens showing current balance
@@ -16,12 +17,14 @@ These test-writing instructions are **framework-agnostic**. Adapt them to your t
 7. Expected: Collection saves, balance updates, cash-in-bag increases, success message shown
 
 **Failure Path - Validation:**
+
 1. User enters 0 or negative amount
 2. Expected: Validation error, "Amount must be greater than 0"
 
 ### Flow 2: Search for Off-Route Shop
 
 **Success Path:**
+
 1. Field staff uses search bar
 2. Types shop name not on assigned route
 3. Finds shop in search results
@@ -31,6 +34,7 @@ These test-writing instructions are **framework-agnostic**. Adapt them to your t
 ### Flow 3: Admin Assigns Route
 
 **Success Path:**
+
 1. Admin views Daily Operations
 2. Admin clicks "Assign Route" for an employee
 3. Admin selects route from dropdown
@@ -58,4 +62,3 @@ These test-writing instructions are **framework-agnostic**. Adapt them to your t
 - Collecting exact balance (balance becomes 0)
 - Multiple collections from same shop in one day
 - Network error during save (retry mechanism)
-

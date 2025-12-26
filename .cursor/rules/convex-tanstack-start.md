@@ -14,7 +14,7 @@ or follow the guide below.
 
 To use Clerk with Convex and TanStack Start, see the [TanStack Start + Clerk guide](/client/tanstack/tanstack-start/clerk.md)
 
-***
+---
 
 Learn how to query data from Convex in a TanStack Start site.
 

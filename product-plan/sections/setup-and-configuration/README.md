@@ -15,12 +15,15 @@ A clean, efficient management interface where admins handle all master data (sho
 ## User Flows
 
 ### Managing Shops
+
 View all shops in a sortable table, search/filter by name or zone, add shops via form or CSV bulk import, edit/delete individual shops inline.
 
 ### Managing Routes
+
 View routes as cards showing name and shop count, create routes by naming them and selecting shops from a checklist, edit/delete routes.
 
 ### Managing Employees
+
 View employees in a table, add employees with name/phone/email/role, activate/deactivate employees to preserve history.
 
 ## Components Provided

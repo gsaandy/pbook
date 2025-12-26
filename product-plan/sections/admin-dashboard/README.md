@@ -15,12 +15,15 @@ Real-time monitoring dashboard showing live collection activity across all emplo
 ## User Flows
 
 ### View Live Summary
+
 See three key metrics at top, auto-refreshes every 30 seconds.
 
 ### Monitor Employee Status
+
 View table of all employees with route, collection count, cash in hand, and last activity timestamp, sort by any column, color-coded status indicators.
 
 ### View Employee Detail
+
 Click employee row to open detailed transaction log showing timestamp, shop, amount, payment mode, running cash total, and GPS map.
 
 ## Components Provided

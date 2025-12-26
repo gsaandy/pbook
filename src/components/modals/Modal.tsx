@@ -9,7 +9,13 @@ interface ModalProps {
   size?: 'sm' | 'md' | 'lg'
 }
 
-export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalProps) {
+export function Modal({
+  isOpen,
+  onClose,
+  title,
+  children,
+  size = 'md',
+}: ModalProps) {
   const modalRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {

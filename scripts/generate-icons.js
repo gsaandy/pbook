@@ -32,9 +32,7 @@ for (const size of sizes) {
   const svg = createIconSVG(size)
   const outputPath = join(publicDir, `logo${size}.png`)
 
-  await sharp(Buffer.from(svg))
-    .png()
-    .toFile(outputPath)
+  await sharp(Buffer.from(svg)).png().toFile(outputPath)
 
   console.log(`Generated: logo${size}.png`)
 }

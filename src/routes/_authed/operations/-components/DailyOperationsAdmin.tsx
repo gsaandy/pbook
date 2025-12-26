@@ -24,8 +24,12 @@ export function DailyOperationsAdmin({
   const [selectedEmployee, setSelectedEmployee] = useState('')
   const [selectedRoute, setSelectedRoute] = useState('')
 
-  const fieldStaff = employees.filter((e) => e.role === 'field_staff' && e.status === 'active')
-  const todayAssignments = routeAssignments.filter((a) => a.date === today && a.status === 'active')
+  const fieldStaff = employees.filter(
+    (e) => e.role === 'field_staff' && e.status === 'active',
+  )
+  const todayAssignments = routeAssignments.filter(
+    (a) => a.date === today && a.status === 'active',
+  )
 
   const getEmployeeName = (employeeId: string) => {
     return employees.find((e) => e.id === employeeId)?.name || 'Unknown'
@@ -88,8 +92,12 @@ export function DailyOperationsAdmin({
                 <Users className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
               </div>
               <div>
-                <p className="text-sm text-slate-600 dark:text-slate-400">Active Field Staff</p>
-                <p className="text-2xl font-bold text-slate-900 dark:text-white">{fieldStaff.length}</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  Active Field Staff
+                </p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-white">
+                  {fieldStaff.length}
+                </p>
               </div>
             </div>
           </div>
@@ -100,8 +108,12 @@ export function DailyOperationsAdmin({
                 <MapPin className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
               </div>
               <div>
-                <p className="text-sm text-slate-600 dark:text-slate-400">Today's Assignments</p>
-                <p className="text-2xl font-bold text-slate-900 dark:text-white">{todayAssignments.length}</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  Today's Assignments
+                </p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-white">
+                  {todayAssignments.length}
+                </p>
               </div>
             </div>
           </div>
@@ -112,7 +124,9 @@ export function DailyOperationsAdmin({
                 <Users className="w-5 h-5 text-amber-600 dark:text-amber-400" />
               </div>
               <div>
-                <p className="text-sm text-slate-600 dark:text-slate-400">Unassigned</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  Unassigned
+                </p>
                 <p className="text-2xl font-bold text-slate-900 dark:text-white">
                   {fieldStaff.length - todayAssignments.length}
                 </p>
@@ -167,14 +181,17 @@ export function DailyOperationsAdmin({
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className={`px-2.5 py-1 text-xs font-medium rounded-full ${
-                      assignment.status === 'active'
-                        ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
-                        : assignment.status === 'completed'
-                        ? 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400'
-                        : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
-                    }`}>
-                      {assignment.status.charAt(0).toUpperCase() + assignment.status.slice(1)}
+                    <span
+                      className={`px-2.5 py-1 text-xs font-medium rounded-full ${
+                        assignment.status === 'active'
+                          ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
+                          : assignment.status === 'completed'
+                            ? 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400'
+                            : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
+                      }`}
+                    >
+                      {assignment.status.charAt(0).toUpperCase() +
+                        assignment.status.slice(1)}
                     </span>
                     {assignment.status === 'active' && onCancelAssignment && (
                       <button
@@ -215,8 +232,13 @@ export function DailyOperationsAdmin({
             >
               <option value="">Choose an employee...</option>
               {fieldStaff.map((emp) => (
-                <option key={emp.id} value={emp.id} disabled={isEmployeeAssigned(emp.id)}>
-                  {emp.name} {isEmployeeAssigned(emp.id) ? '(Already assigned)' : ''}
+                <option
+                  key={emp.id}
+                  value={emp.id}
+                  disabled={isEmployeeAssigned(emp.id)}
+                >
+                  {emp.name}{' '}
+                  {isEmployeeAssigned(emp.id) ? '(Already assigned)' : ''}
                 </option>
               ))}
             </select>

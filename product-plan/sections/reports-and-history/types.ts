@@ -78,7 +78,11 @@ export interface TransactionFilters {
 }
 
 export interface ReportConfig {
-  type: 'daily_summary' | 'employee_performance' | 'shop_collections' | 'payment_mode_breakdown'
+  type:
+    | 'daily_summary'
+    | 'employee_performance'
+    | 'shop_collections'
+    | 'payment_mode_breakdown'
   dateRange: { start: string; end: string }
 }
 

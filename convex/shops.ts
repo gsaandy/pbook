@@ -1,5 +1,5 @@
-import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { v } from 'convex/values'
+import { mutation, query } from './_generated/server'
 
 /**
  * List all shops with optional filters.
@@ -7,45 +7,45 @@ import { mutation, query } from "./_generated/server";
 export const list = query({
   args: {
     zone: v.optional(v.string()),
-    routeId: v.optional(v.id("routes")),
+    routeId: v.optional(v.id('routes')),
     includeDeleted: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    let shops;
+    let shops
 
     if (args.routeId) {
-      const routeId = args.routeId;
+      const routeId = args.routeId
       shops = await ctx.db
-        .query("shops")
-        .withIndex("by_route", (q) => q.eq("routeId", routeId))
-        .collect();
+        .query('shops')
+        .withIndex('by_route', (q) => q.eq('routeId', routeId))
+        .collect()
     } else if (args.zone) {
-      const zone = args.zone;
+      const zone = args.zone
       shops = await ctx.db
-        .query("shops")
-        .withIndex("by_zone", (q) => q.eq("zone", zone))
-        .collect();
+        .query('shops')
+        .withIndex('by_zone', (q) => q.eq('zone', zone))
+        .collect()
     } else {
-      shops = await ctx.db.query("shops").collect();
+      shops = await ctx.db.query('shops').collect()
     }
 
     if (!args.includeDeleted) {
-      shops = shops.filter((s) => !s.deletedAt);
+      shops = shops.filter((s) => !s.deletedAt)
     }
 
-    return shops;
+    return shops
   },
-});
+})
 
 /**
  * Get a single shop by ID.
  */
 export const get = query({
-  args: { id: v.id("shops") },
+  args: { id: v.id('shops') },
   handler: async (ctx, args) => {
-    return await ctx.db.get("shops", args.id);
+    return await ctx.db.get('shops', args.id)
   },
-});
+})
 
 /**
  * Create a new shop.
@@ -57,60 +57,60 @@ export const create = mutation({
     phone: v.optional(v.string()),
     zone: v.string(),
     currentBalance: v.optional(v.float64()),
-    routeId: v.optional(v.id("routes")),
+    routeId: v.optional(v.id('routes')),
   },
   handler: async (ctx, args) => {
-    const shopId = await ctx.db.insert("shops", {
+    const shopId = await ctx.db.insert('shops', {
       name: args.name,
       address: args.address,
       phone: args.phone,
       zone: args.zone,
       currentBalance: args.currentBalance ?? 0,
       routeId: args.routeId,
-    });
+    })
 
-    return shopId;
+    return shopId
   },
-});
+})
 
 /**
  * Update an existing shop.
  */
 export const update = mutation({
   args: {
-    id: v.id("shops"),
+    id: v.id('shops'),
     name: v.optional(v.string()),
     address: v.optional(v.string()),
     phone: v.optional(v.string()),
     zone: v.optional(v.string()),
-    routeId: v.optional(v.id("routes")),
+    routeId: v.optional(v.id('routes')),
   },
   handler: async (ctx, args) => {
-    const { id, ...updates } = args;
+    const { id, ...updates } = args
 
     // Filter out undefined values
     const cleanUpdates = Object.fromEntries(
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-      Object.entries(updates).filter(([_, value]) => value !== undefined)
-    );
+      Object.entries(updates).filter(([_, value]) => value !== undefined),
+    )
 
-    await ctx.db.patch("shops", id, cleanUpdates);
-    return id;
+    await ctx.db.patch('shops', id, cleanUpdates)
+    return id
   },
-});
+})
 
 /**
  * Soft delete a shop.
  */
 export const remove = mutation({
-  args: { id: v.id("shops") },
+  args: { id: v.id('shops') },
   handler: async (ctx, args) => {
-    await ctx.db.patch("shops", args.id, {
+    await ctx.db.patch('shops', args.id, {
       deletedAt: Date.now(),
-    });
-    return args.id;
+    })
+    return args.id
   },
-});
+})
 
 /**
  * Get unique zones from all shops.
@@ -119,11 +119,11 @@ export const getZones = query({
   args: {},
   handler: async (ctx) => {
     const shops = await ctx.db
-      .query("shops")
-      .filter((q) => q.eq(q.field("deletedAt"), undefined))
-      .collect();
+      .query('shops')
+      .filter((q) => q.eq(q.field('deletedAt'), undefined))
+      .collect()
 
-    const zones = [...new Set(shops.map((s) => s.zone))];
-    return zones.sort();
+    const zones = [...new Set(shops.map((s) => s.zone))]
+    return zones.sort()
   },
-});
+})

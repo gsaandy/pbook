@@ -37,13 +37,13 @@ The PSBook logo sits at the top of the sidebar, reinforcing brand identity acros
 
 ### AppShellProps
 
-| Prop | Type | Description |
-|------|------|-------------|
-| `children` | ReactNode | Main content area |
-| `navigationItems` | NavigationItem[] | Array of navigation links |
-| `user` | User | Current user info (optional) |
-| `onNavigate` | (href: string) => void | Navigation callback |
-| `onLogout` | () => void | Logout callback |
+| Prop              | Type                   | Description                  |
+| ----------------- | ---------------------- | ---------------------------- |
+| `children`        | ReactNode              | Main content area            |
+| `navigationItems` | NavigationItem[]       | Array of navigation links    |
+| `user`            | User                   | Current user info (optional) |
+| `onNavigate`      | (href: string) => void | Navigation callback          |
+| `onLogout`        | () => void             | Logout callback              |
 
 ### NavigationItem
 

@@ -1,5 +1,5 @@
-import { v } from "convex/values";
-import { internalMutation, query } from "./_generated/server";
+import { v } from 'convex/values'
+import { internalMutation, mutation, query } from './_generated/server'
 
 /**
  * Internal mutation to link a Clerk user to an existing employee.
@@ -18,30 +18,32 @@ export const linkUser = internalMutation({
   handler: async (ctx, args) => {
     // Find the placeholder employee by email
     const employee = await ctx.db
-      .query("employees")
-      .withIndex("by_email", (q) => q.eq("email", args.email))
-      .first();
+      .query('employees')
+      .withIndex('by_email', (q) => q.eq('email', args.email))
+      .first()
 
     if (!employee) {
-      console.warn(`Webhook: No placeholder employee found for ${args.email}`);
-      return { success: false, reason: "no_employee_found" };
+      console.warn(`Webhook: No placeholder employee found for ${args.email}`)
+      return { success: false, reason: 'no_employee_found' }
     }
 
     if (employee.clerkUserId) {
-      console.warn(`Webhook: Employee ${args.email} already linked to Clerk`);
-      return { success: false, reason: "already_linked" };
+      console.warn(`Webhook: Employee ${args.email} already linked to Clerk`)
+      return { success: false, reason: 'already_linked' }
     }
 
     // Link the Clerk account to the employee
-    await ctx.db.patch("employees", employee._id, {
+    await ctx.db.patch('employees', employee._id, {
       clerkUserId: args.clerkUserId,
-      status: "active",
-    });
+      status: 'active',
+    })
 
-    console.log(`Webhook: Successfully linked ${args.email} to Clerk user ${args.clerkUserId}`);
-    return { success: true, employeeId: employee._id };
+    console.log(
+      `Webhook: Successfully linked ${args.email} to Clerk user ${args.clerkUserId}`,
+    )
+    return { success: true, employeeId: employee._id }
   },
-});
+})
 
 /**
  * Get the current employee based on their Clerk user ID.
@@ -51,11 +53,13 @@ export const getByClerkId = query({
   args: { clerkUserId: v.string() },
   handler: async (ctx, args) => {
     return await ctx.db
-      .query("employees")
-      .withIndex("by_clerk_user_id", (q) => q.eq("clerkUserId", args.clerkUserId))
-      .first();
+      .query('employees')
+      .withIndex('by_clerk_user_id', (q) =>
+        q.eq('clerkUserId', args.clerkUserId),
+      )
+      .first()
   },
-});
+})
 
 /**
  * Get the current authenticated employee.
@@ -64,20 +68,20 @@ export const getByClerkId = query({
 export const getCurrentEmployee = query({
   args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
+    const identity = await ctx.auth.getUserIdentity()
     if (!identity) {
-      return null;
+      return null
     }
 
     // Clerk's subject is the user ID
-    const clerkUserId = identity.subject;
+    const clerkUserId = identity.subject
 
     return await ctx.db
-      .query("employees")
-      .withIndex("by_clerk_user_id", (q) => q.eq("clerkUserId", clerkUserId))
-      .first();
+      .query('employees')
+      .withIndex('by_clerk_user_id', (q) => q.eq('clerkUserId', clerkUserId))
+      .first()
   },
-});
+})
 
 /**
  * List all employees (for admin use).
@@ -85,26 +89,136 @@ export const getCurrentEmployee = query({
  */
 export const list = query({
   args: {
-    status: v.optional(v.union(v.literal("active"), v.literal("inactive"))),
+    status: v.optional(v.union(v.literal('active'), v.literal('inactive'))),
     includeDeleted: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    let employees;
+    let employees
 
     if (args.status) {
       employees = await ctx.db
-        .query("employees")
-        .withIndex("by_status", (q) => q.eq("status", args.status!))
-        .collect();
+        .query('employees')
+        .withIndex('by_status', (q) => q.eq('status', args.status!))
+        .collect()
     } else {
-      employees = await ctx.db.query("employees").collect();
+      employees = await ctx.db.query('employees').collect()
     }
 
     // Filter out deleted unless specifically requested
     if (!args.includeDeleted) {
-      employees = employees.filter((e) => !e.deletedAt);
+      employees = employees.filter((e) => !e.deletedAt)
     }
 
-    return employees;
+    return employees
   },
-});
+})
+
+/**
+ * Get a single employee by ID.
+ */
+export const get = query({
+  args: { id: v.id('employees') },
+  handler: async (ctx, args) => {
+    return await ctx.db.get("employees", args.id)
+  },
+})
+
+/**
+ * Create a new employee placeholder (admin only).
+ * The employee will be linked to a Clerk account when they sign up.
+ */
+export const create = mutation({
+  args: {
+    name: v.string(),
+    email: v.string(),
+    phone: v.string(),
+    role: v.union(
+      v.literal('field_staff'),
+      v.literal('admin'),
+      v.literal('super_admin'),
+    ),
+  },
+  handler: async (ctx, args) => {
+    // Check if email already exists
+    const existing = await ctx.db
+      .query('employees')
+      .withIndex('by_email', (q) => q.eq('email', args.email))
+      .first()
+
+    if (existing) {
+      throw new Error('An employee with this email already exists')
+    }
+
+    const employeeId = await ctx.db.insert('employees', {
+      name: args.name,
+      email: args.email,
+      phone: args.phone,
+      role: args.role,
+      status: 'inactive', // Will become active when linked to Clerk
+    })
+
+    return employeeId
+  },
+})
+
+/**
+ * Update an existing employee.
+ */
+export const update = mutation({
+  args: {
+    id: v.id('employees'),
+    name: v.optional(v.string()),
+    phone: v.optional(v.string()),
+    role: v.optional(
+      v.union(
+        v.literal('field_staff'),
+        v.literal('admin'),
+        v.literal('super_admin'),
+      ),
+    ),
+  },
+  handler: async (ctx, args) => {
+    const { id, ...updates } = args
+
+    const cleanUpdates = Object.fromEntries(
+      Object.entries(updates).filter(
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        ([_, value]) => value !== undefined,
+      ),
+    )
+
+    await ctx.db.patch("employees", id, cleanUpdates)
+    return id
+  },
+})
+
+/**
+ * Toggle employee status between active and inactive.
+ */
+export const toggleStatus = mutation({
+  args: { id: v.id('employees') },
+  handler: async (ctx, args) => {
+    const employee = await ctx.db.get("employees", args.id)
+    if (!employee) {
+      throw new Error('Employee not found')
+    }
+
+    const newStatus = employee.status === 'active' ? 'inactive' : 'active'
+    await ctx.db.patch("employees", args.id, { status: newStatus })
+    return args.id
+  },
+})
+
+/**
+ * Soft delete an employee.
+ */
+export const remove = mutation({
+  args: { id: v.id('employees') },
+  handler: async (ctx, args) => {
+    await ctx.db.patch("employees", args.id, {
+      deletedAt: Date.now(),
+      status: 'inactive',
+    })
+    return args.id
+  },
+})

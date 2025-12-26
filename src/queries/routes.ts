@@ -11,6 +11,10 @@ export const routeQueries = {
   list: (options?: { includeDeleted?: boolean }) =>
     convexQuery(api.routes.list, options ?? {}),
 
+  /** List all routes with shop counts */
+  listWithShopCounts: (options?: { includeDeleted?: boolean }) =>
+    convexQuery(api.routes.listWithShopCounts, options ?? {}),
+
   /** Get a single route by ID */
   detail: (id: Id<'routes'>) => convexQuery(api.routes.get, { id }),
 

@@ -1,13 +1,17 @@
 import { ClerkProvider } from '@clerk/tanstack-react-start'
 import { auth } from '@clerk/tanstack-react-start/server'
 import { TanStackDevtools } from '@tanstack/react-devtools'
-import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from '@tanstack/react-router'
+import {
+  HeadContent,
+  Outlet,
+  Scripts,
+  createRootRouteWithContext,
+} from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { createServerFn } from '@tanstack/react-start'
 import type { QueryClient } from '@tanstack/react-query'
 
 import appCss from '~/styles.css?url'
-import { DataStoreProvider } from '~/lib/data-store'
 import { DefaultCatchBoundary } from '~/components/DefaultCatchBoundary'
 import { NotFound } from '~/components/NotFound'
 
@@ -98,9 +102,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <DataStoreProvider>
-          {children}
-        </DataStoreProvider>
+        {children}
         <TanStackDevtools
           config={{
             position: 'bottom-right',

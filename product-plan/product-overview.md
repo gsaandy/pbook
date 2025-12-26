@@ -15,6 +15,7 @@ A lightweight cash collection and reconciliation system that digitizes the "last
 ## Data Model
 
 **Core Entities:**
+
 - Organization — The distributor company using PSBook
 - Shop — Customer locations where payments are collected
 - Employee — Field staff or admin users
@@ -27,11 +28,13 @@ A lightweight cash collection and reconciliation system that digitizes the "last
 ## Design System
 
 **Colors:**
+
 - Primary: indigo
 - Secondary: emerald
 - Neutral: slate
 
 **Typography:**
+
 - Heading: Inter
 - Body: Inter
 - Mono: JetBrains Mono

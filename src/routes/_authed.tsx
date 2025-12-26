@@ -1,4 +1,9 @@
-import { Outlet, createFileRoute, useLocation, useNavigate } from '@tanstack/react-router'
+import {
+  Outlet,
+  createFileRoute,
+  useLocation,
+  useNavigate,
+} from '@tanstack/react-router'
 import { UserButton } from '@clerk/tanstack-react-start'
 import type { NavigationItem } from '~/lib/types'
 import { AppShell } from '~/components/shell'
@@ -26,12 +31,36 @@ function AuthedLayout() {
   // Navigation items - all users get admin navigation for now
   // Role-based filtering can be added later using Clerk metadata
   const navigationItems: Array<NavigationItem> = [
-    { label: 'Dashboard', href: '/dashboard', isActive: location.pathname === '/dashboard' },
-    { label: 'Operations', href: '/operations', isActive: location.pathname === '/operations' },
-    { label: 'Invoices', href: '/invoices', isActive: location.pathname === '/invoices' },
-    { label: 'Setup', href: '/setup', isActive: location.pathname === '/setup' },
-    { label: 'Reconciliation', href: '/reconciliation', isActive: location.pathname === '/reconciliation' },
-    { label: 'Reports', href: '/reports', isActive: location.pathname === '/reports' },
+    {
+      label: 'Dashboard',
+      href: '/dashboard',
+      isActive: location.pathname === '/dashboard',
+    },
+    {
+      label: 'Operations',
+      href: '/operations',
+      isActive: location.pathname === '/operations',
+    },
+    {
+      label: 'Invoices',
+      href: '/invoices',
+      isActive: location.pathname === '/invoices',
+    },
+    {
+      label: 'Setup',
+      href: '/setup',
+      isActive: location.pathname === '/setup',
+    },
+    {
+      label: 'Reconciliation',
+      href: '/reconciliation',
+      isActive: location.pathname === '/reconciliation',
+    },
+    {
+      label: 'Reports',
+      href: '/reports',
+      isActive: location.pathname === '/reports',
+    },
   ]
 
   const handleNavigate = (href: string) => {

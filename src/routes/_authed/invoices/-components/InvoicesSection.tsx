@@ -1,5 +1,12 @@
 import { useState } from 'react'
-import { CheckCircle, Edit2, FileText, Plus, Search, XCircle } from 'lucide-react'
+import {
+  CheckCircle,
+  Edit2,
+  FileText,
+  Plus,
+  Search,
+  XCircle,
+} from 'lucide-react'
 import type { Invoice, Shop } from '~/lib/types'
 
 export interface InvoicesSectionProps {
@@ -20,7 +27,9 @@ export function InvoicesSection({
   getShopName,
 }: InvoicesSectionProps) {
   const [searchQuery, setSearchQuery] = useState('')
-  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'cancelled'>('all')
+  const [statusFilter, setStatusFilter] = useState<
+    'all' | 'active' | 'cancelled'
+  >('all')
   const [shopFilter, setShopFilter] = useState('')
 
   const formatCurrency = (value: number) => {
@@ -33,7 +42,11 @@ export function InvoicesSection({
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
-    return date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
+    return date.toLocaleDateString('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    })
   }
 
   // Filter invoices
@@ -47,7 +60,8 @@ export function InvoicesSection({
       shopName.includes(query) ||
       invoice.reference.toLowerCase().includes(query)
 
-    const matchesStatus = statusFilter === 'all' || invoice.status === statusFilter
+    const matchesStatus =
+      statusFilter === 'all' || invoice.status === statusFilter
 
     const matchesShop = !shopFilter || invoice.shopId === shopFilter
 
@@ -56,7 +70,8 @@ export function InvoicesSection({
 
   // Sort by date (newest first)
   const sortedInvoices = [...filteredInvoices].sort(
-    (a, b) => new Date(b.invoiceDate).getTime() - new Date(a.invoiceDate).getTime()
+    (a, b) =>
+      new Date(b.invoiceDate).getTime() - new Date(a.invoiceDate).getTime(),
   )
 
   const handleClearFilters = () => {
@@ -128,7 +143,11 @@ export function InvoicesSection({
             <div>
               <select
                 value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value as 'all' | 'active' | 'cancelled')}
+                onChange={(e) =>
+                  setStatusFilter(
+                    e.target.value as 'all' | 'active' | 'cancelled',
+                  )
+                }
                 className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
                 <option value="all">All Status</option>
@@ -156,7 +175,9 @@ export function InvoicesSection({
               <FileText className="w-8 h-8 text-slate-400" />
             </div>
             <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-              {hasActiveFilters ? 'No invoices match your search' : 'No invoices yet'}
+              {hasActiveFilters
+                ? 'No invoices match your search'
+                : 'No invoices yet'}
             </h3>
             <p className="text-slate-600 dark:text-slate-400 mb-4">
               {hasActiveFilters
@@ -275,7 +296,7 @@ export function InvoicesSection({
                                 onClick={() => {
                                   if (
                                     confirm(
-                                      `Cancel invoice ${invoice.invoiceNumber}? This will reduce the shop's balance.`
+                                      `Cancel invoice ${invoice.invoiceNumber}? This will reduce the shop's balance.`,
                                     )
                                   ) {
                                     onCancelInvoice(invoice.id)
@@ -289,7 +310,9 @@ export function InvoicesSection({
                             </>
                           )}
                           {invoice.status === 'cancelled' && (
-                            <span className="text-xs text-slate-400">Cancelled</span>
+                            <span className="text-xs text-slate-400">
+                              Cancelled
+                            </span>
                           )}
                         </div>
                       </td>
@@ -341,13 +364,17 @@ export function InvoicesSection({
 
                   <div className="space-y-2 mb-3">
                     <div className="flex justify-between text-sm">
-                      <span className="text-slate-600 dark:text-slate-400">Shop:</span>
+                      <span className="text-slate-600 dark:text-slate-400">
+                        Shop:
+                      </span>
                       <span className="text-slate-900 dark:text-white font-medium">
                         {getShopName(invoice.shopId)}
                       </span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-slate-600 dark:text-slate-400">Amount:</span>
+                      <span className="text-slate-600 dark:text-slate-400">
+                        Amount:
+                      </span>
                       <span
                         className={`font-medium ${
                           invoice.status === 'cancelled'
@@ -360,7 +387,9 @@ export function InvoicesSection({
                     </div>
                     {invoice.reference && (
                       <div className="flex justify-between text-sm">
-                        <span className="text-slate-600 dark:text-slate-400">Reference:</span>
+                        <span className="text-slate-600 dark:text-slate-400">
+                          Reference:
+                        </span>
                         <span className="text-slate-900 dark:text-white text-right max-w-[60%] truncate">
                           {invoice.reference}
                         </span>
@@ -381,7 +410,7 @@ export function InvoicesSection({
                         onClick={() => {
                           if (
                             confirm(
-                              `Cancel invoice ${invoice.invoiceNumber}? This will reduce the shop's balance.`
+                              `Cancel invoice ${invoice.invoiceNumber}? This will reduce the shop's balance.`,
                             )
                           ) {
                             onCancelInvoice(invoice.id)

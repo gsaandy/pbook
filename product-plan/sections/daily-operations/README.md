@@ -15,12 +15,15 @@ Daily Operations handles two workflows: admins assigning routes to employees eac
 ## User Flows
 
 ### Admin: Daily Route Assignment
+
 View today's date and all employees with assignment status, assign routes to employees via dropdown modal, schedule assignments for today or future dates.
 
 ### Field Staff: Route Dashboard
+
 View cash in bag (running total), see assigned route details and shop list with pending balances, search for off-route shops.
 
 ### Field Staff: Log Collection
+
 Tap shop to open collection form showing current balance, enter amount and select payment mode (Cash/UPI/Cheque), add optional reference/remarks, confirm collection.
 
 ## Components Provided

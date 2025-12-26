@@ -5,6 +5,7 @@
 ## About These Instructions
 
 **What you're receiving:**
+
 - Finished UI designs (React components with full styling)
 - Data model definitions (TypeScript types and sample data)
 - UI/UX specifications (user flows, requirements, screenshots)
@@ -12,6 +13,7 @@
 - Test-writing instructions for each section (for TDD approach)
 
 **What you need to build:**
+
 - Backend API endpoints and database schema
 - Authentication and authorization
 - Data fetching and state management
@@ -19,6 +21,7 @@
 - Integration of the provided UI components with real data
 
 **Important guidelines:**
+
 - **DO NOT** redesign or restyle the provided components — use them as-is
 - **DO** wire up the callback props to your routing and API calls
 - **DO** replace sample data with real data from your backend
@@ -34,12 +37,14 @@
 Each section includes a `tests.md` file with detailed test-writing instructions. These are **framework-agnostic** — adapt them to your testing setup (Jest, Vitest, Playwright, Cypress, RSpec, Minitest, PHPUnit, etc.).
 
 **For each section:**
+
 1. Read `product-plan/sections/[section-id]/tests.md`
 2. Write failing tests for key user flows (success and failure paths)
 3. Implement the feature to make tests pass
 4. Refactor while keeping tests green
 
 The test instructions include:
+
 - Specific UI elements, button labels, and interactions to verify
 - Expected success and failure behaviors
 - Empty state handling (when no records exist yet)
@@ -122,6 +127,7 @@ Implement master data management for shops, routes, and employees.
 A clean CRUD interface for managing shops, routes, and employees using a three-tab layout.
 
 **Key Functionality:**
+
 - Manage shops (add, edit, delete, CSV import)
 - Create routes and assign shops to them
 - Manage employees with role-based access
@@ -137,6 +143,7 @@ See `product-plan/sections/setup-and-configuration/tests.md` for test instructio
 ### Components
 
 Copy from `product-plan/sections/setup-and-configuration/components/`:
+
 - `SetupAndConfiguration.tsx`
 
 ### Data Layer
@@ -179,6 +186,7 @@ Implement route assignment (admin) and collection logging (field staff).
 Role-based interface: admins assign routes, field staff log collections.
 
 **Key Functionality:**
+
 - Admin assigns routes to employees
 - Field staff views assigned route and shops
 - Field staff logs collections (amount + payment mode)
@@ -194,6 +202,7 @@ See `product-plan/sections/daily-operations/tests.md` for test instructions.
 ### Components
 
 Copy from `product-plan/sections/daily-operations/components/`:
+
 - `DailyOperationsFieldStaff.tsx`
 
 ### Data Layer
@@ -233,6 +242,7 @@ Implement real-time monitoring dashboard for admins.
 Live dashboard showing collections, cash-in-hand, and employee status.
 
 **Key Functionality:**
+
 - View summary metrics (Total Collected, Cash in Hand, Digital Payments)
 - Monitor employee status in real-time
 - View employee transaction details
@@ -247,6 +257,7 @@ See `product-plan/sections/admin-dashboard/tests.md` for test instructions.
 ### Components
 
 Copy from `product-plan/sections/admin-dashboard/components/`:
+
 - `AdminDashboard.tsx`
 
 ### Data Layer
@@ -284,6 +295,7 @@ Implement cash verification and daily closing workflow.
 Admins verify cash received from field staff against system calculations.
 
 **Key Functionality:**
+
 - View EOD summary (expected cash, digital payments)
 - Verify each employee's cash handover
 - Handle matches (mark verified)
@@ -299,6 +311,7 @@ See `product-plan/sections/end-of-day-reconciliation/tests.md` for test instruct
 ### Components
 
 Copy from `product-plan/sections/end-of-day-reconciliation/components/`:
+
 - `EndOfDayReconciliation.tsx`
 
 ### Data Layer
@@ -336,6 +349,7 @@ Implement transaction history, reports, and analytics.
 Comprehensive filtering, search, reporting, and analytics for historical data.
 
 **Key Functionality:**
+
 - View transaction history with filters
 - View transaction details with GPS
 - Generate reports (PDF/CSV export)
@@ -351,6 +365,7 @@ See `product-plan/sections/reports-and-history/tests.md` for test instructions.
 ### Components
 
 Copy from `product-plan/sections/reports-and-history/components/`:
+
 - `ReportsAndHistory.tsx`
 
 ### Data Layer
@@ -387,4 +402,3 @@ See `types.ts` for Transaction, ReconciliationEvent, TrendData shapes.
 - Test-driven development ensures quality
 - Empty states are critical for good UX
 - Components handle loading/error states - wire them up
-

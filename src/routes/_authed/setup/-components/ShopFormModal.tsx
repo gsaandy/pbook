@@ -9,7 +9,12 @@ interface ShopFormModalProps {
   shop?: Shop | null
 }
 
-export function ShopFormModal({ isOpen, onClose, onSave, shop }: ShopFormModalProps) {
+export function ShopFormModal({
+  isOpen,
+  onClose,
+  onSave,
+  shop,
+}: ShopFormModalProps) {
   // Lazy initialization - parent uses key prop to reset when shop changes
   const [formData, setFormData] = useState(() => ({
     name: shop?.name ?? '',
@@ -17,7 +22,8 @@ export function ShopFormModal({ isOpen, onClose, onSave, shop }: ShopFormModalPr
     phone: shop?.phone ?? '',
     zone: shop?.zone ?? '',
     currentBalance: shop?.currentBalance ?? 0,
-    lastCollectionDate: shop?.lastCollectionDate ?? new Date().toISOString().split('T')[0],
+    lastCollectionDate:
+      shop?.lastCollectionDate ?? new Date().toISOString().split('T')[0],
   }))
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -31,7 +37,11 @@ export function ShopFormModal({ isOpen, onClose, onSave, shop }: ShopFormModalPr
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={shop ? 'Edit Shop' : 'Add Shop'}>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={shop ? 'Edit Shop' : 'Add Shop'}
+    >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
@@ -54,7 +64,9 @@ export function ShopFormModal({ isOpen, onClose, onSave, shop }: ShopFormModalPr
           <textarea
             required
             value={formData.address}
-            onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, address: e.target.value })
+            }
             className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             rows={2}
             placeholder="Enter address"
@@ -70,7 +82,9 @@ export function ShopFormModal({ isOpen, onClose, onSave, shop }: ShopFormModalPr
               type="tel"
               required
               value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, phone: e.target.value })
+              }
               className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
               placeholder="+91 98765 43210"
             />
@@ -84,7 +98,9 @@ export function ShopFormModal({ isOpen, onClose, onSave, shop }: ShopFormModalPr
               type="text"
               required
               value={formData.zone}
-              onChange={(e) => setFormData({ ...formData, zone: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, zone: e.target.value })
+              }
               className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
               placeholder="North, South, etc."
             />
@@ -98,7 +114,12 @@ export function ShopFormModal({ isOpen, onClose, onSave, shop }: ShopFormModalPr
           <input
             type="number"
             value={formData.currentBalance}
-            onChange={(e) => setFormData({ ...formData, currentBalance: Number(e.target.value) })}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                currentBalance: Number(e.target.value),
+              })
+            }
             className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             min="0"
           />

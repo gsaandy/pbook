@@ -9,7 +9,12 @@ interface EmployeeFormModalProps {
   employee?: Employee | null
 }
 
-export function EmployeeFormModal({ isOpen, onClose, onSave, employee }: EmployeeFormModalProps) {
+export function EmployeeFormModal({
+  isOpen,
+  onClose,
+  onSave,
+  employee,
+}: EmployeeFormModalProps) {
   // Lazy initialization - parent uses key prop to reset when employee changes
   const [formData, setFormData] = useState(() => ({
     name: employee?.name ?? '',
@@ -30,7 +35,11 @@ export function EmployeeFormModal({ isOpen, onClose, onSave, employee }: Employe
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={employee ? 'Edit Employee' : 'Add Employee'}>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={employee ? 'Edit Employee' : 'Add Employee'}
+    >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
@@ -54,7 +63,9 @@ export function EmployeeFormModal({ isOpen, onClose, onSave, employee }: Employe
             type="email"
             required
             value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, email: e.target.value })
+            }
             className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             placeholder="email@example.com"
           />
@@ -68,7 +79,9 @@ export function EmployeeFormModal({ isOpen, onClose, onSave, employee }: Employe
             type="tel"
             required
             value={formData.phone}
-            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, phone: e.target.value })
+            }
             className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             placeholder="+91 98765 43210"
           />
@@ -80,7 +93,12 @@ export function EmployeeFormModal({ isOpen, onClose, onSave, employee }: Employe
           </label>
           <select
             value={formData.role}
-            onChange={(e) => setFormData({ ...formData, role: e.target.value as 'field_staff' | 'admin' })}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                role: e.target.value as 'field_staff' | 'admin',
+              })
+            }
             className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             <option value="field_staff">Field Staff</option>
@@ -94,7 +112,12 @@ export function EmployeeFormModal({ isOpen, onClose, onSave, employee }: Employe
           </label>
           <select
             value={formData.status}
-            onChange={(e) => setFormData({ ...formData, status: e.target.value as 'active' | 'inactive' })}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                status: e.target.value as 'active' | 'inactive',
+              })
+            }
             className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             <option value="active">Active</option>
