@@ -17,6 +17,7 @@ import type * as routes from "../routes.js";
 import type * as shops from "../shops.js";
 import type * as test from "../test.js";
 import type * as transactions from "../transactions.js";
+import type * as users from "../users.js";
 
 import type {
   ApiFromModules,
@@ -34,6 +35,7 @@ declare const fullApi: ApiFromModules<{
   shops: typeof shops;
   test: typeof test;
   transactions: typeof transactions;
+  users: typeof users;
 }>;
 
 /**

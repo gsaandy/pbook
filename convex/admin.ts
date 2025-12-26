@@ -22,7 +22,11 @@ export const getPendingHandovers = query({
 
     for (const txn of unverifiedTransactions) {
       const empId = txn.employeeId as string
-      const existing = employeeMap.get(empId) ?? { total: 0, cashTotal: 0, count: 0 }
+      const existing = employeeMap.get(empId) ?? {
+        total: 0,
+        cashTotal: 0,
+        count: 0,
+      }
       existing.total += txn.amount
       existing.count += 1
       if (txn.paymentMode === 'cash') {

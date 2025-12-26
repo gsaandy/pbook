@@ -1,6 +1,7 @@
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { CollectionsView } from './-components/CollectionsView'
+import { FieldStaffCollections } from './-components/FieldStaffCollections'
 import type { Id } from '~/convex/_generated/dataModel'
 import {
   employeeQueries,
@@ -17,7 +18,9 @@ export const Route = createFileRoute('/_authed/operations')({
       queryClient.ensureQueryData(employeeQueries.list()),
       queryClient.ensureQueryData(employeeQueries.current()),
       queryClient.ensureQueryData(shopQueries.list()),
-      queryClient.ensureQueryData(transactionQueries.listWithDetails({ date: today })),
+      queryClient.ensureQueryData(
+        transactionQueries.listWithDetails({ date: today }),
+      ),
     ])
   },
 })
@@ -52,6 +55,21 @@ function OperationsPage() {
     })
   }
 
+  // Field staff get the mobile-optimized view
+  if (currentEmployee?.role === 'field_staff') {
+    return (
+      <FieldStaffCollections
+        currentEmployee={currentEmployee}
+        shops={shops}
+        transactions={transactions}
+        today={today}
+        onCollectCash={handleCollectCash}
+        isCollecting={collectCashMutation.isPending}
+      />
+    )
+  }
+
+  // Admins get the dashboard view
   return (
     <CollectionsView
       employees={employees}

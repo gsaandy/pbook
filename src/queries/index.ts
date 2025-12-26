@@ -4,7 +4,9 @@
 export {
   employeeQueries,
   useCreateEmployeeMutation,
+  useCreateAndInviteEmployeeMutation,
   useUpdateEmployeeMutation,
+  useResendInvitationMutation,
 } from './employees'
 
 export {

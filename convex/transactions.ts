@@ -19,7 +19,9 @@ export const list = query({
       transactions = await ctx.db
         .query('transactions')
         .withIndex('by_employee_verified', (q) =>
-          q.eq('employeeId', args.employeeId!).eq('isVerified', args.isVerified!),
+          q
+            .eq('employeeId', args.employeeId!)
+            .eq('isVerified', args.isVerified!),
         )
         .collect()
     } else if (args.employeeId) {
@@ -67,7 +69,9 @@ export const listWithDetails = query({
       transactions = await ctx.db
         .query('transactions')
         .withIndex('by_employee_verified', (q) =>
-          q.eq('employeeId', args.employeeId!).eq('isVerified', args.isVerified!),
+          q
+            .eq('employeeId', args.employeeId!)
+            .eq('isVerified', args.isVerified!),
         )
         .collect()
     } else if (args.employeeId) {
@@ -129,7 +133,9 @@ export const getCashInBag = query({
       .collect()
 
     // Only cash transactions count for "cash in bag"
-    const cashTransactions = transactions.filter((t) => t.paymentMode === 'cash')
+    const cashTransactions = transactions.filter(
+      (t) => t.paymentMode === 'cash',
+    )
 
     return {
       total: cashTransactions.reduce((sum, t) => sum + t.amount, 0),

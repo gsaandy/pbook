@@ -5,13 +5,14 @@ import { SetupAndConfiguration } from './-components/SetupAndConfiguration'
 import { EmployeeFormModal } from './-components/EmployeeFormModal'
 import { RouteFormModal } from './-components/RouteFormModal'
 import { ShopFormModal } from './-components/ShopFormModal'
-import type { Employee, Route as RouteType, Shop } from '~/lib/types'
 import type { Id } from '~/convex/_generated/dataModel'
+import type { Employee, Route as RouteType, Shop } from '~/lib/types'
+import { EmployeeRole } from '~/lib/constants'
 import {
   employeeQueries,
   routeQueries,
   shopQueries,
-  useCreateEmployeeMutation,
+  useCreateAndInviteEmployeeMutation,
   useCreateRouteMutation,
   useCreateShopMutation,
   useUpdateEmployeeMutation,
@@ -101,14 +102,17 @@ function SetupPage() {
   // Adapt Convex data to local types
   const shops = convexShops.map(adaptShop)
   const routes = convexRoutes.map((r) => adaptRoute(r, shopsByRoute))
-  const employees = convexEmployees.map(adaptEmployee)
+  // Filter out super_admin from the list - they shouldn't be visible/editable
+  const employees = convexEmployees
+    .filter((e) => e.role !== EmployeeRole.SUPER_ADMIN)
+    .map(adaptEmployee)
 
   // Mutations
   const createShop = useCreateShopMutation()
   const updateShop = useUpdateShopMutation()
   const createRoute = useCreateRouteMutation()
   const updateRoute = useUpdateRouteMutation()
-  const createEmployee = useCreateEmployeeMutation()
+  const createAndInviteEmployee = useCreateAndInviteEmployeeMutation()
   const updateEmployee = useUpdateEmployeeMutation()
 
   // Modal states
@@ -206,7 +210,8 @@ function SetupPage() {
         role: employeeData.role,
       })
     } else {
-      createEmployee.mutate({
+      // Create employee AND send Clerk invitation email
+      createAndInviteEmployee.mutate({
         name: employeeData.name,
         email: employeeData.email,
         role: employeeData.role,

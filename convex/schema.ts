@@ -44,7 +44,11 @@ export default defineSchema({
     email: v.string(),
     name: v.string(),
     phone: v.optional(v.string()),
-    role: v.union(v.literal('field_staff'), v.literal('admin'), v.literal('super_admin')),
+    role: v.union(
+      v.literal('field_staff'),
+      v.literal('admin'),
+      v.literal('super_admin'),
+    ),
     status: v.literal('active'),
   })
     .index('by_email', ['email'])

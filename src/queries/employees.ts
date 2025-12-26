@@ -1,5 +1,9 @@
 import { useMutation } from '@tanstack/react-query'
-import { convexQuery, useConvexMutation } from '@convex-dev/react-query'
+import {
+  convexQuery,
+  useConvexAction,
+  useConvexMutation,
+} from '@convex-dev/react-query'
 import type { Id } from '~/convex/_generated/dataModel'
 import { api } from '~/convex/_generated/api'
 
@@ -22,10 +26,19 @@ export const employeeQueries = {
 }
 
 /**
- * Create a new employee (admin placeholder).
+ * Create a new employee (admin placeholder) - without invitation.
  */
 export function useCreateEmployeeMutation() {
   const mutationFn = useConvexMutation(api.employees.create)
+  return useMutation({ mutationFn })
+}
+
+/**
+ * Create a new employee AND send Clerk invitation email.
+ * This is the preferred method for adding new employees.
+ */
+export function useCreateAndInviteEmployeeMutation() {
+  const mutationFn = useConvexAction(api.users.createAndInviteEmployee)
   return useMutation({ mutationFn })
 }
 
@@ -34,5 +47,13 @@ export function useCreateEmployeeMutation() {
  */
 export function useUpdateEmployeeMutation() {
   const mutationFn = useConvexMutation(api.employees.update)
+  return useMutation({ mutationFn })
+}
+
+/**
+ * Re-send invitation to an existing employee.
+ */
+export function useResendInvitationMutation() {
+  const mutationFn = useConvexAction(api.users.resendInvitation)
   return useMutation({ mutationFn })
 }

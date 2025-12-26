@@ -27,7 +27,9 @@ export function EmployeeFormModal({
     name: employee?.name ?? '',
     email: employee?.email ?? '',
     phone: employee?.phone ?? '',
-    role: employee?.role ?? ('field_staff' as 'field_staff' | 'admin' | 'super_admin'),
+    role:
+      employee?.role ??
+      ('field_staff' as 'field_staff' | 'admin' | 'super_admin'),
     status: employee?.status ?? ('active' as 'active' | 'inactive'),
   }))
 
@@ -113,7 +115,6 @@ export function EmployeeFormModal({
             <SelectContent>
               <SelectItem value="field_staff">Field Staff</SelectItem>
               <SelectItem value="admin">Admin</SelectItem>
-              <SelectItem value="super_admin">Super Admin</SelectItem>
             </SelectContent>
           </Select>
         </div>

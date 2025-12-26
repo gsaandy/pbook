@@ -110,7 +110,11 @@ export const create = mutation({
   args: {
     name: v.string(),
     email: v.string(),
-    role: v.union(v.literal('field_staff'), v.literal('admin'), v.literal('super_admin')),
+    role: v.union(
+      v.literal('field_staff'),
+      v.literal('admin'),
+      v.literal('super_admin'),
+    ),
   },
   handler: async (ctx, args) => {
     // Check if email already exists
@@ -141,7 +145,13 @@ export const update = mutation({
   args: {
     id: v.id('employees'),
     name: v.optional(v.string()),
-    role: v.optional(v.union(v.literal('field_staff'), v.literal('admin'), v.literal('super_admin'))),
+    role: v.optional(
+      v.union(
+        v.literal('field_staff'),
+        v.literal('admin'),
+        v.literal('super_admin'),
+      ),
+    ),
   },
   handler: async (ctx, args) => {
     const { id, ...updates } = args

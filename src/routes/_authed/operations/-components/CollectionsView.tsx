@@ -55,7 +55,9 @@ export function CollectionsView({
   const [collectModalOpen, setCollectModalOpen] = useState(false)
   const [selectedShop, setSelectedShop] = useState('')
   const [amount, setAmount] = useState('')
-  const [paymentMode, setPaymentMode] = useState<'cash' | 'upi' | 'cheque'>('cash')
+  const [paymentMode, setPaymentMode] = useState<'cash' | 'upi' | 'cheque'>(
+    'cash',
+  )
 
   const todayTransactions = transactions.filter((t) => {
     const txnDate = new Date(t.timestamp).toISOString().split('T')[0]
@@ -300,7 +302,9 @@ export function CollectionsView({
             </label>
             <Select
               value={paymentMode}
-              onValueChange={(v) => setPaymentMode(v as 'cash' | 'upi' | 'cheque')}
+              onValueChange={(v) =>
+                setPaymentMode(v as 'cash' | 'upi' | 'cheque')
+              }
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select payment mode" />

@@ -68,7 +68,12 @@ function ReportsPage() {
     // Group by employee + verifiedAt (rounded to minute for grouping)
     const groupMap = new Map<
       string,
-      { employeeName: string; amount: number; count: number; verifiedAt: number }
+      {
+        employeeName: string
+        amount: number
+        count: number
+        verifiedAt: number
+      }
     >()
 
     for (const txn of verifiedCashTxns) {

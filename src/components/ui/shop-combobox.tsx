@@ -110,7 +110,8 @@ export function ShopCombobox({
                     <span className="font-medium">{shop.name}</span>
                     <span className="text-xs text-muted-foreground">
                       {shop.zone}
-                      {showBalance && ` - ${formatCurrency(shop.currentBalance)}`}
+                      {showBalance &&
+                        ` - ${formatCurrency(shop.currentBalance)}`}
                     </span>
                   </div>
                 </ComboboxItem>

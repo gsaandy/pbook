@@ -60,8 +60,7 @@ export function InvoicesSection({
 
   // Sort by date (newest first)
   const sortedInvoices = [...filteredInvoices].sort(
-    (a, b) =>
-      new Date(b.issueDate).getTime() - new Date(a.issueDate).getTime(),
+    (a, b) => new Date(b.issueDate).getTime() - new Date(a.issueDate).getTime(),
   )
 
   const handleClearFilters = () => {
