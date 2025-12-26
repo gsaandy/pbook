@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Modal } from './Modal'
-import type { Employee } from '@/lib/types'
+import type { Employee } from '~/lib/types'
 
 interface EmployeeFormModalProps {
   isOpen: boolean

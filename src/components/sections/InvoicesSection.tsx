@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { CheckCircle, Edit2, FileText, Plus, Search, XCircle } from 'lucide-react'
-import type { Invoice, Shop } from '@/lib/types'
+import type { Invoice, Shop } from '~/lib/types'
 
 export interface InvoicesSectionProps {
   invoices: Array<Invoice>

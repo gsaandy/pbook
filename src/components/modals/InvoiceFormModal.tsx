@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Modal } from './Modal'
-import type { Invoice, Shop } from '@/lib/types'
+import type { Invoice, Shop } from '~/lib/types'
 
 interface InvoiceFormModalProps {
   isOpen: boolean

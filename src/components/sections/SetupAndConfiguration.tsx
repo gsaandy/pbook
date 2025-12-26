@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Edit2, Plus, Power, PowerOff, Search, Trash2, Upload } from 'lucide-react'
-import type { Employee, Route, Shop } from '@/lib/types'
+import type { Employee, Route, Shop } from '~/lib/types'
 
 export interface SetupAndConfigurationProps {
   shops: Array<Shop>

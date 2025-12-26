@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Menu, X } from 'lucide-react'
 import { MainNav } from './MainNav'
-import type { NavigationItem } from '@/lib/types'
+import type { NavigationItem } from '~/lib/types'
 
 export interface AppShellProps {
   children: React.ReactNode

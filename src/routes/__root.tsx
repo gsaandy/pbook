@@ -6,9 +6,9 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 
 import appCss from '../styles.css?url'
-import { DataStoreProvider } from '@/lib/data-store'
-import { DefaultCatchBoundary } from '@/components/DefaultCatchBoundary'
-import { NotFound } from '@/components/NotFound'
+import { DataStoreProvider } from '~/lib/data-store'
+import { DefaultCatchBoundary } from '~/components/DefaultCatchBoundary'
+import { NotFound } from '~/components/NotFound'
 
 const fetchClerkAuth = createServerFn({ method: 'GET' }).handler(async () => {
   const { userId } = await auth()

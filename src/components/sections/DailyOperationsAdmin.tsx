@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Calendar, MapPin, Plus, Users, X } from 'lucide-react'
-import type { Employee, Route, RouteAssignment } from '@/lib/types'
-import { Modal } from '@/components/modals/Modal'
+import type { Employee, Route, RouteAssignment } from '~/lib/types'
+import { Modal } from '~/components/modals/Modal'
 
 export interface DailyOperationsAdminProps {
   employees: Array<Employee>

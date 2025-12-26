@@ -1,4 +1,4 @@
-import type { NavigationItem } from '@/lib/types'
+import type { NavigationItem } from '~/lib/types'
 
 interface MainNavProps {
   items: Array<NavigationItem>

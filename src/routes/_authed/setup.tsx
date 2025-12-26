@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import type { Employee, Route as RouteType, Shop } from '@/lib/types'
-import { SetupAndConfiguration } from '@/components/sections/SetupAndConfiguration'
-import { ConfirmModal, EmployeeFormModal, RouteFormModal, ShopFormModal } from '@/components/modals'
-import { useDataStore } from '@/lib/data-store'
+import type { Employee, Route as RouteType, Shop } from '~/lib/types'
+import { SetupAndConfiguration } from '~/components/sections/SetupAndConfiguration'
+import { ConfirmModal, EmployeeFormModal, RouteFormModal, ShopFormModal } from '~/components/modals'
+import { useDataStore } from '~/lib/data-store'
 
 export const Route = createFileRoute('/_authed/setup')({
   component: SetupPage,

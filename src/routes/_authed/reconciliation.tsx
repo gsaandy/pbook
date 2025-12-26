@@ -1,14 +1,14 @@
 import { useMemo } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import type {CashTransactionsByEmployee, EODSummary, EmployeeSettlement, VerificationFormData} from '@/components/sections/EndOfDayReconciliation';
-import { useDataStore } from '@/lib/data-store'
+import type {CashTransactionsByEmployee, EODSummary, EmployeeSettlement, VerificationFormData} from '~/components/sections/EndOfDayReconciliation';
+import { useDataStore } from '~/lib/data-store'
 import {
 
 
 
   EndOfDayReconciliation
 
-} from '@/components/sections/EndOfDayReconciliation'
+} from '~/components/sections/EndOfDayReconciliation'
 
 export const Route = createFileRoute('/_authed/reconciliation')({
   component: ReconciliationPage,

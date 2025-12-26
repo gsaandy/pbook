@@ -1,8 +1,8 @@
 import { Outlet, createFileRoute, useLocation, useNavigate } from '@tanstack/react-router'
 import { UserButton } from '@clerk/tanstack-react-start'
-import type { NavigationItem } from '@/lib/types'
-import { AppShell } from '@/components/shell'
-import { SignInPage } from '@/components/auth/SignInPage'
+import type { NavigationItem } from '~/lib/types'
+import { AppShell } from '~/components/shell'
+import { SignInPage } from '~/components/auth/SignInPage'
 
 export const Route = createFileRoute('/_authed')({
   beforeLoad: ({ context }) => {
