@@ -1,0 +1,138 @@
+{
+  "_meta": {
+    "models": {
+      "eodSummary": "Daily summary showing total collected, expected cash, and digital payments for reconciliation.",
+      "employeeSettlement": "Settlement record for each employee showing expected cash and verification status.",
+      "cashTransactions": "Individual cash transactions used to calculate expected cash amount."
+    },
+    "relationships": [
+      "EODSummary aggregates all transactions for the day",
+      "EmployeeSettlement tracks reconciliation status for each Employee",
+      "CashTransactions are used to calculate expected cash for each employee"
+    ]
+  },
+  "eodSummary": {
+    "date": "2025-12-25",
+    "totalCollected": 150000,
+    "cashExpected": 100000,
+    "digitalPayments": 50000,
+    "employeesVerified": 1,
+    "employeesTotal": 3
+  },
+  "employeeSettlements": [
+    {
+      "id": "settlement-001",
+      "employeeId": "emp-001",
+      "employeeName": "Rajesh Kumar",
+      "route": "North Zone",
+      "expectedCash": 12500,
+      "actualCash": null,
+      "variance": null,
+      "status": "pending",
+      "verifiedAt": null,
+      "note": null
+    },
+    {
+      "id": "settlement-002",
+      "employeeId": "emp-002",
+      "employeeName": "Priya Sharma",
+      "route": "South Zone",
+      "expectedCash": 8200,
+      "actualCash": 8200,
+      "variance": 0,
+      "status": "verified",
+      "verifiedAt": "2025-12-25T18:05:00Z",
+      "note": null
+    },
+    {
+      "id": "settlement-003",
+      "employeeId": "emp-003",
+      "employeeName": "Amit Patel",
+      "route": "East Zone",
+      "expectedCash": 6500,
+      "actualCash": null,
+      "variance": null,
+      "status": "pending",
+      "verifiedAt": null,
+      "note": null
+    }
+  ],
+  "cashTransactionsByEmployee": {
+    "emp-001": [
+      {
+        "id": "txn-001",
+        "timestamp": "2025-12-25T10:00:00Z",
+        "shopName": "Royal Supermarket",
+        "amount": 2000,
+        "paymentMode": "cash"
+      },
+      {
+        "id": "txn-003",
+        "timestamp": "2025-12-25T11:15:00Z",
+        "shopName": "Royal Supermarket",
+        "amount": 3000,
+        "paymentMode": "cash"
+      },
+      {
+        "id": "txn-004",
+        "timestamp": "2025-12-25T12:00:00Z",
+        "shopName": "Spice Garden",
+        "amount": 7000,
+        "paymentMode": "cash"
+      },
+      {
+        "id": "txn-006",
+        "timestamp": "2025-12-25T13:30:00Z",
+        "shopName": "Royal Supermarket",
+        "amount": 500,
+        "paymentMode": "cash"
+      }
+    ],
+    "emp-002": [
+      {
+        "id": "txn-010",
+        "timestamp": "2025-12-25T09:30:00Z",
+        "shopName": "Sai Kirana Store",
+        "amount": 1200,
+        "paymentMode": "cash"
+      },
+      {
+        "id": "txn-011",
+        "timestamp": "2025-12-25T11:00:00Z",
+        "shopName": "Green Valley Provisions",
+        "amount": 3200,
+        "paymentMode": "cash"
+      },
+      {
+        "id": "txn-012",
+        "timestamp": "2025-12-25T12:45:00Z",
+        "shopName": "Sai Kirana Store",
+        "amount": 2000,
+        "paymentMode": "cash"
+      },
+      {
+        "id": "txn-013",
+        "timestamp": "2025-12-25T14:00:00Z",
+        "shopName": "Green Valley Provisions",
+        "amount": 1800,
+        "paymentMode": "cash"
+      }
+    ],
+    "emp-003": [
+      {
+        "id": "txn-020",
+        "timestamp": "2025-12-25T10:15:00Z",
+        "shopName": "Lakshmi Bakery",
+        "amount": 4000,
+        "paymentMode": "cash"
+      },
+      {
+        "id": "txn-021",
+        "timestamp": "2025-12-25T11:30:00Z",
+        "shopName": "City Mart",
+        "amount": 2500,
+        "paymentMode": "cash"
+      }
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+/* Design Tokens for PSBook */
+
+:root {
+  /* Colors */
+  --color-primary: indigo;
+  --color-secondary: emerald;
+  --color-neutral: slate;
+
+  /* Typography */
+  --font-heading: 'Inter', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
