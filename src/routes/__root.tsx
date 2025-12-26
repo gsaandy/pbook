@@ -21,11 +21,39 @@ export const Route = createRootRoute({
       {
         title: 'PSBook - Cash Collection & Reconciliation',
       },
+      {
+        name: 'theme-color',
+        content: '#4f46e5',
+      },
+      {
+        name: 'description',
+        content: 'Cash collection and reconciliation for distributors',
+      },
+      {
+        name: 'apple-mobile-web-app-capable',
+        content: 'yes',
+      },
+      {
+        name: 'apple-mobile-web-app-status-bar-style',
+        content: 'default',
+      },
+      {
+        name: 'apple-mobile-web-app-title',
+        content: 'PSBook',
+      },
     ],
     links: [
       {
         rel: 'stylesheet',
         href: appCss,
+      },
+      {
+        rel: 'manifest',
+        href: '/manifest.webmanifest',
+      },
+      {
+        rel: 'apple-touch-icon',
+        href: '/logo192.png',
       },
     ],
   }),
@@ -57,6 +85,20 @@ function RootComponent() {
           ]}
         />
         <Scripts />
+        {/* PWA Service Worker Registration */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                  navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('SW registered:', reg.scope))
+                    .catch(err => console.log('SW registration failed:', err));
+                });
+              }
+            `,
+          }}
+        />
       </body>
     </html>
   )
