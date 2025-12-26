@@ -9,42 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SetupRouteImport } from './routes/setup'
-import { Route as ReportsRouteImport } from './routes/reports'
-import { Route as ReconciliationRouteImport } from './routes/reconciliation'
-import { Route as OperationsRouteImport } from './routes/operations'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthedSetupRouteImport } from './routes/_authed/setup'
+import { Route as AuthedReportsRouteImport } from './routes/_authed/reports'
+import { Route as AuthedReconciliationRouteImport } from './routes/_authed/reconciliation'
+import { Route as AuthedOperationsRouteImport } from './routes/_authed/operations'
+import { Route as AuthedDashboardRouteImport } from './routes/_authed/dashboard'
 
-const SetupRoute = SetupRouteImport.update({
-  id: '/setup',
-  path: '/setup',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ReportsRoute = ReportsRouteImport.update({
-  id: '/reports',
-  path: '/reports',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ReconciliationRoute = ReconciliationRouteImport.update({
-  id: '/reconciliation',
-  path: '/reconciliation',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OperationsRoute = OperationsRouteImport.update({
-  id: '/operations',
-  path: '/operations',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const AuthedRoute = AuthedRouteImport.update({
+  id: '/_authed',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -52,41 +26,63 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthedSetupRoute = AuthedSetupRouteImport.update({
+  id: '/setup',
+  path: '/setup',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedReportsRoute = AuthedReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedReconciliationRoute = AuthedReconciliationRouteImport.update({
+  id: '/reconciliation',
+  path: '/reconciliation',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedOperationsRoute = AuthedOperationsRouteImport.update({
+  id: '/operations',
+  path: '/operations',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedDashboardRoute = AuthedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthedRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
-  '/login': typeof LoginRoute
-  '/operations': typeof OperationsRoute
-  '/reconciliation': typeof ReconciliationRoute
-  '/reports': typeof ReportsRoute
-  '/setup': typeof SetupRoute
+  '/dashboard': typeof AuthedDashboardRoute
+  '/operations': typeof AuthedOperationsRoute
+  '/reconciliation': typeof AuthedReconciliationRoute
+  '/reports': typeof AuthedReportsRoute
+  '/setup': typeof AuthedSetupRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
-  '/login': typeof LoginRoute
-  '/operations': typeof OperationsRoute
-  '/reconciliation': typeof ReconciliationRoute
-  '/reports': typeof ReportsRoute
-  '/setup': typeof SetupRoute
+  '/dashboard': typeof AuthedDashboardRoute
+  '/operations': typeof AuthedOperationsRoute
+  '/reconciliation': typeof AuthedReconciliationRoute
+  '/reports': typeof AuthedReportsRoute
+  '/setup': typeof AuthedSetupRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
-  '/login': typeof LoginRoute
-  '/operations': typeof OperationsRoute
-  '/reconciliation': typeof ReconciliationRoute
-  '/reports': typeof ReportsRoute
-  '/setup': typeof SetupRoute
+  '/_authed': typeof AuthedRouteWithChildren
+  '/_authed/dashboard': typeof AuthedDashboardRoute
+  '/_authed/operations': typeof AuthedOperationsRoute
+  '/_authed/reconciliation': typeof AuthedReconciliationRoute
+  '/_authed/reports': typeof AuthedReportsRoute
+  '/_authed/setup': typeof AuthedSetupRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/dashboard'
-    | '/login'
     | '/operations'
     | '/reconciliation'
     | '/reports'
@@ -95,7 +91,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/dashboard'
-    | '/login'
     | '/operations'
     | '/reconciliation'
     | '/reports'
@@ -103,66 +98,26 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/dashboard'
-    | '/login'
-    | '/operations'
-    | '/reconciliation'
-    | '/reports'
-    | '/setup'
+    | '/_authed'
+    | '/_authed/dashboard'
+    | '/_authed/operations'
+    | '/_authed/reconciliation'
+    | '/_authed/reports'
+    | '/_authed/setup'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  DashboardRoute: typeof DashboardRoute
-  LoginRoute: typeof LoginRoute
-  OperationsRoute: typeof OperationsRoute
-  ReconciliationRoute: typeof ReconciliationRoute
-  ReportsRoute: typeof ReportsRoute
-  SetupRoute: typeof SetupRoute
+  AuthedRoute: typeof AuthedRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/setup': {
-      id: '/setup'
-      path: '/setup'
-      fullPath: '/setup'
-      preLoaderRoute: typeof SetupRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/reports': {
-      id: '/reports'
-      path: '/reports'
-      fullPath: '/reports'
-      preLoaderRoute: typeof ReportsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/reconciliation': {
-      id: '/reconciliation'
-      path: '/reconciliation'
-      fullPath: '/reconciliation'
-      preLoaderRoute: typeof ReconciliationRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/operations': {
-      id: '/operations'
-      path: '/operations'
-      fullPath: '/operations'
-      preLoaderRoute: typeof OperationsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
+    '/_authed': {
+      id: '/_authed'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -172,27 +127,77 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authed/setup': {
+      id: '/_authed/setup'
+      path: '/setup'
+      fullPath: '/setup'
+      preLoaderRoute: typeof AuthedSetupRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/reports': {
+      id: '/_authed/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof AuthedReportsRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/reconciliation': {
+      id: '/_authed/reconciliation'
+      path: '/reconciliation'
+      fullPath: '/reconciliation'
+      preLoaderRoute: typeof AuthedReconciliationRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/operations': {
+      id: '/_authed/operations'
+      path: '/operations'
+      fullPath: '/operations'
+      preLoaderRoute: typeof AuthedOperationsRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/dashboard': {
+      id: '/_authed/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthedDashboardRouteImport
+      parentRoute: typeof AuthedRoute
+    }
   }
 }
 
+interface AuthedRouteChildren {
+  AuthedDashboardRoute: typeof AuthedDashboardRoute
+  AuthedOperationsRoute: typeof AuthedOperationsRoute
+  AuthedReconciliationRoute: typeof AuthedReconciliationRoute
+  AuthedReportsRoute: typeof AuthedReportsRoute
+  AuthedSetupRoute: typeof AuthedSetupRoute
+}
+
+const AuthedRouteChildren: AuthedRouteChildren = {
+  AuthedDashboardRoute: AuthedDashboardRoute,
+  AuthedOperationsRoute: AuthedOperationsRoute,
+  AuthedReconciliationRoute: AuthedReconciliationRoute,
+  AuthedReportsRoute: AuthedReportsRoute,
+  AuthedSetupRoute: AuthedSetupRoute,
+}
+
+const AuthedRouteWithChildren =
+  AuthedRoute._addFileChildren(AuthedRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  DashboardRoute: DashboardRoute,
-  LoginRoute: LoginRoute,
-  OperationsRoute: OperationsRoute,
-  ReconciliationRoute: ReconciliationRoute,
-  ReportsRoute: ReportsRoute,
-  SetupRoute: SetupRoute,
+  AuthedRoute: AuthedRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
 
 import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
+import type { startInstance } from './start.ts'
 declare module '@tanstack/react-start' {
   interface Register {
     ssr: true
     router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
   }
 }

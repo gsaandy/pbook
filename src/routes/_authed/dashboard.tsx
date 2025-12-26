@@ -6,7 +6,7 @@ import type {DashboardTransaction, EmployeeStatus, EmployeeTransactions, Summary
 import { useDataStore } from '@/lib/data-store'
 import { AdminDashboard     } from '@/components/sections/AdminDashboard'
 
-export const Route = createFileRoute('/dashboard')({
+export const Route = createFileRoute('/_authed/dashboard')({
   component: DashboardPage,
 })
 

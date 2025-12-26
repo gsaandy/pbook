@@ -7,7 +7,7 @@ import { SetupAndConfiguration } from '@/components/sections/SetupAndConfigurati
 import { ConfirmModal, EmployeeFormModal, RouteFormModal, ShopFormModal } from '@/components/modals'
 import { useDataStore } from '@/lib/data-store'
 
-export const Route = createFileRoute('/setup')({
+export const Route = createFileRoute('/_authed/setup')({
   component: SetupPage,
 })
 

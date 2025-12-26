@@ -1,14 +1,31 @@
-import { HeadContent, Outlet, Scripts, createRootRoute, useLocation, useNavigate } from '@tanstack/react-router'
+import { ClerkProvider } from '@clerk/tanstack-react-start'
+import { auth } from '@clerk/tanstack-react-start/server'
+import { createServerFn } from '@tanstack/react-start'
+import { HeadContent, Outlet, Scripts, createRootRoute } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 
 import appCss from '../styles.css?url'
-import type { NavigationItem } from '@/lib/types'
-import { AuthProvider, useAuth } from '@/lib/auth'
 import { DataStoreProvider } from '@/lib/data-store'
-import { AppShell } from '@/components/shell'
+import { DefaultCatchBoundary } from '@/components/DefaultCatchBoundary'
+import { NotFound } from '@/components/NotFound'
+
+const fetchClerkAuth = createServerFn({ method: 'GET' }).handler(async () => {
+  const { userId } = await auth()
+  return { userId }
+})
 
 export const Route = createRootRoute({
+  beforeLoad: async () => {
+    const { userId } = await fetchClerkAuth()
+    return { userId }
+  },
+  errorComponent: (props) => (
+    <RootDocument>
+      <DefaultCatchBoundary {...props} />
+    </RootDocument>
+  ),
+  notFoundComponent: () => <NotFound />,
   head: () => ({
     meta: [
       {
@@ -58,22 +75,29 @@ export const Route = createRootRoute({
       },
     ],
   }),
-
   component: RootComponent,
 })
 
 function RootComponent() {
+  return (
+    <ClerkProvider>
+      <RootDocument>
+        <Outlet />
+      </RootDocument>
+    </ClerkProvider>
+  )
+}
+
+function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
         <HeadContent />
       </head>
       <body>
-        <AuthProvider>
-          <DataStoreProvider>
-            <RootLayout />
-          </DataStoreProvider>
-        </AuthProvider>
+        <DataStoreProvider>
+          {children}
+        </DataStoreProvider>
         <TanStackDevtools
           config={{
             position: 'bottom-right',
@@ -102,54 +126,5 @@ function RootComponent() {
         />
       </body>
     </html>
-  )
-}
-
-function RootLayout() {
-  const { isAuthenticated, isAdmin, currentUser, logout } = useAuth()
-  const location = useLocation()
-  const navigate = useNavigate()
-
-  // Public routes that don't need auth
-  const isPublicRoute = location.pathname === '/login'
-
-  // If not authenticated and not on public route, render just the outlet (which will redirect)
-  if (!isAuthenticated || isPublicRoute) {
-    return <Outlet />
-  }
-
-  // Build navigation items based on user role
-  const adminNavItems: Array<NavigationItem> = [
-    { label: 'Dashboard', href: '/dashboard', isActive: location.pathname === '/dashboard' },
-    { label: 'Operations', href: '/operations', isActive: location.pathname === '/operations' },
-    { label: 'Setup', href: '/setup', isActive: location.pathname === '/setup' },
-    { label: 'Reconciliation', href: '/reconciliation', isActive: location.pathname === '/reconciliation' },
-    { label: 'Reports', href: '/reports', isActive: location.pathname === '/reports' },
-  ]
-
-  const fieldStaffNavItems: Array<NavigationItem> = [
-    { label: 'Operations', href: '/operations', isActive: location.pathname === '/operations' },
-  ]
-
-  const navigationItems = isAdmin ? adminNavItems : fieldStaffNavItems
-
-  const handleNavigate = (href: string) => {
-    navigate({ to: href })
-  }
-
-  const handleLogout = () => {
-    logout()
-    navigate({ to: '/login' })
-  }
-
-  return (
-    <AppShell
-      navigationItems={navigationItems}
-      user={currentUser ? { name: currentUser.name } : undefined}
-      onNavigate={handleNavigate}
-      onLogout={handleLogout}
-    >
-      <Outlet />
-    </AppShell>
   )
 }

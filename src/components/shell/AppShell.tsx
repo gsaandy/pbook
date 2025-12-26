@@ -3,23 +3,20 @@
 import { useState } from 'react'
 import { Menu, X } from 'lucide-react'
 import { MainNav } from './MainNav'
-import { UserMenu } from './UserMenu'
-import type { NavigationItem, User } from '@/lib/types'
+import type { NavigationItem } from '@/lib/types'
 
 export interface AppShellProps {
   children: React.ReactNode
   navigationItems: Array<NavigationItem>
-  user?: User
   onNavigate?: (href: string) => void
-  onLogout?: () => void
+  userButton?: React.ReactNode
 }
 
 export function AppShell({
   children,
   navigationItems,
-  user,
   onNavigate,
-  onLogout,
+  userButton,
 }: AppShellProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
@@ -38,7 +35,7 @@ export function AppShell({
           <h1 className="text-lg font-semibold text-slate-900 dark:text-white">
             PSBook
           </h1>
-          {user && <UserMenu user={user} onLogout={onLogout} />}
+          {userButton}
         </div>
       </header>
 
@@ -87,7 +84,7 @@ export function AppShell({
       <main className="lg:ml-60 pt-16 lg:pt-0">
         {/* Desktop Header */}
         <div className="hidden lg:flex items-center justify-end px-6 h-16 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
-          {user && <UserMenu user={user} onLogout={onLogout} />}
+          {userButton}
         </div>
         {/* Content Area */}
         <div className="min-h-[calc(100vh-4rem)] lg:min-h-[calc(100vh-4rem)]">

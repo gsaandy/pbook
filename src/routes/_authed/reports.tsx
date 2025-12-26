@@ -5,15 +5,15 @@ import { createFileRoute } from '@tanstack/react-router'
 import type {FilterOptions, ReconciliationEvent, ReportTransaction, TransactionFilters, TrendData} from '@/components/sections/ReportsAndHistory';
 import { useDataStore } from '@/lib/data-store'
 import {
-  
-  
-  
+
+
+
   ReportsAndHistory
-  
-  
+
+
 } from '@/components/sections/ReportsAndHistory'
 
-export const Route = createFileRoute('/reports')({
+export const Route = createFileRoute('/_authed/reports')({
   component: ReportsPage,
 })
 
