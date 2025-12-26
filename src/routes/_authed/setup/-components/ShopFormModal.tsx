@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { Modal } from '~/components/modals/Modal'
 import type { Shop } from '~/lib/types'
+import { Modal } from '~/components/modals/Modal'
 
 interface ShopFormModalProps {
   isOpen: boolean

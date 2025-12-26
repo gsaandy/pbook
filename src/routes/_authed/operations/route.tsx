@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useDataStore } from '~/lib/data-store'
 import { DailyOperationsAdmin } from './-components/DailyOperationsAdmin'
+import { useDataStore } from '~/lib/data-store'
 
 export const Route = createFileRoute('/_authed/operations')({
   component: OperationsPage,
