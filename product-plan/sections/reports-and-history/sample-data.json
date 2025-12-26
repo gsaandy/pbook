@@ -1,0 +1,206 @@
+{
+  "_meta": {
+    "models": {
+      "transactions": "Individual cash collection events recorded by employees at shops throughout history.",
+      "reconciliationEvents": "Audit trail of end-of-day reconciliation sessions showing variances and adjustments.",
+      "trendData": "Analytics data showing collection trends over time for visualization."
+    },
+    "relationships": [
+      "Transactions belong to an Employee and a Shop",
+      "ReconciliationEvents summarize multiple Transactions",
+      "TrendData aggregates Transactions for chart visualization"
+    ]
+  },
+  "transactions": [
+    {
+      "id": "txn-001",
+      "timestamp": "2025-12-25T10:00:00Z",
+      "employeeName": "Rajesh Kumar",
+      "shopName": "Royal Supermarket",
+      "amount": 2000,
+      "paymentMode": "cash",
+      "reference": null,
+      "status": "completed",
+      "gpsLocation": {
+        "lat": 12.9716,
+        "lng": 77.5946
+      }
+    },
+    {
+      "id": "txn-002",
+      "timestamp": "2025-12-25T10:30:00Z",
+      "employeeName": "Rajesh Kumar",
+      "shopName": "Spice Garden",
+      "amount": 500,
+      "paymentMode": "upi",
+      "reference": "UTR123456789",
+      "status": "completed",
+      "gpsLocation": {
+        "lat": 12.9822,
+        "lng": 77.5837
+      }
+    },
+    {
+      "id": "txn-003",
+      "timestamp": "2025-12-25T11:15:00Z",
+      "employeeName": "Rajesh Kumar",
+      "shopName": "Royal Supermarket",
+      "amount": 3000,
+      "paymentMode": "cash",
+      "reference": null,
+      "status": "completed",
+      "gpsLocation": {
+        "lat": 12.9716,
+        "lng": 77.5946
+      }
+    },
+    {
+      "id": "txn-010",
+      "timestamp": "2025-12-25T09:30:00Z",
+      "employeeName": "Priya Sharma",
+      "shopName": "Sai Kirana Store",
+      "amount": 1200,
+      "paymentMode": "cash",
+      "reference": null,
+      "status": "completed",
+      "gpsLocation": {
+        "lat": 12.9279,
+        "lng": 77.5937
+      }
+    },
+    {
+      "id": "txn-011",
+      "timestamp": "2025-12-25T11:00:00Z",
+      "employeeName": "Priya Sharma",
+      "shopName": "Green Valley Provisions",
+      "amount": 3200,
+      "paymentMode": "cash",
+      "reference": null,
+      "status": "completed",
+      "gpsLocation": {
+        "lat": 12.9352,
+        "lng": 77.6245
+      }
+    },
+    {
+      "id": "txn-020",
+      "timestamp": "2025-12-24T10:15:00Z",
+      "employeeName": "Amit Patel",
+      "shopName": "Lakshmi Bakery",
+      "amount": 10000,
+      "paymentMode": "cheque",
+      "reference": "CHQ-456789",
+      "status": "completed",
+      "gpsLocation": {
+        "lat": 12.9716,
+        "lng": 77.6412
+      }
+    },
+    {
+      "id": "txn-021",
+      "timestamp": "2025-12-24T11:30:00Z",
+      "employeeName": "Amit Patel",
+      "shopName": "City Mart",
+      "amount": 2500,
+      "paymentMode": "cash",
+      "reference": null,
+      "status": "completed",
+      "gpsLocation": {
+        "lat": 12.9698,
+        "lng": 77.7499
+      }
+    },
+    {
+      "id": "txn-030",
+      "timestamp": "2025-12-23T14:00:00Z",
+      "employeeName": "Rajesh Kumar",
+      "shopName": "Royal Supermarket",
+      "amount": 5000,
+      "paymentMode": "cash",
+      "reference": null,
+      "status": "completed",
+      "gpsLocation": {
+        "lat": 12.9716,
+        "lng": 77.5946
+      }
+    }
+  ],
+  "reconciliationEvents": [
+    {
+      "id": "recon-001",
+      "date": "2025-12-24",
+      "employeeName": "Rajesh Kumar",
+      "expectedCash": 15000,
+      "actualCash": 14900,
+      "variance": -100,
+      "status": "mismatch",
+      "note": "₹100 shortage due to customer dispute",
+      "verifiedAt": "2025-12-24T18:15:00Z"
+    },
+    {
+      "id": "recon-002",
+      "date": "2025-12-24",
+      "employeeName": "Priya Sharma",
+      "expectedCash": 9500,
+      "actualCash": 9500,
+      "variance": 0,
+      "status": "verified",
+      "note": null,
+      "verifiedAt": "2025-12-24T18:05:00Z"
+    },
+    {
+      "id": "recon-003",
+      "date": "2025-12-23",
+      "employeeName": "Amit Patel",
+      "expectedCash": 12000,
+      "actualCash": 12050,
+      "variance": 50,
+      "status": "mismatch",
+      "note": "₹50 overage, customer paid extra by mistake",
+      "verifiedAt": "2025-12-23T18:20:00Z"
+    }
+  ],
+  "trendData": {
+    "dailyCollections": [
+      { "date": "2025-12-19", "amount": 95000 },
+      { "date": "2025-12-20", "amount": 102000 },
+      { "date": "2025-12-21", "amount": 88000 },
+      { "date": "2025-12-22", "amount": 115000 },
+      { "date": "2025-12-23", "amount": 125000 },
+      { "date": "2025-12-24", "amount": 138000 },
+      { "date": "2025-12-25", "amount": 150000 }
+    ],
+    "employeePerformance": [
+      { "employeeName": "Rajesh Kumar", "totalCollected": 125000 },
+      { "employeeName": "Priya Sharma", "totalCollected": 95000 },
+      { "employeeName": "Amit Patel", "totalCollected": 78000 }
+    ],
+    "paymentModeDistribution": [
+      { "mode": "Cash", "amount": 200000, "percentage": 67 },
+      { "mode": "UPI", "amount": 75000, "percentage": 25 },
+      { "mode": "Cheque", "amount": 25000, "percentage": 8 }
+    ],
+    "topShops": [
+      { "shopName": "Royal Supermarket", "totalCollected": 45000 },
+      { "shopName": "Spice Garden", "totalCollected": 38000 },
+      { "shopName": "Annapurna Restaurant", "totalCollected": 32000 },
+      { "shopName": "Lakshmi Bakery", "totalCollected": 28000 },
+      { "shopName": "Green Valley Provisions", "totalCollected": 25000 }
+    ]
+  },
+  "filterOptions": {
+    "employees": [
+      { "id": "emp-001", "name": "Rajesh Kumar" },
+      { "id": "emp-002", "name": "Priya Sharma" },
+      { "id": "emp-003", "name": "Amit Patel" }
+    ],
+    "shops": [
+      { "id": "shop-001", "name": "Royal Supermarket" },
+      { "id": "shop-002", "name": "Sai Kirana Store" },
+      { "id": "shop-003", "name": "Lakshmi Bakery" },
+      { "id": "shop-004", "name": "Ramesh Tea Stall" },
+      { "id": "shop-005", "name": "Annapurna Restaurant" }
+    ],
+    "paymentModes": ["cash", "upi", "cheque"]
+  }
+}

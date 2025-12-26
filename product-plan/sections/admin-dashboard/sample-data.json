@@ -1,0 +1,122 @@
+{
+  "_meta": {
+    "models": {
+      "summary": "Key metrics showing total collections, cash in hand, and digital payments for today.",
+      "employeeStatus": "Real-time status of each field employee showing their route, collections, and last activity.",
+      "transactions": "Individual cash collection events recorded by employees at shops throughout the day."
+    },
+    "relationships": [
+      "Summary metrics aggregate data from all Transactions",
+      "EmployeeStatus tracks each Employee's activity and cash in hand",
+      "Transactions belong to an Employee and a Shop"
+    ]
+  },
+  "summary": {
+    "totalCollected": 150000,
+    "cashInHand": 100000,
+    "digitalPayments": 50000,
+    "lastUpdated": "2025-12-25T14:30:00Z"
+  },
+  "employeeStatus": [
+    {
+      "id": "emp-001",
+      "name": "Rajesh Kumar",
+      "route": "North Zone",
+      "collectionsCount": 12,
+      "cashInHand": 12500,
+      "lastActivity": "2025-12-25T14:25:00Z",
+      "status": "active"
+    },
+    {
+      "id": "emp-002",
+      "name": "Priya Sharma",
+      "route": "South Zone",
+      "collectionsCount": 8,
+      "cashInHand": 8200,
+      "lastActivity": "2025-12-25T14:15:00Z",
+      "status": "active"
+    },
+    {
+      "id": "emp-003",
+      "name": "Amit Patel",
+      "route": "East Zone",
+      "collectionsCount": 5,
+      "cashInHand": 6500,
+      "lastActivity": "2025-12-25T12:10:00Z",
+      "status": "delayed"
+    },
+    {
+      "id": "emp-005",
+      "name": "Vikram Singh",
+      "route": null,
+      "collectionsCount": 0,
+      "cashInHand": 0,
+      "lastActivity": null,
+      "status": "idle"
+    }
+  ],
+  "employeeTransactions": {
+    "emp-001": [
+      {
+        "id": "txn-001",
+        "timestamp": "2025-12-25T10:00:00Z",
+        "shopName": "Royal Supermarket",
+        "amount": 2000,
+        "paymentMode": "cash",
+        "reference": null,
+        "gpsLocation": {
+          "lat": 12.9716,
+          "lng": 77.5946
+        }
+      },
+      {
+        "id": "txn-002",
+        "timestamp": "2025-12-25T10:30:00Z",
+        "shopName": "Spice Garden",
+        "amount": 500,
+        "paymentMode": "upi",
+        "reference": "UTR123456789",
+        "gpsLocation": {
+          "lat": 12.9822,
+          "lng": 77.5837
+        }
+      },
+      {
+        "id": "txn-003",
+        "timestamp": "2025-12-25T11:15:00Z",
+        "shopName": "Royal Supermarket",
+        "amount": 3000,
+        "paymentMode": "cash",
+        "reference": null,
+        "gpsLocation": {
+          "lat": 12.9716,
+          "lng": 77.5946
+        }
+      },
+      {
+        "id": "txn-004",
+        "timestamp": "2025-12-25T12:00:00Z",
+        "shopName": "Spice Garden",
+        "amount": 7000,
+        "paymentMode": "cash",
+        "reference": null,
+        "gpsLocation": {
+          "lat": 12.9822,
+          "lng": 77.5837
+        }
+      },
+      {
+        "id": "txn-005",
+        "timestamp": "2025-12-25T14:25:00Z",
+        "shopName": "Royal Supermarket",
+        "amount": 1500,
+        "paymentMode": "cheque",
+        "reference": "CHQ-789012",
+        "gpsLocation": {
+          "lat": 12.9716,
+          "lng": 77.5946
+        }
+      }
+    ]
+  }
+}

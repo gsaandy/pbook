@@ -1,0 +1,162 @@
+{
+  "_meta": {
+    "models": {
+      "shops": "Customer locations where field staff collect payments and track outstanding balances.",
+      "routes": "Named, predefined collections of shops grouped together for efficient field operations.",
+      "employees": "Field staff who visit shops and collect payments, or admin users who manage operations and reconcile end-of-day cash."
+    },
+    "relationships": [
+      "Each Route contains multiple Shops (shown as shopIds array)",
+      "Employees can be assigned to Routes via daily assignments",
+      "Shops track current balance owed by the customer"
+    ]
+  },
+  "shops": [
+    {
+      "id": "shop-001",
+      "name": "Royal Supermarket",
+      "address": "123 MG Road, Bangalore",
+      "phone": "+91 98765 43210",
+      "currentBalance": 5000,
+      "zone": "North",
+      "lastCollectionDate": "2025-12-24"
+    },
+    {
+      "id": "shop-002",
+      "name": "Sai Kirana Store",
+      "address": "45 Jayanagar 4th Block, Bangalore",
+      "phone": "+91 98765 43211",
+      "currentBalance": 1200,
+      "zone": "South",
+      "lastCollectionDate": "2025-12-23"
+    },
+    {
+      "id": "shop-003",
+      "name": "Lakshmi Bakery",
+      "address": "78 Indiranagar, Bangalore",
+      "phone": "+91 98765 43212",
+      "currentBalance": 10000,
+      "zone": "East",
+      "lastCollectionDate": "2025-12-20"
+    },
+    {
+      "id": "shop-004",
+      "name": "Ramesh Tea Stall",
+      "address": "12 Market Road, Bangalore",
+      "phone": "+91 98765 43213",
+      "currentBalance": 500,
+      "zone": "Central",
+      "lastCollectionDate": "2025-12-24"
+    },
+    {
+      "id": "shop-005",
+      "name": "Annapurna Restaurant",
+      "address": "56 Brigade Road, Bangalore",
+      "phone": "+91 98765 43214",
+      "currentBalance": 8500,
+      "zone": "Central",
+      "lastCollectionDate": "2025-12-22"
+    },
+    {
+      "id": "shop-006",
+      "name": "Green Valley Provisions",
+      "address": "89 Koramangala, Bangalore",
+      "phone": "+91 98765 43215",
+      "currentBalance": 3200,
+      "zone": "South",
+      "lastCollectionDate": "2025-12-24"
+    },
+    {
+      "id": "shop-007",
+      "name": "City Mart",
+      "address": "34 Whitefield Main Road, Bangalore",
+      "phone": "+91 98765 43216",
+      "currentBalance": 0,
+      "zone": "East",
+      "lastCollectionDate": "2025-12-24"
+    },
+    {
+      "id": "shop-008",
+      "name": "Spice Garden",
+      "address": "67 Malleswaram, Bangalore",
+      "phone": "+91 98765 43217",
+      "currentBalance": 15000,
+      "zone": "North",
+      "lastCollectionDate": "2025-12-18"
+    }
+  ],
+  "routes": [
+    {
+      "id": "route-001",
+      "name": "North Zone",
+      "description": "Covers all shops in North Bangalore",
+      "shopIds": ["shop-001", "shop-008"]
+    },
+    {
+      "id": "route-002",
+      "name": "South Zone",
+      "description": "Jayanagar and Koramangala area",
+      "shopIds": ["shop-002", "shop-006"]
+    },
+    {
+      "id": "route-003",
+      "name": "East Zone",
+      "description": "Indiranagar and Whitefield coverage",
+      "shopIds": ["shop-003", "shop-007"]
+    },
+    {
+      "id": "route-004",
+      "name": "Central Zone",
+      "description": "Downtown commercial district",
+      "shopIds": ["shop-004", "shop-005"]
+    },
+    {
+      "id": "route-005",
+      "name": "Special Delivery",
+      "description": "Ad-hoc route for emergency collections",
+      "shopIds": []
+    }
+  ],
+  "employees": [
+    {
+      "id": "emp-001",
+      "name": "Rajesh Kumar",
+      "phone": "+91 98765 11111",
+      "email": "rajesh@psbook.com",
+      "role": "field_staff",
+      "status": "active"
+    },
+    {
+      "id": "emp-002",
+      "name": "Priya Sharma",
+      "phone": "+91 98765 22222",
+      "email": "priya@psbook.com",
+      "role": "field_staff",
+      "status": "active"
+    },
+    {
+      "id": "emp-003",
+      "name": "Amit Patel",
+      "phone": "+91 98765 33333",
+      "email": "amit@psbook.com",
+      "role": "field_staff",
+      "status": "active"
+    },
+    {
+      "id": "emp-004",
+      "name": "Sunita Reddy",
+      "phone": "+91 98765 44444",
+      "email": "sunita@psbook.com",
+      "role": "admin",
+      "status": "active"
+    },
+    {
+      "id": "emp-005",
+      "name": "Vikram Singh",
+      "phone": "+91 98765 55555",
+      "email": "vikram@psbook.com",
+      "role": "field_staff",
+      "status": "inactive"
+    }
+  ]
+}

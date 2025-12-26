@@ -1,0 +1,138 @@
+{
+  "_meta": {
+    "models": {
+      "routeAssignments": "The daily assignment linking an employee to a route for a specific day, enabling admins to plan field operations.",
+      "shops": "Customer locations where field staff collect payments and track outstanding balances.",
+      "routes": "Named, predefined collections of shops grouped together for efficient field operations.",
+      "employees": "Field staff who visit shops and collect payments, or admin users who manage operations.",
+      "paymentModes": "The method of payment used for a transaction (Cash, UPI, or Cheque)."
+    },
+    "relationships": [
+      "RouteAssignment links an Employee to a Route for a specific date",
+      "Routes contain multiple Shops",
+      "Field staff view their assigned route and the shops within it",
+      "Collections reference a Shop and a PaymentMode"
+    ]
+  },
+  "routeAssignments": [
+    {
+      "id": "assign-001",
+      "employeeId": "emp-001",
+      "employeeName": "Rajesh Kumar",
+      "routeId": "route-001",
+      "routeName": "North Zone",
+      "date": "2025-12-25",
+      "status": "active"
+    },
+    {
+      "id": "assign-002",
+      "employeeId": "emp-002",
+      "employeeName": "Priya Sharma",
+      "routeId": "route-002",
+      "routeName": "South Zone",
+      "date": "2025-12-25",
+      "status": "active"
+    },
+    {
+      "id": "assign-003",
+      "employeeId": "emp-003",
+      "employeeName": "Amit Patel",
+      "routeId": "route-003",
+      "routeName": "East Zone",
+      "date": "2025-12-25",
+      "status": "active"
+    }
+  ],
+  "employees": [
+    {
+      "id": "emp-001",
+      "name": "Rajesh Kumar",
+      "role": "field_staff"
+    },
+    {
+      "id": "emp-002",
+      "name": "Priya Sharma",
+      "role": "field_staff"
+    },
+    {
+      "id": "emp-003",
+      "name": "Amit Patel",
+      "role": "field_staff"
+    },
+    {
+      "id": "emp-004",
+      "name": "Sunita Reddy",
+      "role": "admin"
+    }
+  ],
+  "routes": [
+    {
+      "id": "route-001",
+      "name": "North Zone",
+      "description": "Covers all shops in North Bangalore",
+      "shopCount": 2
+    },
+    {
+      "id": "route-002",
+      "name": "South Zone",
+      "description": "Jayanagar and Koramangala area",
+      "shopCount": 2
+    },
+    {
+      "id": "route-003",
+      "name": "East Zone",
+      "description": "Indiranagar and Whitefield coverage",
+      "shopCount": 2
+    },
+    {
+      "id": "route-004",
+      "name": "Central Zone",
+      "description": "Downtown commercial district",
+      "shopCount": 2
+    }
+  ],
+  "currentEmployee": {
+    "id": "emp-001",
+    "name": "Rajesh Kumar",
+    "role": "field_staff",
+    "cashInBag": 12500
+  },
+  "assignedRoute": {
+    "id": "route-001",
+    "name": "North Zone",
+    "description": "Covers all shops in North Bangalore",
+    "shops": [
+      {
+        "id": "shop-001",
+        "name": "Royal Supermarket",
+        "address": "123 MG Road, Bangalore",
+        "currentBalance": 5000,
+        "lastCollectionDate": "2025-12-24"
+      },
+      {
+        "id": "shop-008",
+        "name": "Spice Garden",
+        "address": "67 Malleswaram, Bangalore",
+        "currentBalance": 15000,
+        "lastCollectionDate": "2025-12-18"
+      }
+    ]
+  },
+  "paymentModes": [
+    {
+      "id": "cash",
+      "label": "Cash",
+      "icon": "Banknote"
+    },
+    {
+      "id": "upi",
+      "label": "UPI",
+      "icon": "Smartphone"
+    },
+    {
+      "id": "cheque",
+      "label": "Cheque",
+      "icon": "FileText"
+    }
+  ]
+}
