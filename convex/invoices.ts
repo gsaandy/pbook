@@ -41,7 +41,7 @@ export const list = query({
     if (args.includeShopDetails) {
       const detailed = await Promise.all(
         invoices.map(async (inv) => {
-          const shop = await ctx.db.get("shops", inv.shopId)
+          const shop = await ctx.db.get('shops', inv.shopId)
           return { ...inv, shop }
         }),
       )
@@ -58,7 +58,7 @@ export const list = query({
 export const get = query({
   args: { id: v.id('invoices') },
   handler: async (ctx, args) => {
-    return await ctx.db.get("invoices", args.id)
+    return await ctx.db.get('invoices', args.id)
   },
 })
 
@@ -112,7 +112,7 @@ export const create = mutation({
     createdBy: v.id('employees'),
   },
   handler: async (ctx, args) => {
-    const shop = await ctx.db.get("shops", args.shopId)
+    const shop = await ctx.db.get('shops', args.shopId)
     if (!shop) {
       throw new Error('Shop not found')
     }
@@ -133,7 +133,7 @@ export const create = mutation({
     })
 
     // Update shop balance
-    await ctx.db.patch("shops", args.shopId, {
+    await ctx.db.patch('shops', args.shopId, {
       currentBalance: newBalance,
     })
 
@@ -167,7 +167,7 @@ export const update = mutation({
     updatedBy: v.id('employees'),
   },
   handler: async (ctx, args) => {
-    const invoice = await ctx.db.get("invoices", args.id)
+    const invoice = await ctx.db.get('invoices', args.id)
     if (!invoice) {
       throw new Error('Invoice not found')
     }
@@ -180,7 +180,7 @@ export const update = mutation({
 
     // Handle amount change with balance adjustment
     if (updates.amount !== undefined && updates.amount !== invoice.amount) {
-      const shop = await ctx.db.get("shops", invoice.shopId)
+      const shop = await ctx.db.get('shops', invoice.shopId)
       if (!shop) {
         throw new Error('Shop not found')
       }
@@ -190,7 +190,7 @@ export const update = mutation({
       const newBalance = oldBalance + amountDelta
 
       // Update shop balance
-      await ctx.db.patch("shops", invoice.shopId, {
+      await ctx.db.patch('shops', invoice.shopId, {
         currentBalance: newBalance,
       })
 
@@ -216,7 +216,7 @@ export const update = mutation({
       ),
     )
 
-    await ctx.db.patch("invoices", id, cleanUpdates)
+    await ctx.db.patch('invoices', id, cleanUpdates)
     return id
   },
 })
@@ -231,7 +231,7 @@ export const cancel = mutation({
     cancelledBy: v.id('employees'),
   },
   handler: async (ctx, args) => {
-    const invoice = await ctx.db.get("invoices", args.id)
+    const invoice = await ctx.db.get('invoices', args.id)
     if (!invoice) {
       throw new Error('Invoice not found')
     }
@@ -240,7 +240,7 @@ export const cancel = mutation({
       throw new Error('Invoice is already cancelled')
     }
 
-    const shop = await ctx.db.get("shops", invoice.shopId)
+    const shop = await ctx.db.get('shops', invoice.shopId)
     if (!shop) {
       throw new Error('Shop not found')
     }
@@ -249,10 +249,10 @@ export const cancel = mutation({
     const newBalance = oldBalance - invoice.amount
 
     // Update invoice status
-    await ctx.db.patch("invoices", args.id, { status: 'cancelled' })
+    await ctx.db.patch('invoices', args.id, { status: 'cancelled' })
 
     // Update shop balance
-    await ctx.db.patch("shops", invoice.shopId, {
+    await ctx.db.patch('shops', invoice.shopId, {
       currentBalance: newBalance,
     })
 

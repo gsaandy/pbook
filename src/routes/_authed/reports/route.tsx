@@ -10,10 +10,10 @@ import type {
   TrendData,
 } from './-components/ReportsAndHistory'
 import {
-  transactionQueries,
-  reconciliationQueries,
   employeeQueries,
+  reconciliationQueries,
   shopQueries,
+  transactionQueries,
 } from '~/queries'
 
 export const Route = createFileRoute('/_authed/reports')({

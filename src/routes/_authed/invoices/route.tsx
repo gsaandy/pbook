@@ -4,21 +4,23 @@ import { createFileRoute } from '@tanstack/react-router'
 import { InvoicesSection } from './-components/InvoicesSection'
 import { InvoiceFormModal } from './-components/InvoiceFormModal'
 import type { Invoice, Shop } from '~/lib/types'
+import type { Id } from '~/convex/_generated/dataModel'
 import {
+  employeeQueries,
   invoiceQueries,
   shopQueries,
-  employeeQueries,
+  useCancelInvoiceMutation,
   useCreateInvoiceMutation,
   useUpdateInvoiceMutation,
-  useCancelInvoiceMutation,
 } from '~/queries'
-import type { Id } from '~/convex/_generated/dataModel'
 
 export const Route = createFileRoute('/_authed/invoices')({
   component: InvoicesPage,
   loader: async ({ context: { queryClient } }) => {
     await Promise.all([
-      queryClient.ensureQueryData(invoiceQueries.list({ includeShopDetails: true })),
+      queryClient.ensureQueryData(
+        invoiceQueries.list({ includeShopDetails: true }),
+      ),
       queryClient.ensureQueryData(shopQueries.list()),
       queryClient.ensureQueryData(employeeQueries.current()),
     ])
@@ -66,7 +68,8 @@ function adaptShop(shop: {
     phone: shop.phone ?? '',
     zone: shop.zone,
     currentBalance: shop.currentBalance,
-    lastCollectionDate: shop.lastCollectionDate ?? new Date().toISOString().split('T')[0],
+    lastCollectionDate:
+      shop.lastCollectionDate ?? new Date().toISOString().split('T')[0],
   }
 }
 

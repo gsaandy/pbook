@@ -9,6 +9,14 @@ import {
   Upload,
 } from 'lucide-react'
 import type { Employee, Route, Shop } from '~/lib/types'
+import {
+  EmployeeRole,
+  EmployeeRoleLabel,
+  Status,
+  formatCurrency,
+  formatDate,
+  getBalanceColorClass,
+} from '~/lib/constants'
 
 export interface SetupAndConfigurationProps {
   shops: Array<Shop>
@@ -62,21 +70,6 @@ export function SetupAndConfiguration({
       emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       emp.email.toLowerCase().includes(searchQuery.toLowerCase()),
   )
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 0,
-    }).format(amount)
-  }
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-IN', {
-      day: 'numeric',
-      month: 'short',
-    })
-  }
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
@@ -268,13 +261,7 @@ export function SetupAndConfiguration({
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span
-                              className={`text-sm font-medium ${
-                                shop.currentBalance > 10000
-                                  ? 'text-red-600 dark:text-red-400'
-                                  : shop.currentBalance > 0
-                                    ? 'text-amber-600 dark:text-amber-400'
-                                    : 'text-emerald-600 dark:text-emerald-400'
-                              }`}
+                              className={`text-sm font-medium ${getBalanceColorClass(shop.currentBalance)}`}
                             >
                               {formatCurrency(shop.currentBalance)}
                             </span>
@@ -350,13 +337,7 @@ export function SetupAndConfiguration({
                           {shop.zone}
                         </span>
                         <span
-                          className={`font-medium ${
-                            shop.currentBalance > 10000
-                              ? 'text-red-600 dark:text-red-400'
-                              : shop.currentBalance > 0
-                                ? 'text-amber-600 dark:text-amber-400'
-                                : 'text-emerald-600 dark:text-emerald-400'
-                          }`}
+                          className={`font-medium ${getBalanceColorClass(shop.currentBalance)}`}
                         >
                           {formatCurrency(shop.currentBalance)}
                         </span>
@@ -501,30 +482,28 @@ export function SetupAndConfiguration({
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span
                               className={`px-2 py-1 text-xs font-medium rounded-full ${
-                                employee.role === 'admin'
+                                employee.role === EmployeeRole.ADMIN
                                   ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
                                   : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
                               }`}
                             >
-                              {employee.role === 'admin'
-                                ? 'Admin'
-                                : 'Field Staff'}
+                              {EmployeeRoleLabel[employee.role]}
                             </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span
                               className={`inline-flex items-center gap-1.5 px-2 py-1 text-xs font-medium rounded-full ${
-                                employee.status === 'active'
+                                employee.status === Status.ACTIVE
                                   ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
                                   : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400'
                               }`}
                             >
-                              {employee.status === 'active' ? (
+                              {employee.status === Status.ACTIVE ? (
                                 <Power className="w-3 h-3" />
                               ) : (
                                 <PowerOff className="w-3 h-3" />
                               )}
-                              {employee.status === 'active'
+                              {employee.status === Status.ACTIVE
                                 ? 'Active'
                                 : 'Inactive'}
                             </span>
@@ -548,7 +527,7 @@ export function SetupAndConfiguration({
                                   className="p-1.5 text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded transition-colors"
                                   aria-label="Toggle employee status"
                                 >
-                                  {employee.status === 'active' ? (
+                                  {employee.status === Status.ACTIVE ? (
                                     <PowerOff className="w-4 h-4" />
                                   ) : (
                                     <Power className="w-4 h-4" />
@@ -595,7 +574,7 @@ export function SetupAndConfiguration({
                               }
                               className="p-2 text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded"
                             >
-                              {employee.status === 'active' ? (
+                              {employee.status === Status.ACTIVE ? (
                                 <PowerOff className="w-4 h-4" />
                               ) : (
                                 <Power className="w-4 h-4" />
@@ -607,26 +586,28 @@ export function SetupAndConfiguration({
                       <div className="flex gap-2 mt-2">
                         <span
                           className={`px-2 py-1 text-xs font-medium rounded-full ${
-                            employee.role === 'admin'
+                            employee.role === EmployeeRole.ADMIN
                               ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
                               : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
                           }`}
                         >
-                          {employee.role === 'admin' ? 'Admin' : 'Field Staff'}
+                          {EmployeeRoleLabel[employee.role]}
                         </span>
                         <span
                           className={`inline-flex items-center gap-1.5 px-2 py-1 text-xs font-medium rounded-full ${
-                            employee.status === 'active'
+                            employee.status === Status.ACTIVE
                               ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
                               : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400'
                           }`}
                         >
-                          {employee.status === 'active' ? (
+                          {employee.status === Status.ACTIVE ? (
                             <Power className="w-3 h-3" />
                           ) : (
                             <PowerOff className="w-3 h-3" />
                           )}
-                          {employee.status === 'active' ? 'Active' : 'Inactive'}
+                          {employee.status === Status.ACTIVE
+                            ? 'Active'
+                            : 'Inactive'}
                         </span>
                       </div>
                     </div>

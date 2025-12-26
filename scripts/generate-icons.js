@@ -1,5 +1,4 @@
 import sharp from 'sharp'
-import { writeFileSync } from 'fs'
 import { join } from 'path'
 
 // PSBook branded icon - indigo background with white "PS" text

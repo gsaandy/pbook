@@ -87,8 +87,8 @@ export const listWithDetails = query({
     // Fetch details
     const detailed = await Promise.all(
       transactions.map(async (txn) => {
-        const employee = await ctx.db.get("employees", txn.employeeId)
-        const shop = await ctx.db.get("shops", txn.shopId)
+        const employee = await ctx.db.get('employees', txn.employeeId)
+        const shop = await ctx.db.get('shops', txn.shopId)
         return { ...txn, employee, shop }
       }),
     )
@@ -103,7 +103,7 @@ export const listWithDetails = query({
 export const get = query({
   args: { id: v.id('transactions') },
   handler: async (ctx, args) => {
-    return await ctx.db.get("transactions", args.id)
+    return await ctx.db.get('transactions', args.id)
   },
 })
 
@@ -158,7 +158,7 @@ export const collectCash = mutation({
   },
   handler: async (ctx, args) => {
     // Get the shop to verify it exists and get current balance
-    const shop = await ctx.db.get("shops", args.shopId)
+    const shop = await ctx.db.get('shops', args.shopId)
     if (!shop) {
       throw new Error('Shop not found')
     }
@@ -180,7 +180,7 @@ export const collectCash = mutation({
     })
 
     // 2. Update shop balance and last collection date
-    await ctx.db.patch("shops", args.shopId, {
+    await ctx.db.patch('shops', args.shopId, {
       currentBalance: newBalance,
       lastCollectionDate: new Date(timestamp).toISOString().split('T')[0],
     })
@@ -211,7 +211,7 @@ export const reverse = mutation({
     reason: v.string(),
   },
   handler: async (ctx, args) => {
-    const transaction = await ctx.db.get("transactions", args.id)
+    const transaction = await ctx.db.get('transactions', args.id)
     if (!transaction) {
       throw new Error('Transaction not found')
     }
@@ -220,7 +220,7 @@ export const reverse = mutation({
       throw new Error('Transaction is already reversed')
     }
 
-    const shop = await ctx.db.get("shops", transaction.shopId)
+    const shop = await ctx.db.get('shops', transaction.shopId)
     if (!shop) {
       throw new Error('Shop not found')
     }
@@ -229,10 +229,10 @@ export const reverse = mutation({
     const newBalance = oldBalance + transaction.amount
 
     // Update transaction status
-    await ctx.db.patch("transactions", args.id, { status: 'reversed' })
+    await ctx.db.patch('transactions', args.id, { status: 'reversed' })
 
     // Restore shop balance
-    await ctx.db.patch("shops", transaction.shopId, {
+    await ctx.db.patch('shops', transaction.shopId, {
       currentBalance: newBalance,
     })
 

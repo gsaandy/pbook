@@ -119,7 +119,7 @@ export const list = query({
 export const get = query({
   args: { id: v.id('employees') },
   handler: async (ctx, args) => {
-    return await ctx.db.get("employees", args.id)
+    return await ctx.db.get('employees', args.id)
   },
 })
 
@@ -187,7 +187,7 @@ export const update = mutation({
       ),
     )
 
-    await ctx.db.patch("employees", id, cleanUpdates)
+    await ctx.db.patch('employees', id, cleanUpdates)
     return id
   },
 })
@@ -198,13 +198,13 @@ export const update = mutation({
 export const toggleStatus = mutation({
   args: { id: v.id('employees') },
   handler: async (ctx, args) => {
-    const employee = await ctx.db.get("employees", args.id)
+    const employee = await ctx.db.get('employees', args.id)
     if (!employee) {
       throw new Error('Employee not found')
     }
 
     const newStatus = employee.status === 'active' ? 'inactive' : 'active'
-    await ctx.db.patch("employees", args.id, { status: newStatus })
+    await ctx.db.patch('employees', args.id, { status: newStatus })
     return args.id
   },
 })
@@ -215,7 +215,7 @@ export const toggleStatus = mutation({
 export const remove = mutation({
   args: { id: v.id('employees') },
   handler: async (ctx, args) => {
-    await ctx.db.patch("employees", args.id, {
+    await ctx.db.patch('employees', args.id, {
       deletedAt: Date.now(),
       status: 'inactive',
     })

@@ -8,14 +8,15 @@ import type {
   EmployeeSettlement,
   VerificationFormData,
 } from './-components/EndOfDayReconciliation'
+import type { Id } from '~/convex/_generated/dataModel'
 import {
   employeeQueries,
-  transactionQueries,
-  routeAssignmentQueries,
   reconciliationQueries,
+  routeAssignmentQueries,
+  transactionQueries,
   useVerifyReconciliationMutation,
 } from '~/queries'
-import type { Id } from '~/convex/_generated/dataModel'
+import { PaymentMode, ReconciliationStatus, Status } from '~/lib/constants'
 
 export const Route = createFileRoute('/_authed/reconciliation')({
   component: ReconciliationPage,
@@ -23,8 +24,12 @@ export const Route = createFileRoute('/_authed/reconciliation')({
     const today = new Date().toISOString().split('T')[0]
     await Promise.all([
       queryClient.ensureQueryData(employeeQueries.list()),
-      queryClient.ensureQueryData(transactionQueries.listWithDetails({ date: today })),
-      queryClient.ensureQueryData(routeAssignmentQueries.byDateWithDetails(today)),
+      queryClient.ensureQueryData(
+        transactionQueries.listWithDetails({ date: today }),
+      ),
+      queryClient.ensureQueryData(
+        routeAssignmentQueries.byDateWithDetails(today),
+      ),
       queryClient.ensureQueryData(reconciliationQueries.list({ date: today })),
     ])
   },
@@ -55,21 +60,23 @@ function ReconciliationPage() {
       0,
     )
     const cashExpected = convexTransactions
-      .filter((t) => t.paymentMode === 'cash')
+      .filter((t) => t.paymentMode === PaymentMode.CASH)
       .reduce((sum, t) => sum + t.amount, 0)
     const digitalPayments = convexTransactions
-      .filter((t) => t.paymentMode !== 'cash')
+      .filter((t) => t.paymentMode !== PaymentMode.CASH)
       .reduce((sum, t) => sum + t.amount, 0)
 
     // Count employees who need verification (those with active assignments today)
     const employeesWithAssignments = new Set(
       convexAssignments
-        .filter((a) => a.status === 'active')
+        .filter((a) => a.status === Status.ACTIVE)
         .map((a) => a.employeeId),
     )
     const employeesTotal = employeesWithAssignments.size
     const employeesVerified = convexReconciliations.filter(
-      (r) => r.status === 'verified' || r.status === 'mismatch',
+      (r) =>
+        r.status === ReconciliationStatus.VERIFIED ||
+        r.status === ReconciliationStatus.MISMATCH,
     ).length
 
     return {
@@ -86,7 +93,7 @@ function ReconciliationPage() {
   const employeeSettlements: Array<EmployeeSettlement> = useMemo(() => {
     // Get all field staff with active assignments today
     const activeAssignments = convexAssignments.filter(
-      (a) => a.status === 'active',
+      (a) => a.status === Status.ACTIVE,
     )
 
     // Build reconciliation lookup map
@@ -100,18 +107,26 @@ function ReconciliationPage() {
       )
       // Route is already included in assignment from byDateWithDetails
       const routeName = assignment.route?.name ?? 'Unknown Route'
-      const reconciliation = reconciliationMap.get(assignment.employeeId as string)
+      const reconciliation = reconciliationMap.get(
+        assignment.employeeId as string,
+      )
 
       // Calculate expected cash from today's cash transactions for this employee
       const expectedCash = convexTransactions
         .filter(
-          (t) => t.employeeId === assignment.employeeId && t.paymentMode === 'cash',
+          (t) =>
+            t.employeeId === assignment.employeeId &&
+            t.paymentMode === PaymentMode.CASH,
         )
         .reduce((sum, t) => sum + t.amount, 0)
 
-      let status: 'pending' | 'verified' | 'mismatch' | 'closed' = 'pending'
+      let status: 'pending' | 'verified' | 'mismatch' | 'closed' =
+        ReconciliationStatus.PENDING
       if (reconciliation) {
-        status = reconciliation.status === 'verified' ? 'verified' : 'mismatch'
+        status =
+          reconciliation.status === ReconciliationStatus.VERIFIED
+            ? ReconciliationStatus.VERIFIED
+            : ReconciliationStatus.MISMATCH
       }
 
       return {
@@ -129,14 +144,19 @@ function ReconciliationPage() {
         note: reconciliation?.note ?? null,
       }
     })
-  }, [convexAssignments, convexEmployees, convexTransactions, convexReconciliations])
+  }, [
+    convexAssignments,
+    convexEmployees,
+    convexTransactions,
+    convexReconciliations,
+  ])
 
   // Build cash transactions by employee
   const cashTransactionsByEmployee: CashTransactionsByEmployee = useMemo(() => {
     const result: CashTransactionsByEmployee = {}
 
     const cashTransactions = convexTransactions.filter(
-      (t) => t.paymentMode === 'cash',
+      (t) => t.paymentMode === PaymentMode.CASH,
     )
 
     cashTransactions.forEach((txn) => {

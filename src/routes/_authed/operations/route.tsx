@@ -1,15 +1,16 @@
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { DailyOperationsAdmin } from './-components/DailyOperationsAdmin'
-import type { Employee, Route as RouteType, RouteAssignment } from '~/lib/types'
+import type { Employee, RouteAssignment, Route as RouteType } from '~/lib/types'
+import type { Id } from '~/convex/_generated/dataModel'
 import {
   employeeQueries,
-  routeQueries,
   routeAssignmentQueries,
+  routeQueries,
   useAssignRouteMutation,
   useCancelAssignmentMutation,
 } from '~/queries'
-import type { Id } from '~/convex/_generated/dataModel'
+import { EmployeeRole, Status } from '~/lib/constants'
 
 export const Route = createFileRoute('/_authed/operations')({
   component: OperationsPage,
@@ -37,8 +38,11 @@ function adaptEmployee(employee: {
     name: employee.name,
     phone: employee.phone ?? '',
     email: employee.email,
-    role: employee.role === 'super_admin' ? 'admin' : employee.role,
-    status: employee.deletedAt ? 'inactive' : 'active',
+    role:
+      employee.role === EmployeeRole.SUPER_ADMIN
+        ? EmployeeRole.ADMIN
+        : employee.role,
+    status: employee.deletedAt ? Status.INACTIVE : Status.ACTIVE,
   }
 }
 
@@ -78,7 +82,9 @@ function OperationsPage() {
 
   // Fetch data from Convex
   const { data: convexEmployees } = useSuspenseQuery(employeeQueries.list())
-  const { data: convexRoutes } = useSuspenseQuery(routeQueries.listWithShopCounts())
+  const { data: convexRoutes } = useSuspenseQuery(
+    routeQueries.listWithShopCounts(),
+  )
   const { data: convexAssignments } = useSuspenseQuery(
     routeAssignmentQueries.byDate(today),
   )

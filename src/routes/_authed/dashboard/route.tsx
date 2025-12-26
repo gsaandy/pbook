@@ -10,10 +10,10 @@ import type {
 } from './-components/AdminDashboard'
 import {
   employeeQueries,
-  transactionQueries,
   routeAssignmentQueries,
+  transactionQueries,
 } from '~/queries'
-import type { Id } from '~/convex/_generated/dataModel'
+import { EmployeeRole, PaymentMode, Status } from '~/lib/constants'
 
 export const Route = createFileRoute('/_authed/dashboard')({
   component: DashboardPage,
@@ -21,8 +21,12 @@ export const Route = createFileRoute('/_authed/dashboard')({
     const today = new Date().toISOString().split('T')[0]
     await Promise.all([
       queryClient.ensureQueryData(employeeQueries.list()),
-      queryClient.ensureQueryData(transactionQueries.listWithDetails({ date: today })),
-      queryClient.ensureQueryData(routeAssignmentQueries.byDateWithDetails(today)),
+      queryClient.ensureQueryData(
+        transactionQueries.listWithDetails({ date: today }),
+      ),
+      queryClient.ensureQueryData(
+        routeAssignmentQueries.byDateWithDetails(today),
+      ),
     ])
   },
 })
@@ -49,10 +53,10 @@ function DashboardPage() {
       0,
     )
     const cashInHand = convexTransactions
-      .filter((t) => t.paymentMode === 'cash')
+      .filter((t) => t.paymentMode === PaymentMode.CASH)
       .reduce((sum, t) => sum + t.amount, 0)
     const digitalPayments = convexTransactions
-      .filter((t) => t.paymentMode !== 'cash')
+      .filter((t) => t.paymentMode !== PaymentMode.CASH)
       .reduce((sum, t) => sum + t.amount, 0)
 
     return {
@@ -67,13 +71,13 @@ function DashboardPage() {
   const employeeStatus: Array<EmployeeStatus> = useMemo(() => {
     // Filter active field staff (no deletedAt and role is field_staff)
     const fieldStaff = convexEmployees.filter(
-      (e) => e.role === 'field_staff' && !e.deletedAt,
+      (e) => e.role === EmployeeRole.FIELD_STAFF && !e.deletedAt,
     )
 
     return fieldStaff.map((emp) => {
       // Find assignment - convexAssignments already includes route details
       const assignment = convexAssignments.find(
-        (a) => a.employeeId === emp._id && a.status === 'active',
+        (a) => a.employeeId === emp._id && a.status === Status.ACTIVE,
       )
       const routeName = assignment?.route?.name ?? null
 
@@ -89,7 +93,7 @@ function DashboardPage() {
 
       // Calculate cash in hand (sum of cash transactions)
       const cashInHand = empTransactions
-        .filter((t) => t.paymentMode === 'cash')
+        .filter((t) => t.paymentMode === PaymentMode.CASH)
         .reduce((sum, t) => sum + t.amount, 0)
 
       // Determine status based on last transaction time

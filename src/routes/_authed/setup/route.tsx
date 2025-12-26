@@ -6,22 +6,22 @@ import { EmployeeFormModal } from './-components/EmployeeFormModal'
 import { RouteFormModal } from './-components/RouteFormModal'
 import { ShopFormModal } from './-components/ShopFormModal'
 import type { Employee, Route as RouteType, Shop } from '~/lib/types'
+import type { Id } from '~/convex/_generated/dataModel'
 import { ConfirmModal } from '~/components/modals'
 import {
   employeeQueries,
   routeQueries,
   shopQueries,
-  useCreateShopMutation,
-  useUpdateShopMutation,
-  useDeleteShopMutation,
-  useCreateRouteMutation,
-  useUpdateRouteMutation,
-  useDeleteRouteMutation,
   useCreateEmployeeMutation,
-  useUpdateEmployeeMutation,
+  useCreateRouteMutation,
+  useCreateShopMutation,
+  useDeleteRouteMutation,
+  useDeleteShopMutation,
   useToggleEmployeeStatusMutation,
+  useUpdateEmployeeMutation,
+  useUpdateRouteMutation,
+  useUpdateShopMutation,
 } from '~/queries'
-import type { Id } from '~/convex/_generated/dataModel'
 
 export const Route = createFileRoute('/_authed/setup')({
   component: SetupPage,
@@ -53,15 +53,19 @@ function adaptShop(shop: {
     phone: shop.phone ?? '',
     zone: shop.zone,
     currentBalance: shop.currentBalance,
-    lastCollectionDate: shop.lastCollectionDate ?? new Date().toISOString().split('T')[0],
+    lastCollectionDate:
+      shop.lastCollectionDate ?? new Date().toISOString().split('T')[0],
   }
 }
 
-function adaptRoute(route: {
-  _id: Id<'routes'>
-  name: string
-  description?: string
-}, shopsByRoute: Map<string, string[]>): RouteType {
+function adaptRoute(
+  route: {
+    _id: Id<'routes'>
+    name: string
+    description?: string
+  },
+  shopsByRoute: Map<string, Array<string>>,
+): RouteType {
   return {
     id: route._id,
     name: route.name,
@@ -95,7 +99,7 @@ function SetupPage() {
   const { data: convexEmployees } = useSuspenseQuery(employeeQueries.list())
 
   // Build shopsByRoute map for route adaptation
-  const shopsByRoute = new Map<string, string[]>()
+  const shopsByRoute = new Map<string, Array<string>>()
   for (const shop of convexShops) {
     if (shop.routeId) {
       const existing = shopsByRoute.get(shop.routeId) ?? []
@@ -107,7 +111,10 @@ function SetupPage() {
   // Adapt Convex data to local types
   const shops = convexShops.map(adaptShop)
   const routes = convexRoutes.map((r) => adaptRoute(r, shopsByRoute))
-  const employees = convexEmployees.map(adaptEmployee)
+  // Filter out super_admin users - they should not be visible in the employees table
+  const employees = convexEmployees
+    .filter((e) => e.role !== 'super_admin')
+    .map(adaptEmployee)
 
   // Mutations
   const createShop = useCreateShopMutation()
@@ -235,7 +242,9 @@ function SetupPage() {
     }
   }
 
-  const handleSaveEmployee = (employeeData: Omit<Employee, 'id'> | Employee) => {
+  const handleSaveEmployee = (
+    employeeData: Omit<Employee, 'id'> | Employee,
+  ) => {
     if ('id' in employeeData) {
       updateEmployee.mutate({
         id: employeeData.id as Id<'employees'>,

@@ -74,7 +74,7 @@ export const listWithDetails = query({
 
     const detailed = await Promise.all(
       reconciliations.map(async (recon) => {
-        const employee = await ctx.db.get("employees", recon.employeeId)
+        const employee = await ctx.db.get('employees', recon.employeeId)
         return { ...recon, employee }
       }),
     )
@@ -89,7 +89,7 @@ export const listWithDetails = query({
 export const get = query({
   args: { id: v.id('dailyReconciliations') },
   handler: async (ctx, args) => {
-    return await ctx.db.get("dailyReconciliations", args.id)
+    return await ctx.db.get('dailyReconciliations', args.id)
   },
 })
 
@@ -152,7 +152,7 @@ export const verify = mutation({
 
     if (existing) {
       // Update existing
-      await ctx.db.patch("dailyReconciliations", existing._id, {
+      await ctx.db.patch('dailyReconciliations', existing._id, {
         actualCash: args.actualCash,
         expectedCash,
         variance,
@@ -197,7 +197,7 @@ export const updateStatus = mutation({
     if (args.note !== undefined) {
       updates.note = args.note
     }
-    await ctx.db.patch("dailyReconciliations", args.id, updates)
+    await ctx.db.patch('dailyReconciliations', args.id, updates)
     return args.id
   },
 })
