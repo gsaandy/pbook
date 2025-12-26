@@ -19,12 +19,6 @@ export const PaymentMode = {
   CHEQUE: 'cheque',
 } as const
 
-export const PaymentModeLabel: Record<string, string> = {
-  cash: 'Cash',
-  upi: 'UPI',
-  cheque: 'Cheque',
-} as const
-
 // Employee roles
 export const EmployeeRole = {
   FIELD_STAFF: 'field_staff',
@@ -50,26 +44,6 @@ export const Status = {
   REVERSED: 'reversed',
 } as const
 
-// Transaction statuses
-export const TransactionStatus = {
-  COMPLETED: 'completed',
-  ADJUSTED: 'adjusted',
-  REVERSED: 'reversed',
-} as const
-
-// Invoice statuses
-export const InvoiceStatus = {
-  ACTIVE: 'active',
-  CANCELLED: 'cancelled',
-} as const
-
-// Route assignment statuses
-export const AssignmentStatus = {
-  ACTIVE: 'active',
-  COMPLETED: 'completed',
-  CANCELLED: 'cancelled',
-} as const
-
 // Reconciliation statuses
 export const ReconciliationStatus = {
   PENDING: 'pending',
@@ -77,24 +51,11 @@ export const ReconciliationStatus = {
   MISMATCH: 'mismatch',
 } as const
 
-// Time intervals (in milliseconds)
-export const TimeInterval = {
-  AUTO_REFRESH: 30000, // 30 seconds
-  ACTIVITY_THRESHOLD_ACTIVE: 1, // hours - considered "active"
-  ACTIVITY_THRESHOLD_DELAYED: 3, // hours - considered "delayed"
-} as const
-
 // UI Configuration
 export const UiConfig = {
   DATE_FORMAT_OPTIONS: {
     day: 'numeric',
     month: 'short',
-  } as Intl.DateTimeFormatOptions,
-  DATE_FORMAT_LONG: {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
   } as Intl.DateTimeFormatOptions,
   CURRENCY_FORMAT_OPTIONS: {
     style: 'currency',
@@ -120,16 +81,6 @@ export function formatDate(
   options: Intl.DateTimeFormatOptions = UiConfig.DATE_FORMAT_OPTIONS,
 ): string {
   return new Date(dateString).toLocaleDateString(LOCALE, options)
-}
-
-/**
- * Format date in long format
- */
-export function formatDateLong(dateString: string): string {
-  return new Date(dateString).toLocaleDateString(
-    LOCALE,
-    UiConfig.DATE_FORMAT_LONG,
-  )
 }
 
 /**
