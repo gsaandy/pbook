@@ -166,7 +166,7 @@ export function ReportsAndHistory({
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div>
             <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
-              Reports & History
+              Reports
             </h1>
             <p className="text-slate-600 dark:text-slate-400 mt-1">
               Transaction history and analytics
