@@ -33,7 +33,7 @@ export const linkUser = internalMutation({
     }
 
     // Link the Clerk account to the employee
-    await ctx.db.patch(employee._id, {
+    await ctx.db.patch("employees", employee._id, {
       clerkUserId: args.clerkUserId,
       status: "active",
     });

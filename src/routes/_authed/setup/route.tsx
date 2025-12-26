@@ -7,9 +7,18 @@ import { ShopFormModal } from './-components/ShopFormModal'
 import type { Employee, Route as RouteType, Shop } from '~/lib/types'
 import { ConfirmModal } from '~/components/modals'
 import { useDataStore } from '~/lib/data-store'
+import { employeeQueries, routeQueries, shopQueries } from '~/queries'
 
 export const Route = createFileRoute('/_authed/setup')({
   component: SetupPage,
+  loader: async ({ context: { queryClient } }) => {
+    // Prefetch all data needed for setup page
+    await Promise.all([
+      queryClient.ensureQueryData(shopQueries.list()),
+      queryClient.ensureQueryData(routeQueries.list()),
+      queryClient.ensureQueryData(employeeQueries.list()),
+    ])
+  },
 })
 
 function SetupPage() {

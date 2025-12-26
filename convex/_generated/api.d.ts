@@ -10,6 +10,9 @@
 
 import type * as employees from "../employees.js";
 import type * as http from "../http.js";
+import type * as routeAssignments from "../routeAssignments.js";
+import type * as routes from "../routes.js";
+import type * as shops from "../shops.js";
 import type * as test from "../test.js";
 
 import type {
@@ -21,6 +24,9 @@ import type {
 declare const fullApi: ApiFromModules<{
   employees: typeof employees;
   http: typeof http;
+  routeAssignments: typeof routeAssignments;
+  routes: typeof routes;
+  shops: typeof shops;
   test: typeof test;
 }>;
 
