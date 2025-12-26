@@ -145,4 +145,3 @@ Your application doesn't require any code changes. The domain configuration is h
 
 - **DNS Propagation**: 5 minutes to 48 hours (usually 1-2 hours)
 - **Vercel Verification**: Immediate once DNS propagates
-- **SSL Certificate**: 5-10 minutes after verification

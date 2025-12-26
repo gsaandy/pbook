@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, useLocation, useNavigate } from '@tanstack/react-router'
+import { Outlet, createFileRoute, useLocation, useNavigate } from '@tanstack/react-router'
 import { UserButton } from '@clerk/tanstack-react-start'
 import type { NavigationItem } from '@/lib/types'
 import { AppShell } from '@/components/shell'
