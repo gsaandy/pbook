@@ -4,14 +4,14 @@ import { createFileRoute } from '@tanstack/react-router'
 import { ReportsAndHistory } from './-components/ReportsAndHistory'
 import type {
   FilterOptions,
-  ReconciliationEvent,
   ReportTransaction,
+  SettlementEvent,
   TransactionFilters,
   TrendData,
 } from './-components/ReportsAndHistory'
 import {
   employeeQueries,
-  reconciliationQueries,
+  settlementQueries,
   shopQueries,
   transactionQueries,
 } from '~/queries'
@@ -21,7 +21,7 @@ export const Route = createFileRoute('/_authed/reports')({
   loader: async ({ context: { queryClient } }) => {
     await Promise.all([
       queryClient.ensureQueryData(transactionQueries.listWithDetails({})),
-      queryClient.ensureQueryData(reconciliationQueries.listWithDetails({})),
+      queryClient.ensureQueryData(settlementQueries.listWithDetails({})),
       queryClient.ensureQueryData(employeeQueries.list()),
       queryClient.ensureQueryData(shopQueries.list()),
     ])
@@ -33,8 +33,8 @@ function ReportsPage() {
   const { data: convexTransactions } = useSuspenseQuery(
     transactionQueries.listWithDetails({}),
   )
-  const { data: convexReconciliations } = useSuspenseQuery(
-    reconciliationQueries.listWithDetails({}),
+  const { data: convexSettlements } = useSuspenseQuery(
+    settlementQueries.listWithDetails({}),
   )
   const { data: convexEmployees } = useSuspenseQuery(employeeQueries.list())
   const { data: convexShops } = useSuspenseQuery(shopQueries.list())
@@ -68,29 +68,28 @@ function ReportsPage() {
       )
   }, [convexTransactions])
 
-  // Transform reconciliations to include employee names
-  const reconciliationEvents: Array<ReconciliationEvent> = useMemo(() => {
-    return convexReconciliations
-      .filter((r) => r.verifiedAt) // Only include verified records
-      .map((r) => {
+  // Transform settlements to include employee names
+  const settlementEvents: Array<SettlementEvent> = useMemo(() => {
+    return convexSettlements
+      .filter((s) => s.receivedAt) // Only include received settlements
+      .map((s) => {
         // Employee is already included in listWithDetails
         return {
-          id: r._id,
-          date: r.date,
-          employeeName: r.employee?.name ?? 'Unknown',
-          expectedCash: r.expectedCash,
-          actualCash: r.actualCash,
-          variance: r.variance,
-          status: r.status as 'verified' | 'mismatch',
-          note: r.note ?? null,
-          verifiedAt: new Date(r.verifiedAt!).toISOString(),
+          id: s._id,
+          employeeName: s.employee?.name ?? 'Unknown',
+          expectedAmount: s.expectedAmount,
+          receivedAmount: s.receivedAmount ?? 0,
+          variance: s.variance ?? 0,
+          status: s.status as 'received' | 'discrepancy',
+          note: s.note ?? null,
+          receivedAt: new Date(s.receivedAt!).toISOString(),
         }
       })
       .sort(
         (a, b) =>
-          new Date(b.verifiedAt).getTime() - new Date(a.verifiedAt).getTime(),
+          new Date(b.receivedAt).getTime() - new Date(a.receivedAt).getTime(),
       )
-  }, [convexReconciliations])
+  }, [convexSettlements])
 
   // Build trend data
   const trendData: TrendData = useMemo(() => {
@@ -226,7 +225,7 @@ function ReportsPage() {
   return (
     <ReportsAndHistory
       transactions={transactions}
-      reconciliationEvents={reconciliationEvents}
+      settlementEvents={settlementEvents}
       trendData={trendData}
       filterOptions={filterOptions}
       currentFilters={filters}

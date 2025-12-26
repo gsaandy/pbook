@@ -8,6 +8,15 @@ import {
   XCircle,
 } from 'lucide-react'
 import type { Invoice, Shop } from '~/lib/types'
+import { formatCurrency } from '~/lib/constants'
+import { ShopCombobox } from '~/components/ui/shop-combobox'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '~/components/ui/select'
 
 export interface InvoicesSectionProps {
   invoices: Array<Invoice>
@@ -31,14 +40,6 @@ export function InvoicesSection({
     'all' | 'active' | 'cancelled'
   >('all')
   const [shopFilter, setShopFilter] = useState('')
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 0,
-    }).format(value)
-  }
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -125,35 +126,33 @@ export function InvoicesSection({
 
             {/* Shop Filter */}
             <div>
-              <select
+              <ShopCombobox
+                shops={shops}
                 value={shopFilter}
-                onChange={(e) => setShopFilter(e.target.value)}
-                className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <option value="">All Shops</option>
-                {shops.map((shop) => (
-                  <option key={shop.id} value={shop.id}>
-                    {shop.name}
-                  </option>
-                ))}
-              </select>
+                onChange={setShopFilter}
+                placeholder="All Shops"
+                showBalance={false}
+                allowClear={true}
+              />
             </div>
 
             {/* Status Filter */}
             <div>
-              <select
+              <Select
                 value={statusFilter}
-                onChange={(e) =>
-                  setStatusFilter(
-                    e.target.value as 'all' | 'active' | 'cancelled',
-                  )
+                onValueChange={(value) =>
+                  setStatusFilter(value as 'all' | 'active' | 'cancelled')
                 }
-                className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
-                <option value="all">All Status</option>
-                <option value="active">Active</option>
-                <option value="cancelled">Cancelled</option>
-              </select>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="All Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 

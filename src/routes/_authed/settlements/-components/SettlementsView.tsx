@@ -24,8 +24,8 @@ export interface EmployeeSettlement {
   expectedCash: number
   actualCash: number | null
   variance: number | null
-  status: 'pending' | 'verified' | 'mismatch' | 'closed'
-  verifiedAt: string | null
+  status: 'pending' | 'received' | 'discrepancy'
+  receivedAt: string | null
   note: string | null
 }
 
@@ -45,7 +45,7 @@ export interface VerificationFormData {
   note?: string
 }
 
-export interface EndOfDayReconciliationProps {
+export interface SettlementsViewProps {
   eodSummary: EODSummary
   employeeSettlements: Array<EmployeeSettlement>
   cashTransactionsByEmployee: CashTransactionsByEmployee
@@ -54,13 +54,13 @@ export interface EndOfDayReconciliationProps {
   onVerifyMismatch?: (settlementId: string, data: VerificationFormData) => void
 }
 
-export function EndOfDayReconciliation({
+export function SettlementsView({
   eodSummary,
   employeeSettlements,
   cashTransactionsByEmployee,
   onVerifyMatch,
   onVerifyMismatch,
-}: EndOfDayReconciliationProps) {
+}: SettlementsViewProps) {
   const [verifyingEmployee, setVerifyingEmployee] = useState<string | null>(
     null,
   )
@@ -113,18 +113,18 @@ export function EndOfDayReconciliation({
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'verified':
+      case 'received':
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300">
             <CheckCircle2 className="w-3.5 h-3.5" />
-            Verified
+            Received
           </span>
         )
-      case 'mismatch':
+      case 'discrepancy':
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300">
             <AlertCircle className="w-3.5 h-3.5" />
-            Mismatch
+            Discrepancy
           </span>
         )
       default:
@@ -346,15 +346,10 @@ export function EndOfDayReconciliation({
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
-            End-of-Day Reconciliation
+            Settlements
           </h1>
           <p className="text-slate-600 dark:text-slate-400 mt-1">
-            {new Date(eodSummary.date).toLocaleDateString('en-IN', {
-              weekday: 'long',
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })}
+            Cash handover verification
           </p>
         </div>
 
@@ -363,7 +358,7 @@ export function EndOfDayReconciliation({
           <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 mb-6">
             <div className="flex items-center justify-between mb-3">
               <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                Reconciliation Progress
+                Verification Progress
               </p>
               <p className="text-sm font-semibold text-slate-900 dark:text-white">
                 {eodSummary.employeesVerified} of {eodSummary.employeesTotal}{' '}
@@ -512,9 +507,9 @@ export function EndOfDayReconciliation({
                             </button>
                           ) : (
                             <span className="text-sm text-slate-500 dark:text-slate-400">
-                              {settlementItem.verifiedAt &&
+                              {settlementItem.receivedAt &&
                                 new Date(
-                                  settlementItem.verifiedAt,
+                                  settlementItem.receivedAt,
                                 ).toLocaleTimeString('en-IN', {
                                   hour: '2-digit',
                                   minute: '2-digit',

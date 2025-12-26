@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import type { Invoice, Shop } from '~/lib/types'
 import { Modal } from '~/components/modals/Modal'
+import { ShopCombobox } from '~/components/ui/shop-combobox'
+import { formatCurrency } from '~/lib/constants'
 
 interface InvoiceFormModalProps {
   isOpen: boolean
@@ -69,14 +71,6 @@ export function InvoiceFormModal({
     onClose()
   }
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 0,
-    }).format(value)
-  }
-
   return (
     <Modal
       isOpen={isOpen}
@@ -88,23 +82,14 @@ export function InvoiceFormModal({
           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
             Shop *
           </label>
-          <select
-            required
-            disabled={!!invoice} // Cannot change shop when editing
+          <ShopCombobox
+            shops={shops}
             value={formData.shopId}
-            onChange={(e) =>
-              setFormData({ ...formData, shopId: e.target.value })
-            }
-            className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <option value="">Select a shop</option>
-            {shops.map((shop) => (
-              <option key={shop.id} value={shop.id}>
-                {shop.name} - {shop.zone} (Balance:{' '}
-                {formatCurrency(shop.currentBalance)})
-              </option>
-            ))}
-          </select>
+            onChange={(shopId) => setFormData({ ...formData, shopId })}
+            disabled={!!invoice}
+            placeholder="Search for a shop..."
+            showBalance={true}
+          />
           {invoice && (
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
               Shop cannot be changed when editing

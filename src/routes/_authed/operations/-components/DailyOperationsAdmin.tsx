@@ -2,6 +2,13 @@ import { useState } from 'react'
 import { Calendar, MapPin, Plus, Users, X } from 'lucide-react'
 import type { Employee, Route, RouteAssignment } from '~/lib/types'
 import { Modal } from '~/components/modals/Modal'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '~/components/ui/select'
 
 export interface DailyOperationsAdminProps {
   employees: Array<Employee>
@@ -225,41 +232,44 @@ export function DailyOperationsAdmin({
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
               Select Employee
             </label>
-            <select
+            <Select
               value={selectedEmployee}
-              onChange={(e) => setSelectedEmployee(e.target.value)}
-              className="w-full px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              onValueChange={setSelectedEmployee}
             >
-              <option value="">Choose an employee...</option>
-              {fieldStaff.map((emp) => (
-                <option
-                  key={emp.id}
-                  value={emp.id}
-                  disabled={isEmployeeAssigned(emp.id)}
-                >
-                  {emp.name}{' '}
-                  {isEmployeeAssigned(emp.id) ? '(Already assigned)' : ''}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Choose an employee..." />
+              </SelectTrigger>
+              <SelectContent>
+                {fieldStaff.map((emp) => (
+                  <SelectItem
+                    key={emp.id}
+                    value={emp.id}
+                    disabled={isEmployeeAssigned(emp.id)}
+                  >
+                    {emp.name}
+                    {isEmployeeAssigned(emp.id) ? ' (Already assigned)' : ''}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
               Select Route
             </label>
-            <select
-              value={selectedRoute}
-              onChange={(e) => setSelectedRoute(e.target.value)}
-              className="w-full px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            >
-              <option value="">Choose a route...</option>
-              {routes.map((route) => (
-                <option key={route.id} value={route.id}>
-                  {route.name} ({route.shopIds.length} shops)
-                </option>
-              ))}
-            </select>
+            <Select value={selectedRoute} onValueChange={setSelectedRoute}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Choose a route..." />
+              </SelectTrigger>
+              <SelectContent>
+                {routes.map((route) => (
+                  <SelectItem key={route.id} value={route.id}>
+                    {route.name} ({route.shopIds.length} shops)
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="flex gap-3 pt-4">

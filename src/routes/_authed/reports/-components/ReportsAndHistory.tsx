@@ -23,16 +23,15 @@ export interface ReportTransaction {
   status: 'completed' | 'adjusted' | 'reversed'
 }
 
-export interface ReconciliationEvent {
+export interface SettlementEvent {
   id: string
-  date: string
   employeeName: string
-  expectedCash: number
-  actualCash: number
+  expectedAmount: number
+  receivedAmount: number
   variance: number
-  status: 'verified' | 'mismatch'
+  status: 'received' | 'discrepancy'
   note: string | null
-  verifiedAt: string
+  receivedAt: string
 }
 
 export interface DailyCollection {
@@ -85,7 +84,7 @@ export interface TransactionFilters {
 
 export interface ReportsAndHistoryProps {
   transactions: Array<ReportTransaction>
-  reconciliationEvents: Array<ReconciliationEvent>
+  settlementEvents: Array<SettlementEvent>
   trendData: TrendData
   filterOptions: FilterOptions
   currentFilters: TransactionFilters
@@ -95,18 +94,18 @@ export interface ReportsAndHistoryProps {
   onViewTransaction?: (transactionId: string) => void
   onExportTransactions?: (format: 'pdf' | 'csv' | 'excel') => void
   onClearFilters?: () => void
-  onViewReconciliation?: (eventId: string) => void
+  onViewSettlement?: (eventId: string) => void
 }
 
 export function ReportsAndHistory({
   transactions,
-  reconciliationEvents,
+  settlementEvents,
   trendData,
   onExportTransactions,
   onClearFilters,
 }: ReportsAndHistoryProps) {
   const [activeView, setActiveView] = useState<
-    'transactions' | 'reconciliation' | 'analytics'
+    'transactions' | 'settlements' | 'analytics'
   >('transactions')
   const [searchQuery, setSearchQuery] = useState('')
 
@@ -203,14 +202,14 @@ export function ReportsAndHistory({
             Transactions ({transactions.length})
           </button>
           <button
-            onClick={() => setActiveView('reconciliation')}
+            onClick={() => setActiveView('settlements')}
             className={`px-4 py-2 font-medium text-sm transition-colors border-b-2 ${
-              activeView === 'reconciliation'
+              activeView === 'settlements'
                 ? 'border-indigo-600 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400'
                 : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
-            Audit Trail ({reconciliationEvents.length})
+            Audit Trail ({settlementEvents.length})
           </button>
           <button
             onClick={() => setActiveView('analytics')}
@@ -384,24 +383,24 @@ export function ReportsAndHistory({
           </>
         )}
 
-        {/* Reconciliation View */}
-        {activeView === 'reconciliation' && (
+        {/* Settlements View */}
+        {activeView === 'settlements' && (
           <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
             <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
               <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
-                EOD Reconciliation History
+                Settlement History
               </h2>
             </div>
 
-            {reconciliationEvents.length === 0 ? (
+            {settlementEvents.length === 0 ? (
               <div className="text-center py-12">
                 <p className="text-slate-600 dark:text-slate-400">
-                  No reconciliation events yet
+                  No settlement events yet
                 </p>
               </div>
             ) : (
               <div className="divide-y divide-slate-200 dark:divide-slate-700">
-                {reconciliationEvents.map((event) => (
+                {settlementEvents.map((event) => (
                   <div
                     key={event.id}
                     className="p-6 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
@@ -412,36 +411,36 @@ export function ReportsAndHistory({
                           {event.employeeName}
                         </h3>
                         <p className="text-sm text-slate-600 dark:text-slate-400 mt-0.5">
-                          {formatDate(event.date)} • Verified at{' '}
-                          {formatTime(event.verifiedAt)}
+                          Received at {formatTime(event.receivedAt)} •{' '}
+                          {formatDate(event.receivedAt)}
                         </p>
                       </div>
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          event.status === 'verified'
+                          event.status === 'received'
                             ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
                             : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
                         }`}
                       >
-                        {event.status === 'verified' ? 'Verified' : 'Mismatch'}
+                        {event.status === 'received' ? 'Received' : 'Discrepancy'}
                       </span>
                     </div>
 
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-3">
                       <div>
                         <p className="text-xs text-slate-500 dark:text-slate-400">
-                          Expected Cash
+                          Expected
                         </p>
                         <p className="text-sm font-semibold text-slate-900 dark:text-white mt-0.5">
-                          {formatCurrency(event.expectedCash)}
+                          {formatCurrency(event.expectedAmount)}
                         </p>
                       </div>
                       <div>
                         <p className="text-xs text-slate-500 dark:text-slate-400">
-                          Actual Cash
+                          Received
                         </p>
                         <p className="text-sm font-semibold text-slate-900 dark:text-white mt-0.5">
-                          {formatCurrency(event.actualCash)}
+                          {formatCurrency(event.receivedAmount)}
                         </p>
                       </div>
                       <div>

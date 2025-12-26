@@ -32,32 +32,32 @@ function AuthedLayout() {
   // Role-based filtering can be added later using Clerk metadata
   const navigationItems: Array<NavigationItem> = [
     {
-      label: 'Dashboard',
+      label: 'Home',
       href: '/dashboard',
       isActive: location.pathname === '/dashboard',
     },
     {
-      label: 'Operations',
+      label: 'Collections',
       href: '/operations',
       isActive: location.pathname === '/operations',
     },
     {
-      label: 'Invoices',
+      label: 'Deliveries',
       href: '/invoices',
       isActive: location.pathname === '/invoices',
     },
     {
-      label: 'Setup',
+      label: 'Shops & Team',
       href: '/setup',
       isActive: location.pathname === '/setup',
     },
     {
-      label: 'Reconciliation',
-      href: '/reconciliation',
-      isActive: location.pathname === '/reconciliation',
+      label: 'Settlements',
+      href: '/settlements',
+      isActive: location.pathname === '/settlements',
     },
     {
-      label: 'Reports',
+      label: 'History',
       href: '/reports',
       isActive: location.pathname === '/reports',
     },

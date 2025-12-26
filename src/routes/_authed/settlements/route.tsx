@@ -1,57 +1,61 @@
 import { useMemo } from 'react'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { EndOfDayReconciliation } from './-components/EndOfDayReconciliation'
+import { SettlementsView } from './-components/SettlementsView'
 import type {
   CashTransactionsByEmployee,
   EODSummary,
   EmployeeSettlement,
   VerificationFormData,
-} from './-components/EndOfDayReconciliation'
+} from './-components/SettlementsView'
 import type { Id } from '~/convex/_generated/dataModel'
 import {
   employeeQueries,
-  reconciliationQueries,
   routeAssignmentQueries,
+  settlementQueries,
   transactionQueries,
-  useVerifyReconciliationMutation,
+  useVerifySettlementMutation,
 } from '~/queries'
-import { PaymentMode, ReconciliationStatus, Status } from '~/lib/constants'
+import { PaymentMode, SettlementStatus, Status } from '~/lib/constants'
 
-export const Route = createFileRoute('/_authed/reconciliation')({
-  component: ReconciliationPage,
+export const Route = createFileRoute('/_authed/settlements')({
+  component: SettlementsPage,
   loader: async ({ context: { queryClient } }) => {
     const today = new Date().toISOString().split('T')[0]
     await Promise.all([
       queryClient.ensureQueryData(employeeQueries.list()),
+      queryClient.ensureQueryData(employeeQueries.current()),
       queryClient.ensureQueryData(
         transactionQueries.listWithDetails({ date: today }),
       ),
       queryClient.ensureQueryData(
         routeAssignmentQueries.byDateWithDetails(today),
       ),
-      queryClient.ensureQueryData(reconciliationQueries.list({ date: today })),
+      queryClient.ensureQueryData(
+        settlementQueries.list({ status: SettlementStatus.PENDING }),
+      ),
     ])
   },
 })
 
-function ReconciliationPage() {
+function SettlementsPage() {
   const today = new Date().toISOString().split('T')[0]
 
   // Fetch data from Convex
   const { data: convexEmployees } = useSuspenseQuery(employeeQueries.list())
+  const { data: currentEmployee } = useSuspenseQuery(employeeQueries.current())
   const { data: convexTransactions } = useSuspenseQuery(
     transactionQueries.listWithDetails({ date: today }),
   )
   const { data: convexAssignments } = useSuspenseQuery(
     routeAssignmentQueries.byDateWithDetails(today),
   )
-  const { data: convexReconciliations } = useSuspenseQuery(
-    reconciliationQueries.list({ date: today }),
+  const { data: convexSettlements } = useSuspenseQuery(
+    settlementQueries.list({}),
   )
 
   // Mutations
-  const verifyReconciliationMutation = useVerifyReconciliationMutation()
+  const verifySettlementMutation = useVerifySettlementMutation()
 
   // Build EOD summary
   const eodSummary: EODSummary = useMemo(() => {
@@ -73,10 +77,10 @@ function ReconciliationPage() {
         .map((a) => a.employeeId),
     )
     const employeesTotal = employeesWithAssignments.size
-    const employeesVerified = convexReconciliations.filter(
-      (r) =>
-        r.status === ReconciliationStatus.VERIFIED ||
-        r.status === ReconciliationStatus.MISMATCH,
+    const employeesVerified = convexSettlements.filter(
+      (s) =>
+        s.status === SettlementStatus.RECEIVED ||
+        s.status === SettlementStatus.DISCREPANCY,
     ).length
 
     return {
@@ -87,7 +91,7 @@ function ReconciliationPage() {
       employeesVerified,
       employeesTotal,
     }
-  }, [convexTransactions, convexAssignments, convexReconciliations, today])
+  }, [convexTransactions, convexAssignments, convexSettlements, today])
 
   // Build employee settlements list
   const employeeSettlements: Array<EmployeeSettlement> = useMemo(() => {
@@ -96,9 +100,9 @@ function ReconciliationPage() {
       (a) => a.status === Status.ACTIVE,
     )
 
-    // Build reconciliation lookup map
-    const reconciliationMap = new Map(
-      convexReconciliations.map((r) => [r.employeeId as string, r]),
+    // Build settlement lookup map by employee
+    const settlementMap = new Map(
+      convexSettlements.map((s) => [s.employeeId as string, s]),
     )
 
     return activeAssignments.map((assignment) => {
@@ -107,9 +111,7 @@ function ReconciliationPage() {
       )
       // Route is already included in assignment from byDateWithDetails
       const routeName = assignment.route?.name ?? 'Unknown Route'
-      const reconciliation = reconciliationMap.get(
-        assignment.employeeId as string,
-      )
+      const settlement = settlementMap.get(assignment.employeeId as string)
 
       // Calculate expected cash from today's cash transactions for this employee
       const expectedCash = convexTransactions
@@ -120,13 +122,15 @@ function ReconciliationPage() {
         )
         .reduce((sum, t) => sum + t.amount, 0)
 
-      let status: 'pending' | 'verified' | 'mismatch' | 'closed' =
-        ReconciliationStatus.PENDING
-      if (reconciliation) {
+      let status: 'pending' | 'received' | 'discrepancy' =
+        SettlementStatus.PENDING
+      if (settlement) {
         status =
-          reconciliation.status === ReconciliationStatus.VERIFIED
-            ? ReconciliationStatus.VERIFIED
-            : ReconciliationStatus.MISMATCH
+          settlement.status === SettlementStatus.RECEIVED
+            ? SettlementStatus.RECEIVED
+            : settlement.status === SettlementStatus.DISCREPANCY
+              ? SettlementStatus.DISCREPANCY
+              : SettlementStatus.PENDING
       }
 
       return {
@@ -135,21 +139,16 @@ function ReconciliationPage() {
         employeeName: employee?.name ?? 'Unknown',
         route: routeName,
         expectedCash,
-        actualCash: reconciliation?.actualCash ?? null,
-        variance: reconciliation?.variance ?? null,
+        actualCash: settlement?.receivedAmount ?? null,
+        variance: settlement?.variance ?? null,
         status,
-        verifiedAt: reconciliation?.verifiedAt
-          ? new Date(reconciliation.verifiedAt).toISOString()
+        receivedAt: settlement?.receivedAt
+          ? new Date(settlement.receivedAt).toISOString()
           : null,
-        note: reconciliation?.note ?? null,
+        note: settlement?.note ?? null,
       }
     })
-  }, [
-    convexAssignments,
-    convexEmployees,
-    convexTransactions,
-    convexReconciliations,
-  ])
+  }, [convexAssignments, convexEmployees, convexTransactions, convexSettlements])
 
   // Build cash transactions by employee
   const cashTransactionsByEmployee: CashTransactionsByEmployee = useMemo(() => {
@@ -185,36 +184,50 @@ function ReconciliationPage() {
     return result
   }, [convexTransactions])
 
-  // Handle match verification
+  // Get transaction IDs for an employee's cash transactions today
+  const getEmployeeCashTransactionIds = (
+    employeeId: string,
+  ): Array<Id<'transactions'>> => {
+    return convexTransactions
+      .filter(
+        (t) => t.employeeId === employeeId && t.paymentMode === PaymentMode.CASH,
+      )
+      .map((t) => t._id as Id<'transactions'>)
+  }
+
+  // Handle match verification (cash matches expected)
   const handleVerifyMatch = (settlementId: string) => {
     const settlement = employeeSettlements.find((s) => s.id === settlementId)
-    if (settlement) {
-      verifyReconciliationMutation.mutate({
+    if (settlement && currentEmployee) {
+      const transactionIds = getEmployeeCashTransactionIds(settlement.employeeId)
+      verifySettlementMutation.mutate({
         employeeId: settlement.employeeId as Id<'employees'>,
-        date: today,
-        actualCash: settlement.expectedCash,
+        transactionIds,
+        receivedBy: currentEmployee._id as Id<'employees'>,
       })
     }
   }
 
-  // Handle mismatch verification
+  // Handle mismatch verification (cash doesn't match)
   const handleVerifyMismatch = (
     settlementId: string,
     data: VerificationFormData,
   ) => {
     const settlement = employeeSettlements.find((s) => s.id === settlementId)
-    if (settlement) {
-      verifyReconciliationMutation.mutate({
+    if (settlement && currentEmployee) {
+      const transactionIds = getEmployeeCashTransactionIds(settlement.employeeId)
+      verifySettlementMutation.mutate({
         employeeId: settlement.employeeId as Id<'employees'>,
-        date: today,
-        actualCash: data.actualCash,
+        transactionIds,
+        receivedAmount: data.actualCash,
+        receivedBy: currentEmployee._id as Id<'employees'>,
         note: data.note,
       })
     }
   }
 
   return (
-    <EndOfDayReconciliation
+    <SettlementsView
       eodSummary={eodSummary}
       employeeSettlements={employeeSettlements}
       cashTransactionsByEmployee={cashTransactionsByEmployee}

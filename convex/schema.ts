@@ -23,26 +23,26 @@ export default defineSchema({
     .index('by_shop', ['shopId'])
     .index('by_changed_at', ['changedAt']),
 
-  // 2. DAILY RECONCILIATIONS - End-of-day cash verification
-  dailyReconciliations: defineTable({
-    date: v.string(), // "2024-12-26"
+  // 2. SETTLEMENTS - Cash handover verification from field staff
+  settlements: defineTable({
     employeeId: v.id('employees'),
-    expectedCash: v.float64(), // Calculated from transactions
-    actualCash: v.optional(v.float64()), // What admin counted
-    variance: v.optional(v.float64()), // expected - actual
+    expectedAmount: v.float64(), // Sum of cash transactions being settled
+    receivedAmount: v.optional(v.float64()), // What admin actually received
+    variance: v.optional(v.float64()), // receivedAmount - expectedAmount
     status: v.union(
-      v.literal('pending'),
-      v.literal('verified'),
-      v.literal('mismatch'),
-      v.literal('closed'),
+      v.literal('pending'), // Cash not yet received
+      v.literal('received'), // Cash received & matches
+      v.literal('discrepancy'), // Cash received but doesn't match
     ),
+    transactionIds: v.array(v.id('transactions')), // Which transactions this covers
     note: v.optional(v.string()),
-    verifiedAt: v.optional(v.float64()),
-    verifiedBy: v.optional(v.id('employees')),
+    createdAt: v.float64(),
+    receivedAt: v.optional(v.float64()),
+    receivedBy: v.optional(v.id('employees')),
   })
-    .index('by_date', ['date'])
-    .index('by_employee_date', ['employeeId', 'date'])
-    .index('by_status', ['status']),
+    .index('by_employee', ['employeeId'])
+    .index('by_status', ['status'])
+    .index('by_created_at', ['createdAt']),
 
   // 3. EMPLOYEES - With Clerk auth linking
   employees: defineTable({

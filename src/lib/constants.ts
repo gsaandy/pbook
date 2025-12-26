@@ -39,16 +39,14 @@ export const Status = {
   COMPLETED: 'completed',
   CANCELLED: 'cancelled',
   PENDING: 'pending',
-  VERIFIED: 'verified',
-  MISMATCH: 'mismatch',
   REVERSED: 'reversed',
 } as const
 
-// Reconciliation statuses
-export const ReconciliationStatus = {
-  PENDING: 'pending',
-  VERIFIED: 'verified',
-  MISMATCH: 'mismatch',
+// Settlement statuses (cash handover verification)
+export const SettlementStatus = {
+  PENDING: 'pending', // Cash not yet received
+  RECEIVED: 'received', // Cash received & matches
+  DISCREPANCY: 'discrepancy', // Cash received but doesn't match
 } as const
 
 // UI Configuration

@@ -1,6 +1,13 @@
 import { useState } from 'react'
 import type { Employee } from '~/lib/types'
 import { Modal } from '~/components/modals/Modal'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '~/components/ui/select'
 
 interface EmployeeFormModalProps {
   isOpen: boolean
@@ -91,38 +98,46 @@ export function EmployeeFormModal({
           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
             Role *
           </label>
-          <select
+          <Select
             value={formData.role}
-            onChange={(e) =>
+            onValueChange={(value) =>
               setFormData({
                 ...formData,
-                role: e.target.value as 'field_staff' | 'admin',
+                role: value as 'field_staff' | 'admin',
               })
             }
-            className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
-            <option value="field_staff">Field Staff</option>
-            <option value="admin">Admin</option>
-          </select>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select role" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="field_staff">Field Staff</SelectItem>
+              <SelectItem value="admin">Admin</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
             Status
           </label>
-          <select
+          <Select
             value={formData.status}
-            onChange={(e) =>
+            onValueChange={(value) =>
               setFormData({
                 ...formData,
-                status: e.target.value as 'active' | 'inactive',
+                status: value as 'active' | 'inactive',
               })
             }
-            className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-          </select>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="active">Active</SelectItem>
+              <SelectItem value="inactive">Inactive</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="flex gap-3 pt-4">
