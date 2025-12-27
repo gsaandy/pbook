@@ -6,7 +6,7 @@ import {
 } from '@tanstack/react-router'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { UserButton } from '@clerk/tanstack-react-start'
-import type { NavigationItem } from '~/lib/types'
+import type { NavigationGroup, NavigationItem } from '~/lib/types'
 import { AppShell } from '~/components/shell'
 import { SignInPage } from '~/components/auth/SignInPage'
 import { employeeQueries } from '~/queries'
@@ -30,20 +30,33 @@ export const Route = createFileRoute('/_authed')({
   component: AuthedLayout,
 })
 
-// Navigation items for admins
-const adminNavItems = [
-  { label: 'Home', href: '/dashboard' },
-  { label: 'Collections', href: '/operations' },
-  { label: 'Deliveries', href: '/invoices' },
-  { label: 'Shops & Team', href: '/setup' },
-  { label: 'Handovers', href: '/settlements' },
-  { label: 'History', href: '/reports' },
+// Navigation groups for admins
+const adminNavGroups: Array<NavigationGroup> = [
+  {
+    title: 'Daily Operations',
+    items: [
+      { label: 'Home', href: '/home' },
+      { label: 'Collections', href: '/collections' },
+      { label: 'Bills', href: '/bills' },
+    ],
+  },
+  {
+    title: 'End of Day',
+    items: [{ label: 'Handovers', href: '/handovers' }],
+  },
+  {
+    title: 'Administration',
+    items: [
+      { label: 'Shops & Team', href: '/manage' },
+      { label: 'History', href: '/history' },
+    ],
+  },
 ]
 
-// Navigation items for field staff (limited access)
-const fieldStaffNavItems = [
-  { label: 'Home', href: '/dashboard' },
-  { label: 'Collections', href: '/operations' },
+// Navigation items for field staff (limited access) - no grouping needed
+const fieldStaffNavItems: Array<NavigationItem> = [
+  { label: 'Home', href: '/home' },
+  { label: 'Collections', href: '/collections' },
 ]
 
 function AuthedLayout() {
@@ -53,12 +66,30 @@ function AuthedLayout() {
 
   const isFieldStaff = currentEmployee?.role === EmployeeRole.FIELD_STAFF
 
-  // Get appropriate nav items based on role
-  const baseNavItems = isFieldStaff ? fieldStaffNavItems : adminNavItems
-  const navigationItems: Array<NavigationItem> = baseNavItems.map((item) => ({
-    ...item,
-    isActive: location.pathname === item.href,
-  }))
+  // Build navigation based on role
+  // Admin gets grouped navigation, field staff gets flat list
+  const navigationGroups: Array<NavigationGroup> | undefined = isFieldStaff
+    ? undefined
+    : adminNavGroups.map((group) => ({
+        ...group,
+        items: group.items.map((item) => ({
+          ...item,
+          isActive: location.pathname === item.href,
+        })),
+      }))
+
+  // Flat navigation items for field staff and mobile bottom nav
+  const navigationItems: Array<NavigationItem> = isFieldStaff
+    ? fieldStaffNavItems.map((item) => ({
+        ...item,
+        isActive: location.pathname === item.href,
+      }))
+    : adminNavGroups.flatMap((group) =>
+        group.items.map((item) => ({
+          ...item,
+          isActive: location.pathname === item.href,
+        })),
+      )
 
   const handleNavigate = (href: string) => {
     navigate({ to: href })
@@ -67,6 +98,7 @@ function AuthedLayout() {
   return (
     <AppShell
       navigationItems={navigationItems}
+      navigationGroups={navigationGroups}
       onNavigate={handleNavigate}
       userButton={
         <UserButton

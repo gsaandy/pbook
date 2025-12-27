@@ -12,7 +12,7 @@ import {
   useCreateInvoiceMutation,
 } from '~/queries'
 
-export const Route = createFileRoute('/_authed/invoices')({
+export const Route = createFileRoute('/_authed/bills')({
   component: InvoicesPage,
   beforeLoad: async ({ context: { queryClient } }) => {
     // Check if user is authorized (admins only)
@@ -20,7 +20,7 @@ export const Route = createFileRoute('/_authed/invoices')({
       employeeQueries.current(),
     )
     if (employee?.role === EmployeeRole.FIELD_STAFF) {
-      throw redirect({ to: '/operations' })
+      throw redirect({ to: '/collections' })
     }
   },
   loader: async ({ context: { queryClient } }) => {

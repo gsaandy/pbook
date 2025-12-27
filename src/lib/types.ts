@@ -107,6 +107,11 @@ export interface NavigationItem {
   isActive?: boolean
 }
 
+export interface NavigationGroup {
+  title: string
+  items: Array<NavigationItem>
+}
+
 export interface User {
   name: string
   avatarUrl?: string

@@ -5,6 +5,6 @@ export const Route = createFileRoute('/')({
 })
 
 function IndexPage() {
-  // Redirect to dashboard - the _authed layout will handle auth check
-  return <Navigate to="/dashboard" />
+  // Redirect to home - the _authed layout will handle auth check
+  return <Navigate to="/home" />
 }

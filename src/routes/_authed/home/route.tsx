@@ -11,7 +11,7 @@ import type {
 import { employeeQueries, transactionQueries } from '~/queries'
 import { EmployeeRole, PaymentMode } from '~/lib/constants'
 
-export const Route = createFileRoute('/_authed/dashboard')({
+export const Route = createFileRoute('/_authed/home')({
   component: DashboardPage,
   loader: async ({ context: { queryClient } }) => {
     const today = new Date().toISOString().split('T')[0]

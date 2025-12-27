@@ -10,7 +10,7 @@ import {
   useCollectCashMutation,
 } from '~/queries'
 
-export const Route = createFileRoute('/_authed/operations')({
+export const Route = createFileRoute('/_authed/collections')({
   component: OperationsPage,
   loader: async ({ context: { queryClient } }) => {
     const today = new Date().toISOString().split('T')[0]

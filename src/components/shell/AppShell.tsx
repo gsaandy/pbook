@@ -2,11 +2,13 @@ import { useState } from 'react'
 import { Menu, X } from 'lucide-react'
 import { MainNav } from './MainNav'
 import { MobileBottomNav } from './MobileBottomNav'
-import type { NavigationItem } from '~/lib/types'
+import type { NavigationGroup, NavigationItem } from '~/lib/types'
 
 export interface AppShellProps {
   children: React.ReactNode
   navigationItems: Array<NavigationItem>
+  /** Grouped navigation for desktop sidebar (admin only) */
+  navigationGroups?: Array<NavigationGroup>
   onNavigate?: (href: string) => void
   userButton?: React.ReactNode
   /** Use 'field_staff' for mobile-first bottom nav layout */
@@ -16,6 +18,7 @@ export interface AppShellProps {
 export function AppShell({
   children,
   navigationItems,
+  navigationGroups,
   onNavigate,
   userButton,
   variant = 'admin',
@@ -74,7 +77,11 @@ export function AppShell({
             PSBook
           </h1>
         </div>
-        <MainNav items={navigationItems} onNavigate={onNavigate} />
+        <MainNav
+          items={navigationItems}
+          groups={navigationGroups}
+          onNavigate={onNavigate}
+        />
       </aside>
 
       {/* Mobile Sidebar Overlay */}
@@ -99,6 +106,7 @@ export function AppShell({
             </div>
             <MainNav
               items={navigationItems}
+              groups={navigationGroups}
               onNavigate={(href) => {
                 onNavigate?.(href)
                 setIsMobileMenuOpen(false)

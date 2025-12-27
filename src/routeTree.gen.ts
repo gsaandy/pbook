@@ -11,12 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthedSetupRouteRouteImport } from './routes/_authed/setup/route'
-import { Route as AuthedSettlementsRouteRouteImport } from './routes/_authed/settlements/route'
-import { Route as AuthedReportsRouteRouteImport } from './routes/_authed/reports/route'
-import { Route as AuthedOperationsRouteRouteImport } from './routes/_authed/operations/route'
-import { Route as AuthedInvoicesRouteRouteImport } from './routes/_authed/invoices/route'
-import { Route as AuthedDashboardRouteRouteImport } from './routes/_authed/dashboard/route'
+import { Route as AuthedManageRouteRouteImport } from './routes/_authed/manage/route'
+import { Route as AuthedHomeRouteRouteImport } from './routes/_authed/home/route'
+import { Route as AuthedHistoryRouteRouteImport } from './routes/_authed/history/route'
+import { Route as AuthedHandoversRouteRouteImport } from './routes/_authed/handovers/route'
+import { Route as AuthedCollectionsRouteRouteImport } from './routes/_authed/collections/route'
+import { Route as AuthedBillsRouteRouteImport } from './routes/_authed/bills/route'
 
 const AuthedRoute = AuthedRouteImport.update({
   id: '/_authed',
@@ -27,95 +27,95 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthedSetupRouteRoute = AuthedSetupRouteRouteImport.update({
-  id: '/setup',
-  path: '/setup',
+const AuthedManageRouteRoute = AuthedManageRouteRouteImport.update({
+  id: '/manage',
+  path: '/manage',
   getParentRoute: () => AuthedRoute,
 } as any)
-const AuthedSettlementsRouteRoute = AuthedSettlementsRouteRouteImport.update({
-  id: '/settlements',
-  path: '/settlements',
+const AuthedHomeRouteRoute = AuthedHomeRouteRouteImport.update({
+  id: '/home',
+  path: '/home',
   getParentRoute: () => AuthedRoute,
 } as any)
-const AuthedReportsRouteRoute = AuthedReportsRouteRouteImport.update({
-  id: '/reports',
-  path: '/reports',
+const AuthedHistoryRouteRoute = AuthedHistoryRouteRouteImport.update({
+  id: '/history',
+  path: '/history',
   getParentRoute: () => AuthedRoute,
 } as any)
-const AuthedOperationsRouteRoute = AuthedOperationsRouteRouteImport.update({
-  id: '/operations',
-  path: '/operations',
+const AuthedHandoversRouteRoute = AuthedHandoversRouteRouteImport.update({
+  id: '/handovers',
+  path: '/handovers',
   getParentRoute: () => AuthedRoute,
 } as any)
-const AuthedInvoicesRouteRoute = AuthedInvoicesRouteRouteImport.update({
-  id: '/invoices',
-  path: '/invoices',
+const AuthedCollectionsRouteRoute = AuthedCollectionsRouteRouteImport.update({
+  id: '/collections',
+  path: '/collections',
   getParentRoute: () => AuthedRoute,
 } as any)
-const AuthedDashboardRouteRoute = AuthedDashboardRouteRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const AuthedBillsRouteRoute = AuthedBillsRouteRouteImport.update({
+  id: '/bills',
+  path: '/bills',
   getParentRoute: () => AuthedRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/dashboard': typeof AuthedDashboardRouteRoute
-  '/invoices': typeof AuthedInvoicesRouteRoute
-  '/operations': typeof AuthedOperationsRouteRoute
-  '/reports': typeof AuthedReportsRouteRoute
-  '/settlements': typeof AuthedSettlementsRouteRoute
-  '/setup': typeof AuthedSetupRouteRoute
+  '/bills': typeof AuthedBillsRouteRoute
+  '/collections': typeof AuthedCollectionsRouteRoute
+  '/handovers': typeof AuthedHandoversRouteRoute
+  '/history': typeof AuthedHistoryRouteRoute
+  '/home': typeof AuthedHomeRouteRoute
+  '/manage': typeof AuthedManageRouteRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/dashboard': typeof AuthedDashboardRouteRoute
-  '/invoices': typeof AuthedInvoicesRouteRoute
-  '/operations': typeof AuthedOperationsRouteRoute
-  '/reports': typeof AuthedReportsRouteRoute
-  '/settlements': typeof AuthedSettlementsRouteRoute
-  '/setup': typeof AuthedSetupRouteRoute
+  '/bills': typeof AuthedBillsRouteRoute
+  '/collections': typeof AuthedCollectionsRouteRoute
+  '/handovers': typeof AuthedHandoversRouteRoute
+  '/history': typeof AuthedHistoryRouteRoute
+  '/home': typeof AuthedHomeRouteRoute
+  '/manage': typeof AuthedManageRouteRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authed': typeof AuthedRouteWithChildren
-  '/_authed/dashboard': typeof AuthedDashboardRouteRoute
-  '/_authed/invoices': typeof AuthedInvoicesRouteRoute
-  '/_authed/operations': typeof AuthedOperationsRouteRoute
-  '/_authed/reports': typeof AuthedReportsRouteRoute
-  '/_authed/settlements': typeof AuthedSettlementsRouteRoute
-  '/_authed/setup': typeof AuthedSetupRouteRoute
+  '/_authed/bills': typeof AuthedBillsRouteRoute
+  '/_authed/collections': typeof AuthedCollectionsRouteRoute
+  '/_authed/handovers': typeof AuthedHandoversRouteRoute
+  '/_authed/history': typeof AuthedHistoryRouteRoute
+  '/_authed/home': typeof AuthedHomeRouteRoute
+  '/_authed/manage': typeof AuthedManageRouteRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/dashboard'
-    | '/invoices'
-    | '/operations'
-    | '/reports'
-    | '/settlements'
-    | '/setup'
+    | '/bills'
+    | '/collections'
+    | '/handovers'
+    | '/history'
+    | '/home'
+    | '/manage'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/dashboard'
-    | '/invoices'
-    | '/operations'
-    | '/reports'
-    | '/settlements'
-    | '/setup'
+    | '/bills'
+    | '/collections'
+    | '/handovers'
+    | '/history'
+    | '/home'
+    | '/manage'
   id:
     | '__root__'
     | '/'
     | '/_authed'
-    | '/_authed/dashboard'
-    | '/_authed/invoices'
-    | '/_authed/operations'
-    | '/_authed/reports'
-    | '/_authed/settlements'
-    | '/_authed/setup'
+    | '/_authed/bills'
+    | '/_authed/collections'
+    | '/_authed/handovers'
+    | '/_authed/history'
+    | '/_authed/home'
+    | '/_authed/manage'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -139,67 +139,67 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authed/setup': {
-      id: '/_authed/setup'
-      path: '/setup'
-      fullPath: '/setup'
-      preLoaderRoute: typeof AuthedSetupRouteRouteImport
+    '/_authed/manage': {
+      id: '/_authed/manage'
+      path: '/manage'
+      fullPath: '/manage'
+      preLoaderRoute: typeof AuthedManageRouteRouteImport
       parentRoute: typeof AuthedRoute
     }
-    '/_authed/settlements': {
-      id: '/_authed/settlements'
-      path: '/settlements'
-      fullPath: '/settlements'
-      preLoaderRoute: typeof AuthedSettlementsRouteRouteImport
+    '/_authed/home': {
+      id: '/_authed/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof AuthedHomeRouteRouteImport
       parentRoute: typeof AuthedRoute
     }
-    '/_authed/reports': {
-      id: '/_authed/reports'
-      path: '/reports'
-      fullPath: '/reports'
-      preLoaderRoute: typeof AuthedReportsRouteRouteImport
+    '/_authed/history': {
+      id: '/_authed/history'
+      path: '/history'
+      fullPath: '/history'
+      preLoaderRoute: typeof AuthedHistoryRouteRouteImport
       parentRoute: typeof AuthedRoute
     }
-    '/_authed/operations': {
-      id: '/_authed/operations'
-      path: '/operations'
-      fullPath: '/operations'
-      preLoaderRoute: typeof AuthedOperationsRouteRouteImport
+    '/_authed/handovers': {
+      id: '/_authed/handovers'
+      path: '/handovers'
+      fullPath: '/handovers'
+      preLoaderRoute: typeof AuthedHandoversRouteRouteImport
       parentRoute: typeof AuthedRoute
     }
-    '/_authed/invoices': {
-      id: '/_authed/invoices'
-      path: '/invoices'
-      fullPath: '/invoices'
-      preLoaderRoute: typeof AuthedInvoicesRouteRouteImport
+    '/_authed/collections': {
+      id: '/_authed/collections'
+      path: '/collections'
+      fullPath: '/collections'
+      preLoaderRoute: typeof AuthedCollectionsRouteRouteImport
       parentRoute: typeof AuthedRoute
     }
-    '/_authed/dashboard': {
-      id: '/_authed/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthedDashboardRouteRouteImport
+    '/_authed/bills': {
+      id: '/_authed/bills'
+      path: '/bills'
+      fullPath: '/bills'
+      preLoaderRoute: typeof AuthedBillsRouteRouteImport
       parentRoute: typeof AuthedRoute
     }
   }
 }
 
 interface AuthedRouteChildren {
-  AuthedDashboardRouteRoute: typeof AuthedDashboardRouteRoute
-  AuthedInvoicesRouteRoute: typeof AuthedInvoicesRouteRoute
-  AuthedOperationsRouteRoute: typeof AuthedOperationsRouteRoute
-  AuthedReportsRouteRoute: typeof AuthedReportsRouteRoute
-  AuthedSettlementsRouteRoute: typeof AuthedSettlementsRouteRoute
-  AuthedSetupRouteRoute: typeof AuthedSetupRouteRoute
+  AuthedBillsRouteRoute: typeof AuthedBillsRouteRoute
+  AuthedCollectionsRouteRoute: typeof AuthedCollectionsRouteRoute
+  AuthedHandoversRouteRoute: typeof AuthedHandoversRouteRoute
+  AuthedHistoryRouteRoute: typeof AuthedHistoryRouteRoute
+  AuthedHomeRouteRoute: typeof AuthedHomeRouteRoute
+  AuthedManageRouteRoute: typeof AuthedManageRouteRoute
 }
 
 const AuthedRouteChildren: AuthedRouteChildren = {
-  AuthedDashboardRouteRoute: AuthedDashboardRouteRoute,
-  AuthedInvoicesRouteRoute: AuthedInvoicesRouteRoute,
-  AuthedOperationsRouteRoute: AuthedOperationsRouteRoute,
-  AuthedReportsRouteRoute: AuthedReportsRouteRoute,
-  AuthedSettlementsRouteRoute: AuthedSettlementsRouteRoute,
-  AuthedSetupRouteRoute: AuthedSetupRouteRoute,
+  AuthedBillsRouteRoute: AuthedBillsRouteRoute,
+  AuthedCollectionsRouteRoute: AuthedCollectionsRouteRoute,
+  AuthedHandoversRouteRoute: AuthedHandoversRouteRoute,
+  AuthedHistoryRouteRoute: AuthedHistoryRouteRoute,
+  AuthedHomeRouteRoute: AuthedHomeRouteRoute,
+  AuthedManageRouteRoute: AuthedManageRouteRoute,
 }
 
 const AuthedRouteWithChildren =

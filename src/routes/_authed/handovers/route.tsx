@@ -10,7 +10,7 @@ import {
   useVerifyHandoverMutation,
 } from '~/queries'
 
-export const Route = createFileRoute('/_authed/settlements')({
+export const Route = createFileRoute('/_authed/handovers')({
   component: HandoversPage,
   beforeLoad: async ({ context: { queryClient } }) => {
     // Check if user is authorized (admins only)
@@ -18,7 +18,7 @@ export const Route = createFileRoute('/_authed/settlements')({
       employeeQueries.current(),
     )
     if (employee?.role === EmployeeRole.FIELD_STAFF) {
-      throw redirect({ to: '/operations' })
+      throw redirect({ to: '/collections' })
     }
   },
   loader: async ({ context: { queryClient } }) => {

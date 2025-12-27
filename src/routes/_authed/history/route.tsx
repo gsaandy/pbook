@@ -12,7 +12,7 @@ import type {
 import { EmployeeRole } from '~/lib/constants'
 import { employeeQueries, shopQueries, transactionQueries } from '~/queries'
 
-export const Route = createFileRoute('/_authed/reports')({
+export const Route = createFileRoute('/_authed/history')({
   component: ReportsPage,
   beforeLoad: async ({ context: { queryClient } }) => {
     // Check if user is authorized (admins only)
@@ -20,7 +20,7 @@ export const Route = createFileRoute('/_authed/reports')({
       employeeQueries.current(),
     )
     if (employee?.role === EmployeeRole.FIELD_STAFF) {
-      throw redirect({ to: '/operations' })
+      throw redirect({ to: '/collections' })
     }
   },
   loader: async ({ context: { queryClient } }) => {

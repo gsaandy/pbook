@@ -20,7 +20,7 @@ import {
   useUpdateShopMutation,
 } from '~/queries'
 
-export const Route = createFileRoute('/_authed/setup')({
+export const Route = createFileRoute('/_authed/manage')({
   component: SetupPage,
   beforeLoad: async ({ context: { queryClient } }) => {
     // Check if user is authorized (admins only)
@@ -28,7 +28,7 @@ export const Route = createFileRoute('/_authed/setup')({
       employeeQueries.current(),
     )
     if (employee?.role === EmployeeRole.FIELD_STAFF) {
-      throw redirect({ to: '/operations' })
+      throw redirect({ to: '/collections' })
     }
   },
   loader: async ({ context: { queryClient } }) => {
