@@ -11,7 +11,8 @@ count.txt
 .output
 .vinxi
 todos.json
-
+playwright-report
+test-results
 
 
 product-plan/Retailer Master Report.xlsx - Sheet1.csv
