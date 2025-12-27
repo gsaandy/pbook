@@ -13,7 +13,10 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { ConvexHttpClient } from 'convex/browser'
+/* eslint-disable-next-line */
 import { api } from '../convex/_generated/api'
+/* eslint-disable-next-line */
+import { Id } from '../convex/_generated/dataModel'
 
 // CSV column indices (0-based)
 const CSV_COLUMNS = {
@@ -98,6 +101,7 @@ function parseCSVLine(line: string): Array<string> {
   let current = ''
   let inQuotes = false
 
+  // eslint-disable-next-line
   for (let i = 0; i < line.length; i++) {
     const char = line[i]
 
@@ -242,7 +246,7 @@ async function main() {
   let routesCreated = 0
   let routesSkipped = 0
 
-  for (const [key, route] of uniqueRoutes) {
+  for (const [, route] of uniqueRoutes) {
     try {
       // Check if route already exists
       const existing = await client.query(api.routes.getByCode, {
@@ -296,6 +300,7 @@ async function main() {
   let shopsSkipped = 0
   let shopsErrors = 0
 
+  // eslint-disable-next-line
   for (let i = 0; i < parsedRows.length; i++) {
     const row = parsedRows[i]
     const routeId = routeCodeToId.get(row.routeCode)
@@ -319,7 +324,7 @@ async function main() {
         name: row.retailerName,
         retailerUniqueCode: row.retailerUniqueCode,
         zone: row.zone,
-        routeId: routeId,
+        routeId: routeId as Id<'routes'>,
         addressLine1: row.addressLine1,
         addressLine2: row.addressLine2,
         addressLine3: row.addressLine3,

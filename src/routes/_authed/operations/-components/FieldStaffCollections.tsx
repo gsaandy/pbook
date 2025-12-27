@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import {
   Banknote,
+  ChevronLeft,
   ChevronRight,
   FileText,
   Search,
@@ -23,6 +24,8 @@ interface Transaction {
   isVerified: boolean
   shop?: { name: string } | null
 }
+
+const ITEMS_PER_PAGE = 20
 
 export interface FieldStaffCollectionsProps {
   currentEmployee: {
@@ -54,6 +57,7 @@ export function FieldStaffCollections({
     'cash',
   )
   const [searchQuery, setSearchQuery] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
 
   // Calculate cash in bag (unverified cash collections today)
   const todayTransactions = transactions.filter((t) => {
@@ -118,6 +122,19 @@ export function FieldStaffCollections({
   const sortedShops = [...filteredShops].sort(
     (a, b) => b.currentBalance - a.currentBalance,
   )
+
+  // Pagination
+  const totalPages = Math.ceil(sortedShops.length / ITEMS_PER_PAGE)
+  const paginatedShops = sortedShops.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE,
+  )
+
+  // Reset page when search changes
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value)
+    setCurrentPage(1)
+  }
 
   const paymentModes = [
     { id: 'cash' as const, label: 'Cash' },
@@ -286,18 +303,19 @@ export function FieldStaffCollections({
               type="text"
               placeholder="Search shops by name or zone..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => handleSearchChange(e.target.value)}
               className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent"
             />
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
-            {sortedShops.length} shops • Sorted by balance (highest first)
+            {sortedShops.length} shops • Showing {paginatedShops.length} •
+            Sorted by balance
           </p>
         </div>
 
         {/* Shop List */}
         <div className="divide-y divide-slate-200 dark:divide-slate-700 bg-white dark:bg-slate-800">
-          {sortedShops.length === 0 ? (
+          {paginatedShops.length === 0 ? (
             <div className="p-8 text-center">
               <p className="text-slate-600 dark:text-slate-400">
                 {searchQuery
@@ -306,7 +324,7 @@ export function FieldStaffCollections({
               </p>
             </div>
           ) : (
-            sortedShops.map((shopItem) => (
+            paginatedShops.map((shopItem) => (
               <button
                 key={shopItem._id}
                 onClick={() => setSelectedShop(shopItem._id)}
@@ -343,6 +361,40 @@ export function FieldStaffCollections({
             ))
           )}
         </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 p-4 flex items-center justify-between">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              {(currentPage - 1) * ITEMS_PER_PAGE + 1}-
+              {Math.min(currentPage * ITEMS_PER_PAGE, sortedShops.length)} of{' '}
+              {sortedShops.length}
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="p-2 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                aria-label="Previous page"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <span className="text-sm font-medium text-slate-700 dark:text-slate-300 min-w-[60px] text-center">
+                {currentPage} / {totalPages}
+              </span>
+              <button
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(totalPages, p + 1))
+                }
+                disabled={currentPage === totalPages}
+                className="p-2 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                aria-label="Next page"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

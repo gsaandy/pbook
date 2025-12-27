@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import {
+  ChevronLeft,
+  ChevronRight,
   Edit2,
   Plus,
   Power,
@@ -36,6 +38,8 @@ export interface SetupAndConfigurationProps {
 
 type Tab = 'shops' | 'routes' | 'employees'
 
+const ITEMS_PER_PAGE = 20
+
 export function SetupAndConfiguration({
   shops,
   routes,
@@ -53,6 +57,7 @@ export function SetupAndConfiguration({
 }: SetupAndConfigurationProps) {
   const [activeTab, setActiveTab] = useState<Tab>('shops')
   const [searchQuery, setSearchQuery] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
 
   // Filter data based on search
   const filteredShops = shops.filter(
@@ -71,6 +76,26 @@ export function SetupAndConfiguration({
       emp.email.toLowerCase().includes(searchQuery.toLowerCase()),
   )
 
+  // Pagination for shops
+  const totalShopPages = Math.ceil(filteredShops.length / ITEMS_PER_PAGE)
+  const paginatedShops = filteredShops.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE,
+  )
+
+  // Reset page when search changes
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value)
+    setCurrentPage(1)
+  }
+
+  // Reset page when tab changes
+  const handleTabChange = (tab: Tab) => {
+    setActiveTab(tab)
+    setSearchQuery('')
+    setCurrentPage(1)
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -88,10 +113,7 @@ export function SetupAndConfiguration({
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div className="flex gap-2 border-b border-slate-200 dark:border-slate-700">
             <button
-              onClick={() => {
-                setActiveTab('shops')
-                setSearchQuery('')
-              }}
+              onClick={() => handleTabChange('shops')}
               className={`px-4 py-2 font-medium text-sm transition-colors border-b-2 ${
                 activeTab === 'shops'
                   ? 'border-indigo-600 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400'
@@ -101,10 +123,7 @@ export function SetupAndConfiguration({
               Shops ({shops.length})
             </button>
             <button
-              onClick={() => {
-                setActiveTab('routes')
-                setSearchQuery('')
-              }}
+              onClick={() => handleTabChange('routes')}
               className={`px-4 py-2 font-medium text-sm transition-colors border-b-2 ${
                 activeTab === 'routes'
                   ? 'border-indigo-600 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400'
@@ -114,10 +133,7 @@ export function SetupAndConfiguration({
               Routes ({routes.length})
             </button>
             <button
-              onClick={() => {
-                setActiveTab('employees')
-                setSearchQuery('')
-              }}
+              onClick={() => handleTabChange('employees')}
               className={`px-4 py-2 font-medium text-sm transition-colors border-b-2 ${
                 activeTab === 'employees'
                   ? 'border-indigo-600 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400'
@@ -176,7 +192,7 @@ export function SetupAndConfiguration({
             type="text"
             placeholder={`Search ${activeTab}...`}
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
             className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent"
           />
         </div>
@@ -184,29 +200,33 @@ export function SetupAndConfiguration({
         {/* Shops Tab */}
         {activeTab === 'shops' && (
           <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
-            {filteredShops.length === 0 ? (
+            {paginatedShops.length === 0 ? (
               <div className="text-center py-12">
                 <p className="text-slate-600 dark:text-slate-400 mb-4">
-                  No shops yet. Add your first shop or import from CSV.
+                  {searchQuery
+                    ? 'No shops match your search.'
+                    : 'No shops yet. Add your first shop or import from CSV.'}
                 </p>
-                <div className="flex gap-3 justify-center">
-                  {onAddShop && (
-                    <button
-                      onClick={onAddShop}
-                      className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 dark:bg-indigo-500 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600"
-                    >
-                      Add Shop
-                    </button>
-                  )}
-                  {onImportShops && (
-                    <button
-                      onClick={onImportShops}
-                      className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700"
-                    >
-                      Import CSV
-                    </button>
-                  )}
-                </div>
+                {!searchQuery && (
+                  <div className="flex gap-3 justify-center">
+                    {onAddShop && (
+                      <button
+                        onClick={onAddShop}
+                        className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 dark:bg-indigo-500 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600"
+                      >
+                        Add Shop
+                      </button>
+                    )}
+                    {onImportShops && (
+                      <button
+                        onClick={onImportShops}
+                        className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700"
+                      >
+                        Import CSV
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
             ) : (
               <>
@@ -236,7 +256,7 @@ export function SetupAndConfiguration({
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
-                      {filteredShops.map((shop) => (
+                      {paginatedShops.map((shop) => (
                         <tr
                           key={shop.id}
                           className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
@@ -299,7 +319,7 @@ export function SetupAndConfiguration({
 
                 {/* Mobile Cards */}
                 <div className="md:hidden divide-y divide-slate-200 dark:divide-slate-700">
-                  {filteredShops.map((shop) => (
+                  {paginatedShops.map((shop) => (
                     <div key={shop.id} className="p-4">
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex-1">
@@ -345,6 +365,45 @@ export function SetupAndConfiguration({
                     </div>
                   ))}
                 </div>
+
+                {/* Pagination Controls */}
+                {totalShopPages > 1 && (
+                  <div className="flex items-center justify-between px-4 py-3 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700">
+                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                      Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1}-
+                      {Math.min(
+                        currentPage * ITEMS_PER_PAGE,
+                        filteredShops.length,
+                      )}{' '}
+                      of {filteredShops.length} shops
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() =>
+                          setCurrentPage((p) => Math.max(1, p - 1))
+                        }
+                        disabled={currentPage === 1}
+                        className="p-2 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        aria-label="Previous page"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+                      <span className="text-sm font-medium text-slate-700 dark:text-slate-300 min-w-[80px] text-center">
+                        Page {currentPage} of {totalShopPages}
+                      </span>
+                      <button
+                        onClick={() =>
+                          setCurrentPage((p) => Math.min(totalShopPages, p + 1))
+                        }
+                        disabled={currentPage === totalShopPages}
+                        className="p-2 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        aria-label="Next page"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                )}
               </>
             )}
           </div>
