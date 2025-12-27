@@ -301,7 +301,7 @@ export function DailyOperationsFieldStaff({
                     {shopItem.name}
                   </h3>
                   <p className="text-sm text-slate-600 dark:text-slate-400 truncate">
-                    {shopItem.address}
+                    {[shopItem.addressLine1, shopItem.city, shopItem.zone].filter(Boolean).join(', ') || shopItem.zone}
                   </p>
                   <div className="flex items-center gap-3 mt-2">
                     <span

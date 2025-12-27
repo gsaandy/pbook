@@ -10,11 +10,24 @@ export interface Shop {
   id: string
   code: string // retailerUniqueCode from Convex
   name: string
-  address: string
-  phone: string
+  // Address fields
+  addressLine1?: string
+  addressLine2?: string
+  addressLine3?: string
+  city?: string
+  district?: string
+  state?: string
+  pinCode?: string
+  // Contact fields
+  phone?: string
+  whatsapp?: string
+  // Location
+  latitude?: number
+  longitude?: number
+  // Business
   currentBalance: number
   zone: string
-  lastCollectionDate: string
+  routeId?: string
 }
 
 export interface Employee {

@@ -106,7 +106,7 @@ export function RouteFormModal({
                       {shop.name}
                     </p>
                     <p className="text-xs text-slate-500 dark:text-slate-400">
-                      {shop.zone} - {shop.address}
+                      {shop.zone}{shop.city ? ` - ${shop.city}` : ''}
                     </p>
                   </div>
                 </label>

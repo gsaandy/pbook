@@ -49,16 +49,43 @@ function adaptShop(shop: {
   zone: string
   currentBalance: number
   routeId?: Id<'routes'>
+  // Address fields
+  addressLine1?: string
+  addressLine2?: string
+  addressLine3?: string
+  city?: string
+  district?: string
+  state?: string
+  pinCode?: string
+  // Contact fields
+  phone?: string
+  whatsapp?: string
+  // Location
+  latitude?: number
+  longitude?: number
 }): Shop {
   return {
     id: shop._id,
     code: shop.retailerUniqueCode,
     name: shop.name,
-    address: '',
-    phone: '',
+    // Address fields
+    addressLine1: shop.addressLine1,
+    addressLine2: shop.addressLine2,
+    addressLine3: shop.addressLine3,
+    city: shop.city,
+    district: shop.district,
+    state: shop.state,
+    pinCode: shop.pinCode,
+    // Contact fields
+    phone: shop.phone,
+    whatsapp: shop.whatsapp,
+    // Location
+    latitude: shop.latitude,
+    longitude: shop.longitude,
+    // Business
     zone: shop.zone,
     currentBalance: shop.currentBalance,
-    lastCollectionDate: new Date().toISOString().split('T')[0],
+    routeId: shop.routeId,
   }
 }
 
@@ -156,12 +183,35 @@ function SetupPage() {
         id: shopData.id as Id<'shops'>,
         name: shopData.name,
         zone: shopData.zone,
+        // Address fields
+        addressLine1: shopData.addressLine1,
+        addressLine2: shopData.addressLine2,
+        addressLine3: shopData.addressLine3,
+        city: shopData.city,
+        district: shopData.district,
+        state: shopData.state,
+        pinCode: shopData.pinCode,
+        // Contact fields
+        phone: shopData.phone,
+        whatsapp: shopData.whatsapp,
       })
     } else {
       createShop.mutate({
         name: shopData.name,
+        retailerUniqueCode: shopData.code,
         zone: shopData.zone,
         currentBalance: shopData.currentBalance,
+        // Address fields
+        addressLine1: shopData.addressLine1,
+        addressLine2: shopData.addressLine2,
+        addressLine3: shopData.addressLine3,
+        city: shopData.city,
+        district: shopData.district,
+        state: shopData.state,
+        pinCode: shopData.pinCode,
+        // Contact fields
+        phone: shopData.phone,
+        whatsapp: shopData.whatsapp,
       })
     }
     setShopModalOpen(false)
@@ -189,8 +239,14 @@ function SetupPage() {
         name: routeData.name,
       })
     } else {
+      // Generate a code from the route name (e.g., "Kannur Route" -> "KANNUR_ROUTE")
+      const code = routeData.name
+        .toUpperCase()
+        .replace(/[^A-Z0-9]+/g, '_')
+        .replace(/^_+|_+$/g, '')
       createRoute.mutate({
         name: routeData.name,
+        code,
       })
     }
     setRouteModalOpen(false)
