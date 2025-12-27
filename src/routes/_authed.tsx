@@ -4,16 +4,22 @@ import {
   useLocation,
   useNavigate,
 } from '@tanstack/react-router'
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { UserButton } from '@clerk/tanstack-react-start'
 import type { NavigationItem } from '~/lib/types'
 import { AppShell } from '~/components/shell'
 import { SignInPage } from '~/components/auth/SignInPage'
+import { employeeQueries } from '~/queries'
+import { EmployeeRole } from '~/lib/constants'
 
 export const Route = createFileRoute('/_authed')({
   beforeLoad: ({ context }) => {
     if (!context.userId) {
       throw new Error('Not authenticated')
     }
+  },
+  loader: async ({ context: { queryClient } }) => {
+    await queryClient.ensureQueryData(employeeQueries.current())
   },
   errorComponent: ({ error }) => {
     if (error.message === 'Not authenticated') {
@@ -24,44 +30,35 @@ export const Route = createFileRoute('/_authed')({
   component: AuthedLayout,
 })
 
+// Navigation items for admins
+const adminNavItems = [
+  { label: 'Home', href: '/dashboard' },
+  { label: 'Collections', href: '/operations' },
+  { label: 'Deliveries', href: '/invoices' },
+  { label: 'Shops & Team', href: '/setup' },
+  { label: 'Handovers', href: '/settlements' },
+  { label: 'History', href: '/reports' },
+]
+
+// Navigation items for field staff (limited access)
+const fieldStaffNavItems = [
+  { label: 'Home', href: '/dashboard' },
+  { label: 'Collections', href: '/operations' },
+]
+
 function AuthedLayout() {
   const location = useLocation()
   const navigate = useNavigate()
+  const { data: currentEmployee } = useSuspenseQuery(employeeQueries.current())
 
-  // Navigation items - all users get admin navigation for now
-  // Role-based filtering can be added later using Clerk metadata
-  const navigationItems: Array<NavigationItem> = [
-    {
-      label: 'Home',
-      href: '/dashboard',
-      isActive: location.pathname === '/dashboard',
-    },
-    {
-      label: 'Collections',
-      href: '/operations',
-      isActive: location.pathname === '/operations',
-    },
-    {
-      label: 'Deliveries',
-      href: '/invoices',
-      isActive: location.pathname === '/invoices',
-    },
-    {
-      label: 'Shops & Team',
-      href: '/setup',
-      isActive: location.pathname === '/setup',
-    },
-    {
-      label: 'Handovers',
-      href: '/settlements',
-      isActive: location.pathname === '/settlements',
-    },
-    {
-      label: 'History',
-      href: '/reports',
-      isActive: location.pathname === '/reports',
-    },
-  ]
+  const isFieldStaff = currentEmployee?.role === EmployeeRole.FIELD_STAFF
+
+  // Get appropriate nav items based on role
+  const baseNavItems = isFieldStaff ? fieldStaffNavItems : adminNavItems
+  const navigationItems: Array<NavigationItem> = baseNavItems.map((item) => ({
+    ...item,
+    isActive: location.pathname === item.href,
+  }))
 
   const handleNavigate = (href: string) => {
     navigate({ to: href })
@@ -72,6 +69,7 @@ function AuthedLayout() {
       navigationItems={navigationItems}
       onNavigate={handleNavigate}
       userButton={<UserButton />}
+      variant={isFieldStaff ? 'field_staff' : 'admin'}
     >
       <Outlet />
     </AppShell>

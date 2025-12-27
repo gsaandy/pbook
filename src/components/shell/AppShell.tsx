@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Menu, X } from 'lucide-react'
 import { MainNav } from './MainNav'
+import { MobileBottomNav } from './MobileBottomNav'
 import type { NavigationItem } from '~/lib/types'
 
 export interface AppShellProps {
@@ -8,6 +9,8 @@ export interface AppShellProps {
   navigationItems: Array<NavigationItem>
   onNavigate?: (href: string) => void
   userButton?: React.ReactNode
+  /** Use 'field_staff' for mobile-first bottom nav layout */
+  variant?: 'admin' | 'field_staff'
 }
 
 export function AppShell({
@@ -15,9 +18,36 @@ export function AppShell({
   navigationItems,
   onNavigate,
   userButton,
+  variant = 'admin',
 }: AppShellProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
+  // Field staff get a mobile-first layout with bottom nav
+  if (variant === 'field_staff') {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+        {/* Simple Header */}
+        <header className="fixed top-0 left-0 right-0 z-40 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
+          <div className="flex items-center justify-between px-4 h-14">
+            <h1 className="text-lg font-semibold text-slate-900 dark:text-white">
+              PSBook
+            </h1>
+            {userButton}
+          </div>
+        </header>
+
+        {/* Main Content - with padding for header and bottom nav */}
+        <main className="pt-14 pb-16">
+          <div className="min-h-[calc(100vh-7.5rem)]">{children}</div>
+        </main>
+
+        {/* Bottom Navigation */}
+        <MobileBottomNav items={navigationItems} onNavigate={onNavigate} />
+      </div>
+    )
+  }
+
+  // Admin layout with sidebar
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       {/* Mobile Header */}

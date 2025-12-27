@@ -35,14 +35,44 @@ export const get = query({
 })
 
 /**
+ * Get a shop by retailer unique code.
+ */
+export const getByRetailerUniqueCode = query({
+  args: { retailerUniqueCode: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query('shops')
+      .withIndex('by_retailer_unique_code', (q) =>
+        q.eq('retailerUniqueCode', args.retailerUniqueCode),
+      )
+      .first()
+  },
+})
+
+/**
  * Create a new shop.
  */
 export const create = mutation({
   args: {
     name: v.string(),
+    retailerUniqueCode: v.string(),
     zone: v.string(),
     currentBalance: v.optional(v.float64()),
     routeId: v.optional(v.id('routes')),
+    // Address fields
+    addressLine1: v.optional(v.string()),
+    addressLine2: v.optional(v.string()),
+    addressLine3: v.optional(v.string()),
+    city: v.optional(v.string()),
+    district: v.optional(v.string()),
+    state: v.optional(v.string()),
+    pinCode: v.optional(v.string()),
+    // Contact
+    phone: v.optional(v.string()),
+    whatsapp: v.optional(v.string()),
+    // Location
+    latitude: v.optional(v.float64()),
+    longitude: v.optional(v.float64()),
   },
   handler: async (ctx, args) => {
     const nameLower = args.name.toLowerCase().trim()
@@ -67,12 +97,38 @@ export const create = mutation({
       throw new Error(`A shop named "${existing.name}" already exists`)
     }
 
+    // Check for duplicate retailerUniqueCode
+    const existingByCode = await ctx.db
+      .query('shops')
+      .withIndex('by_retailer_unique_code', (q) =>
+        q.eq('retailerUniqueCode', args.retailerUniqueCode),
+      )
+      .first()
+
+    if (existingByCode) {
+      throw new Error(
+        `A shop with retailer unique code "${args.retailerUniqueCode}" already exists`,
+      )
+    }
+
     const shopId = await ctx.db.insert('shops', {
       name: args.name.trim(),
       nameLower,
+      retailerUniqueCode: args.retailerUniqueCode.trim(),
       zone: args.zone,
       currentBalance: args.currentBalance ?? 0,
       routeId: args.routeId,
+      addressLine1: args.addressLine1?.trim(),
+      addressLine2: args.addressLine2?.trim(),
+      addressLine3: args.addressLine3?.trim(),
+      city: args.city?.trim(),
+      district: args.district?.trim(),
+      state: args.state?.trim(),
+      pinCode: args.pinCode?.trim(),
+      phone: args.phone?.trim(),
+      whatsapp: args.whatsapp?.trim(),
+      latitude: args.latitude,
+      longitude: args.longitude,
     })
 
     return shopId
@@ -86,11 +142,45 @@ export const update = mutation({
   args: {
     id: v.id('shops'),
     name: v.optional(v.string()),
+    retailerUniqueCode: v.optional(v.string()),
     zone: v.optional(v.string()),
     routeId: v.optional(v.id('routes')),
+    // Address fields
+    addressLine1: v.optional(v.string()),
+    addressLine2: v.optional(v.string()),
+    addressLine3: v.optional(v.string()),
+    city: v.optional(v.string()),
+    district: v.optional(v.string()),
+    state: v.optional(v.string()),
+    pinCode: v.optional(v.string()),
+    // Contact
+    phone: v.optional(v.string()),
+    whatsapp: v.optional(v.string()),
+    // Location
+    latitude: v.optional(v.float64()),
+    longitude: v.optional(v.float64()),
   },
   handler: async (ctx, args) => {
-    const { id, name, zone, routeId } = args
+    const {
+      id,
+      name,
+      retailerUniqueCode,
+      zone,
+      routeId,
+      addressLine1,
+      addressLine2,
+      addressLine3,
+      city,
+      district,
+      state,
+      pinCode,
+      phone,
+      whatsapp,
+      latitude,
+      longitude,
+    } = args
+
+    const updates: Record<string, unknown> = {}
 
     // If name is being updated, check for duplicates
     if (name !== undefined) {
@@ -115,21 +205,45 @@ export const update = mutation({
         throw new Error(`A shop named "${existing.name}" already exists`)
       }
 
-      await ctx.db.patch('shops', id, {
-        name: name.trim(),
-        nameLower,
-        ...(zone !== undefined && { zone }),
-        ...(routeId !== undefined && { routeId }),
-      })
-    } else {
-      // No name change, just update other fields
-      const cleanUpdates: Record<string, unknown> = {}
-      if (zone !== undefined) cleanUpdates.zone = zone
-      if (routeId !== undefined) cleanUpdates.routeId = routeId
+      updates.name = name.trim()
+      updates.nameLower = nameLower
+    }
 
-      if (Object.keys(cleanUpdates).length > 0) {
-        await ctx.db.patch('shops', id, cleanUpdates)
+    // If retailerUniqueCode is being updated, check for duplicates
+    if (retailerUniqueCode !== undefined) {
+      const existingByCode = await ctx.db
+        .query('shops')
+        .withIndex('by_retailer_unique_code', (q) =>
+          q.eq('retailerUniqueCode', retailerUniqueCode),
+        )
+        .first()
+
+      if (existingByCode && existingByCode._id !== id) {
+        throw new Error(
+          `A shop with retailer unique code "${retailerUniqueCode}" already exists`,
+        )
       }
+
+      updates.retailerUniqueCode = retailerUniqueCode.trim()
+    }
+
+    // Update other fields
+    if (zone !== undefined) updates.zone = zone
+    if (routeId !== undefined) updates.routeId = routeId
+    if (addressLine1 !== undefined) updates.addressLine1 = addressLine1.trim()
+    if (addressLine2 !== undefined) updates.addressLine2 = addressLine2.trim()
+    if (addressLine3 !== undefined) updates.addressLine3 = addressLine3.trim()
+    if (city !== undefined) updates.city = city.trim()
+    if (district !== undefined) updates.district = district.trim()
+    if (state !== undefined) updates.state = state.trim()
+    if (pinCode !== undefined) updates.pinCode = pinCode.trim()
+    if (phone !== undefined) updates.phone = phone.trim()
+    if (whatsapp !== undefined) updates.whatsapp = whatsapp.trim()
+    if (latitude !== undefined) updates.latitude = latitude
+    if (longitude !== undefined) updates.longitude = longitude
+
+    if (Object.keys(updates).length > 0) {
+      await ctx.db.patch('shops', id, updates)
     }
 
     return id

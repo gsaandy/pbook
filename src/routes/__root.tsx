@@ -1,31 +1,53 @@
-import { ClerkProvider } from '@clerk/tanstack-react-start'
-import { auth } from '@clerk/tanstack-react-start/server'
-import { TanStackDevtools } from '@tanstack/react-devtools'
 import {
   HeadContent,
   Outlet,
   Scripts,
   createRootRouteWithContext,
+  useRouteContext,
 } from '@tanstack/react-router'
+import { ClerkProvider, useAuth } from '@clerk/tanstack-react-start'
+import { auth } from '@clerk/tanstack-react-start/server'
+import { TanStackDevtools } from '@tanstack/react-devtools'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { createServerFn } from '@tanstack/react-start'
+import { ConvexProviderWithClerk } from 'convex/react-clerk'
 import type { QueryClient } from '@tanstack/react-query'
+import type { ConvexReactClient } from 'convex/react'
+import type { ConvexQueryClient } from '@convex-dev/react-query'
 
 import appCss from '~/styles.css?url'
 import { DefaultCatchBoundary } from '~/components/DefaultCatchBoundary'
 import { NotFound } from '~/components/NotFound'
 
 const fetchClerkAuth = createServerFn({ method: 'GET' }).handler(async () => {
-  const { userId } = await auth()
-  return { userId }
+  const { userId, getToken } = await auth()
+  const token = await getToken({ template: 'convex' })
+
+  return {
+    userId,
+    token,
+  }
 })
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient
+  convexClient: ConvexReactClient
+  convexQueryClient: ConvexQueryClient
 }>()({
-  beforeLoad: async () => {
-    const { userId } = await fetchClerkAuth()
-    return { userId }
+  beforeLoad: async (ctx) => {
+    const auth = await fetchClerkAuth()
+    const { userId, token } = auth
+
+    // During SSR only (the only time serverHttpClient exists),
+    // set the Clerk auth token to make HTTP queries with.
+    if (token) {
+      ctx.context.convexQueryClient.serverHttpClient?.setAuth(token)
+    }
+
+    return {
+      userId,
+      token,
+    }
   },
   errorComponent: (props) => (
     <RootDocument>
@@ -86,11 +108,15 @@ export const Route = createRootRouteWithContext<{
 })
 
 function RootComponent() {
+  const context = useRouteContext({ from: Route.id })
+
   return (
     <ClerkProvider>
-      <RootDocument>
-        <Outlet />
-      </RootDocument>
+      <ConvexProviderWithClerk client={context.convexClient} useAuth={useAuth}>
+        <RootDocument>
+          <Outlet />
+        </RootDocument>
+      </ConvexProviderWithClerk>
     </ClerkProvider>
   )
 }

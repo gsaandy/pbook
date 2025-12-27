@@ -8,35 +8,35 @@
  * @module
  */
 
-import type * as admin from "../admin.js";
-import type * as employees from "../employees.js";
-import type * as http from "../http.js";
-import type * as invoices from "../invoices.js";
-import type * as migrations from "../migrations.js";
-import type * as routes from "../routes.js";
-import type * as shops from "../shops.js";
-import type * as test from "../test.js";
-import type * as transactions from "../transactions.js";
-import type * as users from "../users.js";
+import type * as admin from '../admin.js'
+import type * as employees from '../employees.js'
+import type * as http from '../http.js'
+import type * as invoices from '../invoices.js'
+import type * as migrations from '../migrations.js'
+import type * as routes from '../routes.js'
+import type * as shops from '../shops.js'
+import type * as test from '../test.js'
+import type * as transactions from '../transactions.js'
+import type * as users from '../users.js'
 
 import type {
   ApiFromModules,
   FilterApi,
   FunctionReference,
-} from "convex/server";
+} from 'convex/server'
 
 declare const fullApi: ApiFromModules<{
-  admin: typeof admin;
-  employees: typeof employees;
-  http: typeof http;
-  invoices: typeof invoices;
-  migrations: typeof migrations;
-  routes: typeof routes;
-  shops: typeof shops;
-  test: typeof test;
-  transactions: typeof transactions;
-  users: typeof users;
-}>;
+  admin: typeof admin
+  employees: typeof employees
+  http: typeof http
+  invoices: typeof invoices
+  migrations: typeof migrations
+  routes: typeof routes
+  shops: typeof shops
+  test: typeof test
+  transactions: typeof transactions
+  users: typeof users
+}>
 
 /**
  * A utility for referencing Convex functions in your app's public API.
@@ -48,8 +48,8 @@ declare const fullApi: ApiFromModules<{
  */
 export declare const api: FilterApi<
   typeof fullApi,
-  FunctionReference<any, "public">
->;
+  FunctionReference<any, 'public'>
+>
 
 /**
  * A utility for referencing Convex functions in your app's internal API.
@@ -61,7 +61,7 @@ export declare const api: FilterApi<
  */
 export declare const internal: FilterApi<
   typeof fullApi,
-  FunctionReference<any, "internal">
->;
+  FunctionReference<any, 'internal'>
+>
 
-export declare const components: {};
+export declare const components: {}

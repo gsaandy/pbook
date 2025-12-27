@@ -1,20 +1,23 @@
-import { createRouter } from '@tanstack/react-router'
+import { createRouter as createTanStackRouter } from '@tanstack/react-router'
 import { QueryClient } from '@tanstack/react-query'
 import { routerWithQueryClient } from '@tanstack/react-router-with-query'
 import { ConvexQueryClient } from '@convex-dev/react-query'
-import { ConvexProvider } from 'convex/react'
+import { ConvexProvider, ConvexReactClient } from 'convex/react'
 
 // Import the generated route tree
 import { routeTree } from './routeTree.gen'
 
-// Create a new router instance
+// Note: This project uses getRouter instead of createRouter for TanStack Start
 export function getRouter() {
   const CONVEX_URL = (import.meta as any).env.VITE_CONVEX_URL!
   if (!CONVEX_URL) {
-    console.error('Missing env var VITE_CONVEX_URL')
+    throw new Error('missing VITE_CONVEX_URL envar')
   }
 
-  const convexQueryClient = new ConvexQueryClient(CONVEX_URL)
+  const convex = new ConvexReactClient(CONVEX_URL, {
+    unsavedChangesWarning: false,
+  })
+  const convexQueryClient = new ConvexQueryClient(convex)
 
   const queryClient: QueryClient = new QueryClient({
     defaultOptions: {
@@ -27,11 +30,11 @@ export function getRouter() {
   convexQueryClient.connect(queryClient)
 
   const router = routerWithQueryClient(
-    createRouter({
+    createTanStackRouter({
       routeTree,
       scrollRestoration: true,
       defaultPreloadStaleTime: 0,
-      context: { queryClient },
+      context: { queryClient, convexClient: convex, convexQueryClient },
       Wrap: ({ children }) => (
         <ConvexProvider client={convexQueryClient.convexClient}>
           {children}
@@ -42,4 +45,10 @@ export function getRouter() {
   )
 
   return router
+}
+
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: ReturnType<typeof getRouter>
+  }
 }

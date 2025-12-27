@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { useSuspenseQuery } from '@tanstack/react-query'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import { InvoicesSection } from './-components/InvoicesSection'
 import { InvoiceFormModal } from './-components/InvoiceFormModal'
 import type { Id } from '~/convex/_generated/dataModel'
+import { EmployeeRole } from '~/lib/constants'
 import {
   employeeQueries,
   invoiceQueries,
@@ -13,6 +14,15 @@ import {
 
 export const Route = createFileRoute('/_authed/invoices')({
   component: InvoicesPage,
+  beforeLoad: async ({ context: { queryClient } }) => {
+    // Check if user is authorized (admins only)
+    const employee = await queryClient.ensureQueryData(
+      employeeQueries.current(),
+    )
+    if (employee?.role === EmployeeRole.FIELD_STAFF) {
+      throw redirect({ to: '/operations' })
+    }
+  },
   loader: async ({ context: { queryClient } }) => {
     await Promise.all([
       queryClient.ensureQueryData(invoiceQueries.listWithDetails()),

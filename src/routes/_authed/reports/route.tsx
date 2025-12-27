@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useSuspenseQuery } from '@tanstack/react-query'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import { ReportsAndHistory } from './-components/ReportsAndHistory'
 import type {
   FilterOptions,
@@ -9,10 +9,20 @@ import type {
   TransactionFilters,
   TrendData,
 } from './-components/ReportsAndHistory'
+import { EmployeeRole } from '~/lib/constants'
 import { employeeQueries, shopQueries, transactionQueries } from '~/queries'
 
 export const Route = createFileRoute('/_authed/reports')({
   component: ReportsPage,
+  beforeLoad: async ({ context: { queryClient } }) => {
+    // Check if user is authorized (admins only)
+    const employee = await queryClient.ensureQueryData(
+      employeeQueries.current(),
+    )
+    if (employee?.role === EmployeeRole.FIELD_STAFF) {
+      throw redirect({ to: '/operations' })
+    }
+  },
   loader: async ({ context: { queryClient } }) => {
     await Promise.all([
       queryClient.ensureQueryData(transactionQueries.listWithDetails({})),

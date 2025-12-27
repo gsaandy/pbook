@@ -58,20 +58,39 @@ export default defineSchema({
   routes: defineTable({
     name: v.string(),
     nameLower: v.optional(v.string()), // For case-insensitive uniqueness (optional for migration)
-  }).index('by_name_lower', ['nameLower']),
+    code: v.string(),
+    codeLower: v.optional(v.string()), // For case-insensitive uniqueness (optional for migration)
+  })
+    .index('by_name_lower', ['nameLower'])
+    .index('by_code_lower', ['codeLower']),
 
   // 5. SHOPS
   shops: defineTable({
     name: v.string(),
     nameLower: v.optional(v.string()), // For case-insensitive uniqueness (optional for migration)
-    address: v.optional(v.string()),
+    retailerUniqueCode: v.string(),
+    // Address fields
+    addressLine1: v.optional(v.string()),
+    addressLine2: v.optional(v.string()),
+    addressLine3: v.optional(v.string()),
+    city: v.optional(v.string()),
+    district: v.optional(v.string()),
+    state: v.optional(v.string()),
+    pinCode: v.optional(v.string()),
+    // Contact
     phone: v.optional(v.string()),
+    whatsapp: v.optional(v.string()),
+    // Location
+    latitude: v.optional(v.float64()),
+    longitude: v.optional(v.float64()),
+    // Business
     currentBalance: v.float64(),
     routeId: v.optional(v.id('routes')),
     zone: v.string(),
   })
     .index('by_route', ['routeId'])
-    .index('by_name_lower', ['nameLower']),
+    .index('by_name_lower', ['nameLower'])
+    .index('by_retailer_unique_code', ['retailerUniqueCode']),
 
   // 6. TRANSACTIONS (Collections - Decreases Balance)
   transactions: defineTable({

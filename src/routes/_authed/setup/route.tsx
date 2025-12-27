@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useSuspenseQuery } from '@tanstack/react-query'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import { SetupAndConfiguration } from './-components/SetupAndConfiguration'
 import { EmployeeFormModal } from './-components/EmployeeFormModal'
 import { RouteFormModal } from './-components/RouteFormModal'
@@ -22,6 +22,15 @@ import {
 
 export const Route = createFileRoute('/_authed/setup')({
   component: SetupPage,
+  beforeLoad: async ({ context: { queryClient } }) => {
+    // Check if user is authorized (admins only)
+    const employee = await queryClient.ensureQueryData(
+      employeeQueries.current(),
+    )
+    if (employee?.role === EmployeeRole.FIELD_STAFF) {
+      throw redirect({ to: '/operations' })
+    }
+  },
   loader: async ({ context: { queryClient } }) => {
     // Prefetch all data needed for setup page
     await Promise.all([
