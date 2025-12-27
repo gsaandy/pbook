@@ -1,5 +1,4 @@
 import { useMemo, useState, useTransition } from 'react'
-import type { Shop } from '~/lib/types'
 import { formatCurrency } from '~/lib/constants'
 import {
   Combobox,
@@ -11,8 +10,23 @@ import {
 
 const MAX_DISPLAYED_ITEMS = 50
 
+// Flexible shop type that works with both adapted Shop type and Convex data
+interface ShopItem {
+  id?: string
+  _id?: string
+  name: string
+  code?: string
+  retailerUniqueCode?: string
+  zone: string
+  currentBalance: number
+}
+
+// Helper to get normalized values from shop
+const getShopId = (shop: ShopItem) => shop.id ?? shop._id ?? ''
+const getShopCode = (shop: ShopItem) => shop.code ?? shop.retailerUniqueCode ?? ''
+
 export interface ShopComboboxProps {
-  shops: Array<Shop>
+  shops: Array<ShopItem>
   value: string
   onChange: (shopId: string) => void
   disabled?: boolean
@@ -35,7 +49,7 @@ export function ShopCombobox({
   const [isPending, startTransition] = useTransition()
 
   const selectedShop = useMemo(
-    () => shops.find((s) => s.id === value),
+    () => shops.find((s) => getShopId(s) === value),
     [shops, value],
   )
 
@@ -45,6 +59,7 @@ export function ShopCombobox({
     return shops.filter(
       (shop) =>
         shop.name.toLowerCase().includes(query) ||
+        getShopCode(shop).toLowerCase().includes(query) ||
         shop.zone.toLowerCase().includes(query),
     )
   }, [shops, filterQuery])
@@ -61,12 +76,13 @@ export function ShopCombobox({
     })
   }
 
-  const getDisplayValue = (shop: Shop | undefined) => {
+  const getDisplayValue = (shop: ShopItem | undefined) => {
     if (!shop) return ''
+    const code = getShopCode(shop)
     if (showBalance) {
-      return `${shop.name} - ${shop.zone} (${formatCurrency(shop.currentBalance)})`
+      return `${code} - ${shop.name} (${formatCurrency(shop.currentBalance)})`
     }
-    return `${shop.name} - ${shop.zone}`
+    return `${code} - ${shop.name}`
   }
 
   return (
@@ -104,18 +120,32 @@ export function ShopCombobox({
             </div>
           ) : (
             <>
-              {displayedShops.map((shop) => (
-                <ComboboxItem key={shop.id} value={shop.id}>
-                  <div className="flex flex-col">
-                    <span className="font-medium">{shop.name}</span>
-                    <span className="text-xs text-muted-foreground">
-                      {shop.zone}
-                      {showBalance &&
-                        ` - ${formatCurrency(shop.currentBalance)}`}
-                    </span>
-                  </div>
-                </ComboboxItem>
-              ))}
+              {displayedShops.map((shop) => {
+                const shopId = getShopId(shop)
+                const shopCode = getShopCode(shop)
+                return (
+                  <ComboboxItem key={shopId} value={shopId}>
+                    <div className="flex flex-col w-full py-0.5">
+                      <span className="font-medium text-slate-900 dark:text-white truncate">
+                        {shop.name}
+                      </span>
+                      <div className="flex items-center justify-between gap-2 mt-0.5">
+                        <span className="text-xs text-slate-500 dark:text-slate-400">
+                          {shop.zone}
+                          {showBalance && (
+                            <span className="ml-1.5 text-slate-600 dark:text-slate-300 font-medium">
+                              {formatCurrency(shop.currentBalance)}
+                            </span>
+                          )}
+                        </span>
+                        <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-700/50 px-1.5 py-0.5 rounded">
+                          {shopCode}
+                        </span>
+                      </div>
+                    </div>
+                  </ComboboxItem>
+                )
+              })}
               {hasMoreResults && (
                 <div className="px-2 py-1.5 text-xs text-muted-foreground text-center border-t">
                   Type to search {filteredShops.length - MAX_DISPLAYED_ITEMS}{' '}

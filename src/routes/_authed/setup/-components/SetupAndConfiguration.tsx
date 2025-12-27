@@ -16,7 +16,6 @@ import {
   EmployeeRoleLabel,
   Status,
   formatCurrency,
-  formatDate,
   getBalanceColorClass,
 } from '~/lib/constants'
 
@@ -63,6 +62,7 @@ export function SetupAndConfiguration({
   const filteredShops = shops.filter(
     (shop) =>
       shop.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      shop.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
       shop.zone.toLowerCase().includes(searchQuery.toLowerCase()),
   )
 
@@ -236,19 +236,16 @@ export function SetupAndConfiguration({
                     <thead className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
                       <tr>
                         <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                          Shop Name
+                          Code
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                          Address
+                          Shop Name
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                           Zone
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                           Balance
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                          Last Collection
                         </th>
                         <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                           Actions
@@ -262,16 +259,13 @@ export function SetupAndConfiguration({
                           className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
                         >
                           <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="text-sm font-mono text-slate-600 dark:text-slate-400">
+                              {shop.code}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm font-medium text-slate-900 dark:text-white">
                               {shop.name}
-                            </div>
-                            <div className="text-sm text-slate-500 dark:text-slate-400">
-                              {shop.phone}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="text-sm text-slate-600 dark:text-slate-400 max-w-xs truncate">
-                              {shop.address}
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
@@ -285,9 +279,6 @@ export function SetupAndConfiguration({
                             >
                               {formatCurrency(shop.currentBalance)}
                             </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-400">
-                            {formatDate(shop.lastCollectionDate)}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right">
                             <div className="flex justify-end gap-2">
@@ -323,12 +314,12 @@ export function SetupAndConfiguration({
                     <div key={shop.id} className="p-4">
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex-1">
+                          <p className="text-xs font-mono text-slate-500 dark:text-slate-400">
+                            {shop.code}
+                          </p>
                           <h3 className="font-medium text-slate-900 dark:text-white">
                             {shop.name}
                           </h3>
-                          <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                            {shop.address}
-                          </p>
                         </div>
                         <div className="flex gap-1 ml-2">
                           {onEditShop && (
@@ -350,9 +341,6 @@ export function SetupAndConfiguration({
                         </div>
                       </div>
                       <div className="flex flex-wrap gap-3 text-sm">
-                        <span className="text-slate-600 dark:text-slate-400">
-                          {shop.phone}
-                        </span>
                         <span className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs">
                           {shop.zone}
                         </span>

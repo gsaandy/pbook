@@ -45,12 +45,14 @@ export const Route = createFileRoute('/_authed/setup')({
 function adaptShop(shop: {
   _id: Id<'shops'>
   name: string
+  retailerUniqueCode: string
   zone: string
   currentBalance: number
   routeId?: Id<'routes'>
 }): Shop {
   return {
     id: shop._id,
+    code: shop.retailerUniqueCode,
     name: shop.name,
     address: '',
     phone: '',

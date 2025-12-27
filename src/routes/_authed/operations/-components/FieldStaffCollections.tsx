@@ -12,6 +12,7 @@ import {
 interface Shop {
   _id: string
   name: string
+  retailerUniqueCode: string
   zone: string
   currentBalance: number
 }
@@ -114,6 +115,7 @@ export function FieldStaffCollections({
     const query = searchQuery.toLowerCase()
     return (
       s.name.toLowerCase().includes(query) ||
+      s.retailerUniqueCode.toLowerCase().includes(query) ||
       s.zone.toLowerCase().includes(query)
     )
   })
@@ -151,6 +153,9 @@ export function FieldStaffCollections({
             <div className="sticky top-0 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 p-4 sm:p-6">
               <div className="flex items-start justify-between">
                 <div>
+                  <p className="text-xs font-mono text-slate-500 dark:text-slate-400">
+                    {shop.retailerUniqueCode}
+                  </p>
                   <h2 className="text-xl font-bold text-slate-900 dark:text-white">
                     {shop.name}
                   </h2>
@@ -301,7 +306,7 @@ export function FieldStaffCollections({
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
             <input
               type="text"
-              placeholder="Search shops by name or zone..."
+              placeholder="Search by name, code, or zone..."
               value={searchQuery}
               onChange={(e) => handleSearchChange(e.target.value)}
               className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent"
@@ -331,6 +336,9 @@ export function FieldStaffCollections({
                 className="w-full p-4 sm:p-6 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors text-left"
               >
                 <div className="flex-1 min-w-0 mr-4">
+                  <p className="text-xs font-mono text-slate-500 dark:text-slate-400">
+                    {shopItem.retailerUniqueCode}
+                  </p>
                   <h3 className="font-semibold text-slate-900 dark:text-white text-base sm:text-lg mb-1">
                     {shopItem.name}
                   </h3>

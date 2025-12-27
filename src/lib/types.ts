@@ -8,6 +8,7 @@ export interface Organization {
 
 export interface Shop {
   id: string
+  code: string // retailerUniqueCode from Convex
   name: string
   address: string
   phone: string
