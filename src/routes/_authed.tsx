@@ -68,7 +68,18 @@ function AuthedLayout() {
     <AppShell
       navigationItems={navigationItems}
       onNavigate={handleNavigate}
-      userButton={<UserButton />}
+      userButton={
+        <UserButton
+          appearance={{
+            elements: {
+              // Hide the "Manage account" button in the dropdown
+              userButtonPopoverActionButton__manageAccount: {
+                display: 'none',
+              },
+            },
+          }}
+        />
+      }
       variant={isFieldStaff ? 'field_staff' : 'admin'}
     >
       <Outlet />
