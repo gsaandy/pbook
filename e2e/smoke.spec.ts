@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 /**
  * Smoke tests - Basic tests that verify the app loads without errors
@@ -17,7 +17,7 @@ import { test, expect } from '@playwright/test'
 test.describe('Smoke Tests', () => {
   test('homepage loads without errors', async ({ page }) => {
     // Check for JavaScript errors
-    const errors: string[] = []
+    const errors: Array<string> = []
     page.on('pageerror', (error) => {
       errors.push(error.message)
     })
@@ -29,7 +29,7 @@ test.describe('Smoke Tests', () => {
 
     // Should not have any JS errors (except expected Convex connection errors in test env)
     const criticalErrors = errors.filter(
-      e => !e.includes('Convex') && !e.includes('WebSocket')
+      (e) => !e.includes('Convex') && !e.includes('WebSocket'),
     )
     expect(criticalErrors).toHaveLength(0)
   })
@@ -60,7 +60,6 @@ test.describe('Smoke Tests', () => {
     await page.waitForTimeout(2000)
 
     // App should either show content or redirect to sign-in
-    const url = page.url()
     const hasContent = await page.locator('body').textContent()
 
     // Either we're on the home page with content, or redirected to sign-in
@@ -70,7 +69,7 @@ test.describe('Smoke Tests', () => {
 
 test.describe('Static Assets', () => {
   test('CSS loads correctly', async ({ page }) => {
-    const cssResponses: number[] = []
+    const cssResponses: Array<number> = []
 
     page.on('response', (response) => {
       if (response.url().includes('.css')) {
@@ -88,7 +87,7 @@ test.describe('Static Assets', () => {
   })
 
   test('JavaScript bundles load correctly', async ({ page }) => {
-    const jsResponses: number[] = []
+    const jsResponses: Array<number> = []
 
     page.on('response', (response) => {
       if (response.url().includes('.js') || response.url().includes('.mjs')) {

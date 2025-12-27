@@ -1,14 +1,14 @@
-import { describe, test, expect, mock } from 'bun:test'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { describe, expect, mock, test } from 'bun:test'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SetupAndConfiguration } from './SetupAndConfiguration'
-import type { Shop, Route, Employee } from '~/lib/types'
+import type { Employee, Route, Shop } from '~/lib/types'
 
 // Import setup
 import '~/test/setup'
 
 // Mock data
-const mockShops: Shop[] = [
+const mockShops: Array<Shop> = [
   {
     id: 'shop_1',
     code: '67063100001',
@@ -44,7 +44,7 @@ const mockShops: Shop[] = [
   },
 ]
 
-const mockRoutes: Route[] = [
+const mockRoutes: Array<Route> = [
   {
     id: 'route_1',
     name: 'Kannur Route',
@@ -59,7 +59,7 @@ const mockRoutes: Route[] = [
   },
 ]
 
-const mockEmployees: Employee[] = [
+const mockEmployees: Array<Employee> = [
   {
     id: 'emp_1',
     name: 'John Doe',
@@ -251,7 +251,9 @@ describe('SetupAndConfiguration', () => {
       await userEvent.type(searchInput, '67063100002')
 
       await waitFor(() => {
-        expect(screen.getAllByText('MarginFree Market').length).toBeGreaterThan(0)
+        expect(screen.getAllByText('MarginFree Market').length).toBeGreaterThan(
+          0,
+        )
         expect(screen.queryByText('Cochin Bakery')).toBeNull()
       })
     })
@@ -269,7 +271,9 @@ describe('SetupAndConfiguration', () => {
       await userEvent.type(searchInput, 'Thalassery')
 
       await waitFor(() => {
-        expect(screen.getAllByText('Ashrayam Pharmacy').length).toBeGreaterThan(0)
+        expect(screen.getAllByText('Ashrayam Pharmacy').length).toBeGreaterThan(
+          0,
+        )
         expect(screen.queryByText('Cochin Bakery')).toBeNull()
       })
     })
@@ -360,7 +364,9 @@ describe('SetupAndConfiguration', () => {
       await userEvent.click(routesTab)
 
       expect(screen.getAllByText('Kannur Route').length).toBeGreaterThan(0)
-      expect(screen.getAllByText('Main route for Kannur area').length).toBeGreaterThan(0)
+      expect(
+        screen.getAllByText('Main route for Kannur area').length,
+      ).toBeGreaterThan(0)
     })
 
     test('displays shop count for each route', async () => {
@@ -536,9 +542,9 @@ describe('SetupAndConfiguration', () => {
   })
 
   describe('pagination', () => {
-    test('paginates shops when more than 20', async () => {
+    test('paginates shops when more than 20', () => {
       // Create 25 shops
-      const manyShops: Shop[] = Array.from({ length: 25 }, (_, i) => ({
+      const manyShops: Array<Shop> = Array.from({ length: 25 }, (_, i) => ({
         id: `shop_${i}`,
         code: `CODE${String(i).padStart(5, '0')}`,
         name: `Shop ${i}`,
@@ -566,7 +572,7 @@ describe('SetupAndConfiguration', () => {
     })
 
     test('navigates to next page', async () => {
-      const manyShops: Shop[] = Array.from({ length: 25 }, (_, i) => ({
+      const manyShops: Array<Shop> = Array.from({ length: 25 }, (_, i) => ({
         id: `shop_${i}`,
         code: `CODE${String(i).padStart(5, '0')}`,
         name: `Shop ${i}`,
@@ -605,7 +611,9 @@ describe('SetupAndConfiguration', () => {
       )
 
       expect(
-        screen.getByText('No shops yet. Add your first shop or import from CSV.'),
+        screen.getByText(
+          'No shops yet. Add your first shop or import from CSV.',
+        ),
       ).toBeDefined()
     })
 

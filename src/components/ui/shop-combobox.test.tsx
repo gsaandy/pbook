@@ -1,5 +1,5 @@
-import { describe, test, expect, mock } from 'bun:test'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { describe, expect, mock, test } from 'bun:test'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ShopCombobox } from './shop-combobox'
 
@@ -110,7 +110,7 @@ describe('ShopCombobox', () => {
   })
 
   describe('shop data format compatibility', () => {
-    test('works with adapted Shop type (id, code)', async () => {
+    test('works with adapted Shop type (id, code)', () => {
       const onChange = mock(() => {})
       render(
         <ShopCombobox
@@ -121,12 +121,12 @@ describe('ShopCombobox', () => {
       )
 
       // Should display selected shop with code format
-      const input = screen.getByRole('combobox') as HTMLInputElement
+      const input = screen.getByRole('combobox')
       expect(input.value).toContain('67063100001')
       expect(input.value).toContain('Cochin Bakery')
     })
 
-    test('works with Convex format (_id, retailerUniqueCode)', async () => {
+    test('works with Convex format (_id, retailerUniqueCode)', () => {
       const onChange = mock(() => {})
       render(
         <ShopCombobox
@@ -137,7 +137,7 @@ describe('ShopCombobox', () => {
       )
 
       // Should display selected shop with retailerUniqueCode
-      const input = screen.getByRole('combobox') as HTMLInputElement
+      const input = screen.getByRole('combobox')
       expect(input.value).toContain('67063100001')
       expect(input.value).toContain('Cochin Bakery')
     })
@@ -155,7 +155,7 @@ describe('ShopCombobox', () => {
         />,
       )
 
-      const input = screen.getByRole('combobox') as HTMLInputElement
+      const input = screen.getByRole('combobox')
       // Format: "code - name (balance)"
       expect(input.value).toContain('67063100001')
       expect(input.value).toContain('Cochin Bakery')
@@ -173,7 +173,7 @@ describe('ShopCombobox', () => {
         />,
       )
 
-      const input = screen.getByRole('combobox') as HTMLInputElement
+      const input = screen.getByRole('combobox')
       // Format: "code - name"
       expect(input.value).toContain('67063100001')
       expect(input.value).toContain('Cochin Bakery')
@@ -185,11 +185,7 @@ describe('ShopCombobox', () => {
     test('filters shops by name', async () => {
       const onChange = mock(() => {})
       render(
-        <ShopCombobox
-          shops={mockShopsAdapted}
-          value=""
-          onChange={onChange}
-        />,
+        <ShopCombobox shops={mockShopsAdapted} value="" onChange={onChange} />,
       )
 
       const input = screen.getByRole('combobox')
@@ -208,11 +204,7 @@ describe('ShopCombobox', () => {
     test('filters shops by code', async () => {
       const onChange = mock(() => {})
       render(
-        <ShopCombobox
-          shops={mockShopsAdapted}
-          value=""
-          onChange={onChange}
-        />,
+        <ShopCombobox shops={mockShopsAdapted} value="" onChange={onChange} />,
       )
 
       const input = screen.getByRole('combobox')
@@ -228,11 +220,7 @@ describe('ShopCombobox', () => {
     test('filters shops by zone', async () => {
       const onChange = mock(() => {})
       render(
-        <ShopCombobox
-          shops={mockShopsAdapted}
-          value=""
-          onChange={onChange}
-        />,
+        <ShopCombobox shops={mockShopsAdapted} value="" onChange={onChange} />,
       )
 
       const input = screen.getByRole('combobox')
@@ -248,11 +236,7 @@ describe('ShopCombobox', () => {
     test('shows no results message when filter has no matches', async () => {
       const onChange = mock(() => {})
       render(
-        <ShopCombobox
-          shops={mockShopsAdapted}
-          value=""
-          onChange={onChange}
-        />,
+        <ShopCombobox shops={mockShopsAdapted} value="" onChange={onChange} />,
       )
 
       const input = screen.getByRole('combobox')
@@ -267,11 +251,7 @@ describe('ShopCombobox', () => {
     test('filters with retailerUniqueCode (Convex format)', async () => {
       const onChange = mock(() => {})
       render(
-        <ShopCombobox
-          shops={mockShopsConvex}
-          value=""
-          onChange={onChange}
-        />,
+        <ShopCombobox shops={mockShopsConvex} value="" onChange={onChange} />,
       )
 
       const input = screen.getByRole('combobox')
@@ -289,11 +269,7 @@ describe('ShopCombobox', () => {
     test('calls onChange when shop is selected', async () => {
       const onChange = mock(() => {})
       render(
-        <ShopCombobox
-          shops={mockShopsAdapted}
-          value=""
-          onChange={onChange}
-        />,
+        <ShopCombobox shops={mockShopsAdapted} value="" onChange={onChange} />,
       )
 
       const input = screen.getByRole('combobox')
@@ -314,11 +290,7 @@ describe('ShopCombobox', () => {
     test('calls onChange with _id for Convex format shops', async () => {
       const onChange = mock(() => {})
       render(
-        <ShopCombobox
-          shops={mockShopsConvex}
-          value=""
-          onChange={onChange}
-        />,
+        <ShopCombobox shops={mockShopsConvex} value="" onChange={onChange} />,
       )
 
       const input = screen.getByRole('combobox')
@@ -347,9 +319,7 @@ describe('ShopCombobox', () => {
       }))
 
       const onChange = mock(() => {})
-      render(
-        <ShopCombobox shops={manyShops} value="" onChange={onChange} />,
-      )
+      render(<ShopCombobox shops={manyShops} value="" onChange={onChange} />)
 
       const input = screen.getByRole('combobox')
       await userEvent.click(input)
@@ -373,9 +343,7 @@ describe('ShopCombobox', () => {
       }))
 
       const onChange = mock(() => {})
-      render(
-        <ShopCombobox shops={manyShops} value="" onChange={onChange} />,
-      )
+      render(<ShopCombobox shops={manyShops} value="" onChange={onChange} />)
 
       const input = screen.getByRole('combobox')
       await userEvent.click(input)
@@ -438,7 +406,7 @@ describe('ShopCombobox helper functions', () => {
       />,
     )
 
-    const input = screen.getByRole('combobox') as HTMLInputElement
+    const input = screen.getByRole('combobox')
     expect(input.value).toContain('Cochin Bakery')
   })
 
@@ -452,7 +420,7 @@ describe('ShopCombobox helper functions', () => {
       />,
     )
 
-    const input = screen.getByRole('combobox') as HTMLInputElement
+    const input = screen.getByRole('combobox')
     expect(input.value).toContain('Cochin Bakery')
   })
 
@@ -466,7 +434,7 @@ describe('ShopCombobox helper functions', () => {
       />,
     )
 
-    const input = screen.getByRole('combobox') as HTMLInputElement
+    const input = screen.getByRole('combobox')
     expect(input.value).toContain('67063100001')
   })
 
@@ -480,7 +448,7 @@ describe('ShopCombobox helper functions', () => {
       />,
     )
 
-    const input = screen.getByRole('combobox') as HTMLInputElement
+    const input = screen.getByRole('combobox')
     expect(input.value).toContain('67063100001')
   })
 })

@@ -1,5 +1,6 @@
-import type { ReactElement, ReactNode } from 'react'
-import { render, type RenderOptions } from '@testing-library/react'
+import { render } from '@testing-library/react'
+import type { RenderOptions } from '@testing-library/react'
+import type { ReactElement } from 'react'
 
 // Custom render function with providers if needed
 function customRender(

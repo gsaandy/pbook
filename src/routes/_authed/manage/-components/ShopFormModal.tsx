@@ -137,7 +137,10 @@ export function ShopFormModal({
       onClose={onClose}
       title={shop ? 'Edit Shop' : 'Add Shop'}
     >
-      <form onSubmit={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-4 max-h-[70vh] overflow-y-auto pr-2"
+      >
         {/* Shop Name & Code */}
         <div className="grid grid-cols-2 gap-3">
           <div>
@@ -147,7 +150,9 @@ export function ShopFormModal({
             <input
               type="text"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
               className={errors.name ? errorInputClassName : inputClassName}
               placeholder="Enter shop name"
             />
@@ -161,7 +166,9 @@ export function ShopFormModal({
             <input
               type="text"
               value={formData.code}
-              onChange={(e) => setFormData({ ...formData, code: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, code: e.target.value })
+              }
               className={errors.code ? errorInputClassName : inputClassName}
               placeholder="e.g., 67063100001"
               disabled={!!shop} // Cannot change code once created
@@ -273,7 +280,9 @@ export function ShopFormModal({
                     const value = e.target.value.replace(/\D/g, '').slice(0, 6)
                     setFormData({ ...formData, pinCode: value })
                   }}
-                  className={errors.pinCode ? errorInputClassName : inputClassName}
+                  className={
+                    errors.pinCode ? errorInputClassName : inputClassName
+                  }
                   placeholder="6-digit PIN"
                   maxLength={6}
                 />
@@ -316,7 +325,9 @@ export function ShopFormModal({
                 onChange={(e) =>
                   setFormData({ ...formData, whatsapp: e.target.value })
                 }
-                className={errors.whatsapp ? errorInputClassName : inputClassName}
+                className={
+                  errors.whatsapp ? errorInputClassName : inputClassName
+                }
                 placeholder="+91 98765 43210"
               />
               {errors.whatsapp && (
@@ -346,7 +357,9 @@ export function ShopFormModal({
                 className={errors.zone ? errorInputClassName : inputClassName}
                 placeholder="e.g., Kannur, Thalassery"
               />
-              {errors.zone && <p className={errorTextClassName}>{errors.zone}</p>}
+              {errors.zone && (
+                <p className={errorTextClassName}>{errors.zone}</p>
+              )}
             </div>
 
             <div>

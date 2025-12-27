@@ -1,4 +1,4 @@
-import { describe, test, expect, mock } from 'bun:test'
+import { describe, expect, mock, test } from 'bun:test'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { FieldStaffCollections } from './FieldStaffCollections'
@@ -37,7 +37,7 @@ const mockShops = [
   },
 ]
 
-const today = new Date().toISOString().split('T')[0]!
+const today = new Date().toISOString().split('T')[0]
 
 const mockTransactions = [
   {
@@ -160,7 +160,7 @@ describe('FieldStaffCollections', () => {
       const shopNames = screen.getAllByRole('button', { name: /.*/ })
       // First shop in list should be MarginFree Market (15000 balance)
       const firstShopButton = shopNames.find((btn) =>
-        btn.textContent?.includes('MarginFree Market'),
+        btn.textContent.includes('MarginFree Market'),
       )
       expect(firstShopButton).toBeDefined()
     })
@@ -331,7 +331,10 @@ describe('FieldStaffCollections', () => {
     test('calls onCollectCash with correct data when submitted', async () => {
       const onCollectCash = mock(() => {})
       render(
-        <FieldStaffCollections {...defaultProps} onCollectCash={onCollectCash} />,
+        <FieldStaffCollections
+          {...defaultProps}
+          onCollectCash={onCollectCash}
+        />,
       )
 
       // Open modal
@@ -356,7 +359,10 @@ describe('FieldStaffCollections', () => {
     test('allows selecting different payment modes', async () => {
       const onCollectCash = mock(() => {})
       render(
-        <FieldStaffCollections {...defaultProps} onCollectCash={onCollectCash} />,
+        <FieldStaffCollections
+          {...defaultProps}
+          onCollectCash={onCollectCash}
+        />,
       )
 
       // Open modal
@@ -426,7 +432,10 @@ describe('FieldStaffCollections', () => {
     test('resets form after successful submission', async () => {
       const onCollectCash = mock(() => {})
       render(
-        <FieldStaffCollections {...defaultProps} onCollectCash={onCollectCash} />,
+        <FieldStaffCollections
+          {...defaultProps}
+          onCollectCash={onCollectCash}
+        />,
       )
 
       // Open modal
@@ -449,7 +458,7 @@ describe('FieldStaffCollections', () => {
   })
 
   describe('pagination', () => {
-    test('paginates when more than 20 shops', async () => {
+    test('paginates when more than 20 shops', () => {
       const manyShops = Array.from({ length: 25 }, (_, i) => ({
         _id: `shop_${i}`,
         name: `Shop ${i}`,
@@ -609,7 +618,11 @@ describe('FieldStaffCollections', () => {
   describe('empty states', () => {
     test('shows empty state when no shops', () => {
       render(
-        <FieldStaffCollections {...defaultProps} shops={[]} transactions={[]} />,
+        <FieldStaffCollections
+          {...defaultProps}
+          shops={[]}
+          transactions={[]}
+        />,
       )
 
       expect(screen.getByText('No shops available.')).toBeDefined()

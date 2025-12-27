@@ -23,7 +23,8 @@ interface ShopItem {
 
 // Helper to get normalized values from shop
 const getShopId = (shop: ShopItem) => shop.id ?? shop._id ?? ''
-const getShopCode = (shop: ShopItem) => shop.code ?? shop.retailerUniqueCode ?? ''
+const getShopCode = (shop: ShopItem) =>
+  shop.code ?? shop.retailerUniqueCode ?? ''
 
 export interface ShopComboboxProps {
   shops: Array<ShopItem>
